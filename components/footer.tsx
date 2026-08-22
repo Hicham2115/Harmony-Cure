@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Camera, Leaf, Mail, Share2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { PAYMENT_METHODS } from "@/components/payment-icons";
 
 const SHOP_LINKS = [
   { label: "Boutique", href: "/boutique" },
@@ -136,7 +137,19 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-3 border-t border-white/15 pt-6 text-center sm:flex-row sm:justify-between sm:text-left">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-2.5 border-t border-white/15 pt-6 sm:justify-start">
+          {PAYMENT_METHODS.map(({ label, Mark }) => (
+            <span
+              className="flex h-8 min-w-14 items-center justify-center rounded-md bg-white px-3"
+              key={label}
+              title={label}
+            >
+              <Mark />
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-6 flex flex-col items-center gap-3 border-t border-white/15 pt-6 text-center sm:flex-row sm:justify-between sm:text-left">
           <p className="text-xs text-white/60">
             © {new Date().getFullYear()} Harmony Cure. Tous droits réservés.
           </p>

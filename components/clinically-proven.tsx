@@ -1,14 +1,22 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ImageIcon, Leaf } from "lucide-react";
+import { ArrowRight, Leaf } from "lucide-react";
+
+import ctaImage from "@/app/assets/calltoaction.jpg";
 
 export function ClinicallyProven() {
   return (
     <section className="bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
         <div className="grid overflow-hidden rounded-2xl shadow-[0_14px_36px_rgba(42,34,22,0.12)] lg:grid-cols-2">
-          {/* Placeholder — swap for the real photo */}
-          <div className="relative flex aspect-4/3 items-center justify-center bg-[#f1ede4] lg:aspect-auto">
-            <ImageIcon className="size-14 text-[#a77d38]/40" strokeWidth={1} />
+          <div className="relative aspect-4/3 lg:aspect-auto">
+            <Image
+              alt="Cliniquement prouvés"
+              className="object-cover"
+              fill
+              priority
+              src={ctaImage}
+            />
           </div>
 
           <div className="flex flex-col items-center gap-5 bg-[#0e3927] px-8 py-16 text-center sm:px-14">

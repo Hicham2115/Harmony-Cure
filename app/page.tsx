@@ -7,6 +7,7 @@ import { BeforeAfter } from "@/components/before-after";
 import { Reviews } from "@/components/reviews";
 import { Guarantees } from "@/components/guarantees";
 import { ClinicallyProven } from "@/components/clinically-proven";
+import { Faq } from "@/components/faq";
 import { Footer } from "@/components/footer";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
       <Reviews />
       <Guarantees />
       <ClinicallyProven />
+      <Faq />
       <Footer />
     </div>
   );
