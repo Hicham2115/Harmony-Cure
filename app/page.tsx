@@ -5,6 +5,9 @@ import { BestSellers } from "@/components/best-sellers";
 import { ProductShowcase } from "@/components/product-showcase";
 import { BeforeAfter } from "@/components/before-after";
 import { Reviews } from "@/components/reviews";
+import { Guarantees } from "@/components/guarantees";
+import { ClinicallyProven } from "@/components/clinically-proven";
+import { Footer } from "@/components/footer";
 
 export default function Home() {
   return (
@@ -16,6 +19,9 @@ export default function Home() {
       <ProductShowcase />
       <BeforeAfter />
       <Reviews />
+      <Guarantees />
+      <ClinicallyProven />
+      <Footer />
     </div>
   );
 }
