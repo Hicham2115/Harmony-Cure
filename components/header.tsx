@@ -32,7 +32,7 @@ const NAV_LINKS = [
 
 export function Header() {
   return (
-    <header className="w-full ">
+    <header className="sticky top-0 z-50 w-full">
       <div className="relative  flex items-center justify-center gap-2 bg-[#0d3825] px-4 py-2 text-center text-[9px] font-medium uppercase tracking-[0.1em] text-white sm:px-12 sm:py-2.5 sm:text-[10px] sm:tracking-[0.16em] lg:text-xs">
         <span className="flex items-center gap-1.5 sm:gap-2">
           <Leaf
