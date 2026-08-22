@@ -103,7 +103,7 @@ export function BeforeAfter() {
           </Comparison>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-6 rounded-2xl bg-white p-6 sm:grid-cols-4">
+        {/* <div className="mt-10 grid grid-cols-2 gap-6 rounded-2xl bg-white p-6 sm:grid-cols-4">
           {TRUST_ITEMS.map(({ icon: Icon, label }) => (
             <div className="flex items-center gap-3" key={label}>
               <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-[#a77d38]/30 text-[#0e3927]">
@@ -114,7 +114,7 @@ export function BeforeAfter() {
               </span>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );
