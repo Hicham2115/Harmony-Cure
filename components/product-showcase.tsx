@@ -94,7 +94,10 @@ export function ProductShowcase() {
     CATEGORIES.find((category) => category.id === activeId) ?? CATEGORIES[0];
 
   return (
-    <section className="bg-white py-16 sm:py-20 lg:py-24">
+    <section
+      id="produits"
+      className="scroll-mt-32 bg-white py-16 sm:py-20 lg:py-24"
+    >
       <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-[5.8vw]">
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 border-b border-black/10 pb-px">
           {CATEGORIES.map((category) => {

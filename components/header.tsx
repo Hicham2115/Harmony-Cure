@@ -24,10 +24,9 @@ import {
 
 const NAV_LINKS = [
   { label: "Boutique", href: "/boutique" },
-  { label: "Soins", href: "/soins" },
-  { label: "Cheveux", href: "/cheveux" },
-  { label: "À propos", href: "/a-propos" },
-  { label: "Blog", href: "/blog" },
+  { label: "Soins", href: "/#produits" },
+  { label: "Cheveux", href: "/#resultats" },
+  { label: "À propos", href: "/#histoire" },
 ];
 
 export function Header() {

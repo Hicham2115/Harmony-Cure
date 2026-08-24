@@ -5,7 +5,7 @@ import Lenis from "lenis";
 
 export function SmoothScroll() {
   useEffect(() => {
-    const lenis = new Lenis();
+    const lenis = new Lenis({ anchors: true });
 
     function raf(time: number) {
       lenis.raf(time);

@@ -37,7 +37,10 @@ const TRUST_ITEMS = [
 
 export function BeforeAfter() {
   return (
-    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
+    <section
+      id="resultats"
+      className="scroll-mt-32 relative overflow-hidden py-16 sm:py-20 lg:py-24"
+    >
       <Leaf
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-16 -left-16 size-72 -rotate-12 text-[#0e3927]/10 sm:size-96"
