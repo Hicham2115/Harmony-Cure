@@ -5,9 +5,19 @@ import { Footer } from "@/components/footer";
 import { BoutiqueGrid } from "@/components/boutique-grid";
 
 export const metadata: Metadata = {
-  title: "Boutique | Harmony Cure",
+  title: "Boutique",
   description:
-    "Découvrez nos soins capillaires naturels, formulés et fabriqués en France.",
+    "Découvrez nos soins capillaires naturels, formulés et fabriqués en France : anti-chute, collagène marin, cures minceur.",
+  alternates: {
+    canonical: "/boutique",
+  },
+  openGraph: {
+    title: "Boutique | Harmony Cure",
+    description:
+      "Découvrez nos soins capillaires naturels, formulés et fabriqués en France.",
+    url: "https://harmonycure.fr/boutique",
+    type: "website",
+  },
 };
 
 export default function BoutiquePage() {

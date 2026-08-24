@@ -41,7 +41,7 @@ export function Faq() {
           </p>
 
           <h2 className="font-heading text-4xl leading-[0.95] tracking-[-0.02em] text-[#171715] sm:text-5xl">
-            Vous <span className="italic text-[#aa6a12]">vous demandez</span>
+            Vous <span className=" text-[#aa6a12]">vous demandez</span>
           </h2>
 
           <span className="h-px w-10 bg-[#a77d38]" />

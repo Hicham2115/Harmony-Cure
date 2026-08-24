@@ -58,11 +58,15 @@ export function BeforeAfter() {
               <Leaf className="size-3.5 text-[#a77d38]" strokeWidth={1.2} />
             </div>
 
-            <p className="max-w-md text-base leading-relaxed text-[#3d3a34] sm:text-lg">
-              Nos formules 100% naturelles, enrichies en actifs végétaux
-              sélectionnés, stimulent la croissance des cheveux, renforcent les
-              racines et hydratent le cuir chevelu pour des cheveux plus denses,
-              plus sains et visiblement brillants.
+            <p className="max-w-lg text-base leading-relaxed text-[#3d3a34] sm:text-lg">
+              Nos formules 100 % naturelles, enrichies en actifs végétaux
+              rigoureusement sélectionnés, agissent en profondeur pour stimuler
+              la croissance des cheveux, renforcer les racines et hydrater
+              durablement le cuir chevelu. Grâce à une combinaison d’ingrédients
+              naturels aux propriétés nourrissantes et revitalisantes, elles
+              contribuent à améliorer la santé et la vitalité de vos cheveux au
+              quotidien, pour une chevelure plus dense, plus forte, plus saine
+              et visiblement plus brillante.
             </p>
           </div>
 

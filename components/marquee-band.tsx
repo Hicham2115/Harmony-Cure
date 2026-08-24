@@ -20,7 +20,10 @@ export function MarqueeBand() {
                 className="flex items-center gap-3 whitespace-nowrap px-6 text-xs font-medium tracking-[0.12em] text-white uppercase sm:text-sm"
                 key={message}
               >
-                <Leaf className="size-3 shrink-0 text-[#a77d38]" strokeWidth={1.5} />
+                <Leaf
+                  className="size-3 shrink-0 text-[#a77d38]"
+                  strokeWidth={1.5}
+                />
                 {message}
               </li>
             ))}

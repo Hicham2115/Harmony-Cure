@@ -4,7 +4,7 @@ const GUARANTEES = [
   {
     title: "Produits naturels",
     description:
-      "Roquette, acide hyaluronique ou encore vitamine C — tous nos produits sont composés d'ingrédients naturels.",
+      "Nos formules 100 % naturelles, enrichies en actifs végétaux sélectionnés, stimulent la croissance, renforcent les racines et hydratent le cuir chevelu.",
   },
   {
     title: "Laboratoire pharmaceutique",
@@ -14,12 +14,12 @@ const GUARANTEES = [
   {
     title: "Fabrication française",
     description:
-      "Tous nos produits sont fabriqués en France, garantissant qualité et savoir-faire local.",
+      "Tous nos produits sont fabriqués en France, garantissant qualité, expertise et savoir-faire local à chaque étape de leur fabrication.",
   },
   {
     title: "Livraison dans le monde",
     description:
-      "Nous proposons la livraison internationale afin que nos produits de qualité vous parviennent où que vous soyez.",
+      "Nous proposons la livraison internationale afin que nos produits de qualité vous parviennent facilement, où que vous soyez dans le monde.",
   },
 ];
 
@@ -62,7 +62,7 @@ export function Guarantees() {
 
           <span className="h-px w-10 bg-[#a77d38]" />
 
-          <p className="text-sm leading-relaxed text-white/70 sm:text-base">
+          <p className="text-sm leading-relaxed text-white/90 sm:text-base">
             Des formules exigeantes, fabriquées en France, pensées pour durer.
           </p>
         </div>
@@ -79,7 +79,7 @@ export function Guarantees() {
               <h3 className="text-base font-bold uppercase leading-snug tracking-wide text-white">
                 {title}
               </h3>
-              <p className="text-sm leading-relaxed text-white/70">
+              <p className="text-sm leading-relaxed text-white/90">
                 {description}
               </p>
             </div>

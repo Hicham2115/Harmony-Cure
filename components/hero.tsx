@@ -59,7 +59,7 @@ export function Hero() {
 
       <div className="relative z-20 mx-auto flex min-h-110 max-w-[1600px] items-center px-6 py-16 sm:px-10 sm:py-20 lg:min-h-110 lg:px-[5.8vw] lg:py-28">
         <div className="flex max-w-lg flex-col gap-5 sm:max-w-xl lg:max-w-6xl lg:gap-6">
-          <p className="flex items-center gap-3 text-[19px] font-semibold tracking-[0.2em] text-[#544530] sm:text-xs">
+          <p className="flex items-center gap-3 text-[19px] font-semibold tracking-[0.2em] text-[#000000] sm:text-xs">
             <span className="h-px w-9  bg-current" />
             <Leaf
               className="size-3 shrink-0 sm:size-3.5"

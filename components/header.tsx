@@ -121,22 +121,22 @@ export function Header() {
 
         {/* Right side */}
         <div className="flex items-center justify-end gap-0.5 text-[#1a2e22] sm:gap-1 lg:gap-3">
-          <Button
+          {/* <Button
             aria-label="Rechercher"
             className="group rounded-full text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:text-[#a77d38]"
             size="icon"
             variant="ghost"
           >
             <Search className="size-5 transition-transform duration-300 group-hover:scale-110" />
-          </Button>
-          <Button
+          </Button> */}
+          {/* <Button
             aria-label="Compte"
             className="hidden rounded-full text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:text-[#a77d38] sm:inline-flex"
             size="icon"
             variant="ghost"
           >
             <User className="size-5" />
-          </Button>
+          </Button> */}
           <Button
             aria-label="Favoris"
             className="group hidden rounded-full text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:text-[#a77d38] sm:inline-flex"

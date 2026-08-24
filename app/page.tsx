@@ -8,6 +8,7 @@ import { Reviews } from "@/components/reviews";
 import { Guarantees } from "@/components/guarantees";
 import { ClinicallyProven } from "@/components/clinically-proven";
 import { Faq } from "@/components/faq";
+import { Contact } from "@/components/contact";
 import { Footer } from "@/components/footer";
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
       <Guarantees />
       <ClinicallyProven />
       <Faq />
+      <Contact />
       <Footer />
     </div>
   );
