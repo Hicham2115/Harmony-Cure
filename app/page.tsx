@@ -4,6 +4,7 @@ import { MarqueeBand } from "@/components/marquee-band";
 import { BestSellers } from "@/components/best-sellers";
 import { ProductShowcase } from "@/components/product-showcase";
 import { BeforeAfter } from "@/components/before-after";
+import { OurStory } from "@/components/our-story";
 import { Reviews } from "@/components/reviews";
 import { Guarantees } from "@/components/guarantees";
 import { ClinicallyProven } from "@/components/clinically-proven";
@@ -20,6 +21,7 @@ export default function Home() {
       <BestSellers />
       <ProductShowcase />
       <BeforeAfter />
+      <OurStory />
       <Reviews />
       <Guarantees />
       <ClinicallyProven />
