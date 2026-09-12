@@ -83,7 +83,7 @@ export function BestSellers() {
             TOUTES NOS CURES
           </p>
 
-          <h2 className="font-heading text-4xl leading-[0.95] tracking-[-0.02em] text-[#171715] sm:text-5xl lg:text-6xl">
+          <h2 className=" text-4xl leading-[0.95] tracking-[-0.02em] text-[#171715] sm:text-5xl lg:text-6xl">
             Nos <span className=" text-[#aa6a12]">best-sellers</span>
           </h2>
 
