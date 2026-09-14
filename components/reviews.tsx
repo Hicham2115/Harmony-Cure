@@ -1,3 +1,6 @@
+"use client";
+
+import { useRef, useState } from "react";
 import { Play, Star } from "lucide-react";
 
 import {
@@ -9,43 +12,91 @@ import {
 } from "@/components/ui/carousel";
 
 const REVIEWS = [
-  {
-    name: "Camille",
-    product: "Sérum Pousse Cheveux",
-    quote: "Mes cheveux n'ont jamais été aussi denses.",
-    rating: 5,
-  },
-  {
-    name: "Léa",
-    product: "Collagène Marin",
-    quote: "Ma peau est visiblement plus éclatante.",
-    rating: 5,
-  },
-  {
-    name: "Manon",
-    product: "Masque Nutrition",
-    quote: "Un parfum et une texture incroyables.",
-    rating: 5,
-  },
-  {
-    name: "Sophie",
-    product: "Anti-Chute Vegan",
-    quote: "La chute a nettement ralenti en un mois.",
-    rating: 4,
-  },
-  {
-    name: "Inès",
-    product: "Shampooing Doux",
-    quote: "Doux au quotidien, aucune irritation.",
-    rating: 5,
-  },
-  {
-    name: "Chloé",
-    product: "Huile de Ricin",
-    quote: "Mes sourcils et cils sont transformés.",
-    rating: 5,
-  },
+  { name: "@asmabaklouti", product: "Harmony Cure", video: "/videos/reviews/asmabaklouti-1.mp4" },
+  { name: "@asmabaklouti", product: "Harmony Cure", video: "/videos/reviews/asmabaklouti-2.mp4" },
+  { name: "@asmabaklouti", product: "Harmony Cure", video: "/videos/reviews/asmabaklouti-3.mp4" },
+  { name: "@asmabaklouti", product: "Harmony Cure", video: "/videos/reviews/asmabaklouti-4.mp4" },
+  { name: "@fatine_in_paris", product: "Harmony Cure", video: "/videos/reviews/fatine-1.mp4" },
+  { name: "@fatine_in_paris", product: "Harmony Cure", video: "/videos/reviews/fatine-2.mp4" },
+  { name: "@fatine_in_paris", product: "Harmony Cure", video: "/videos/reviews/fatine-3.mp4" },
+  { name: "@fatine_in_paris", product: "Harmony Cure", video: "/videos/reviews/fatine-4.mp4" },
+  { name: "@fatine_in_paris", product: "Harmony Cure", video: "/videos/reviews/fatine-5.mp4" },
+  { name: "@imenbourguiba_", product: "Harmony Cure", video: "/videos/reviews/imen-1.mp4" },
+  { name: "@imenbourguiba_", product: "Harmony Cure", video: "/videos/reviews/imen-2.mp4" },
+  { name: "@imenbourguiba_", product: "Harmony Cure", video: "/videos/reviews/imen-3.mp4" },
+  { name: "Cliente vérifiée", product: "Harmony Cure", video: "/videos/reviews/general-1.mp4" },
+  { name: "Cliente vérifiée", product: "Harmony Cure", video: "/videos/reviews/general-2.mp4" },
+  { name: "Cliente vérifiée", product: "Harmony Cure", video: "/videos/reviews/general-3.mp4" },
+  { name: "Cliente vérifiée", product: "Harmony Cure", video: "/videos/reviews/general-4.mp4" },
+  { name: "Cliente vérifiée", product: "Pack HarmonyLove", video: "/videos/reviews/pack-love-1.mp4" },
+  { name: "Cliente vérifiée", product: "Pack HarmonyLove", video: "/videos/reviews/pack-love-2.mp4" },
+  { name: "Cliente vérifiée", product: "Pack HarmonyLove", video: "/videos/reviews/pack-love-3.mp4" },
+  { name: "Cliente vérifiée", product: "Pack HarmonyLove", video: "/videos/reviews/pack-love-4.mp4" },
+  { name: "Cliente vérifiée", product: "Pack Brûleur de Graisse", video: "/videos/reviews/pack-bruleur-1.mp4" },
+  { name: "Cliente vérifiée", product: "Pack Brûleur de Graisse", video: "/videos/reviews/pack-bruleur-2.mp4" },
 ];
+
+function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlay = () => {
+    const el = videoRef.current;
+    if (!el) return;
+    el.muted = false;
+    el.controls = true;
+    void el.play();
+    setIsPlaying(true);
+  };
+
+  return (
+    <div className="group relative aspect-9/16 overflow-hidden rounded-2xl border border-[#a77d38]/20 bg-linear-to-b from-[#ece3d3] to-[#ddd0b6] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#a77d38]/50 hover:shadow-xl">
+      <video
+        className="absolute inset-0 size-full object-cover"
+        loop
+        muted
+        onClick={!isPlaying ? handlePlay : undefined}
+        playsInline
+        preload="metadata"
+        ref={videoRef}
+        src={video}
+      />
+
+      {!isPlaying && (
+        <button
+          aria-label="Lire la vidéo"
+          className="absolute inset-0 flex items-center justify-center"
+          onClick={handlePlay}
+          type="button"
+        >
+          <span className="absolute inset-0 bg-black/10 transition-colors duration-300 group-hover:bg-black/25" />
+          <span className="relative flex size-14 items-center justify-center rounded-full bg-white/90 text-[#171715] shadow-md transition-transform duration-300 group-hover:scale-110">
+            <Play className="size-5 fill-current" strokeWidth={0} />
+          </span>
+        </button>
+      )}
+
+      {!isPlaying && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4">
+          <div className="flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-[#171715]">
+            {name}
+          </div>
+          <div className="flex items-center gap-0.5 rounded-full bg-white/90 px-2 py-1 text-[#a77d38]">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Star className="size-2.5" fill="currentColor" key={index} strokeWidth={0} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!isPlaying && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/75 via-black/25 to-transparent p-4 pt-14 transition-transform duration-300 group-hover:-translate-y-0.5">
+          <p className="text-xs uppercase tracking-wide text-white/80">{product}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function Reviews() {
   return (
@@ -89,47 +140,12 @@ export function Reviews() {
           opts={{ align: "start", loop: false }}
         >
           <CarouselContent>
-            {REVIEWS.map((review) => (
+            {REVIEWS.map((review, index) => (
               <CarouselItem
                 className="basis-1/2 sm:basis-1/3 lg:basis-1/4"
-                key={review.name}
+                key={`${review.video}-${index}`}
               >
-                <div className="group relative aspect-9/16 overflow-hidden rounded-2xl border border-[#a77d38]/20 bg-linear-to-b from-[#ece3d3] to-[#ddd0b6] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#a77d38]/50 hover:shadow-xl">
-                  {/* Placeholder — replace with a <video> element once footage is added */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex size-14 items-center justify-center rounded-full bg-white/90 text-[#171715] shadow-md transition-transform duration-300 group-hover:scale-110">
-                      <Play className="size-5 fill-current" strokeWidth={0} />
-                    </div>
-                  </div>
-
-                  <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-white/90 text-xs font-semibold text-[#171715]">
-                      {review.name.charAt(0)}
-                    </div>
-                    <div className="flex items-center gap-0.5 rounded-full bg-white/90 px-2 py-1 text-[#a77d38]">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star
-                          className="size-2.5"
-                          fill={index < review.rating ? "currentColor" : "none"}
-                          key={index}
-                          strokeWidth={1.5}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/75 via-black/25 to-transparent p-4 pt-14 transition-transform duration-300 group-hover:-translate-y-0.5">
-                    <p className="text-sm font-semibold text-white">
-                      {review.name}
-                    </p>
-                    <p className="text-xs italic text-white/80">
-                      &ldquo;{review.quote}&rdquo;
-                    </p>
-                    <p className="mt-1 text-[10px] uppercase tracking-wide text-white/50">
-                      {review.product}
-                    </p>
-                  </div>
-                </div>
+                <ReviewCard {...review} />
               </CarouselItem>
             ))}
           </CarouselContent>
