@@ -57,8 +57,8 @@ export function Footer() {
               </Link>
 
               <p className="max-w-xs text-base leading-relaxed text-white/85">
-                Des soins naturels, efficaces et sensoriels, fabriqués en
-                France pour révéler durablement votre beauté.
+                Des soins naturels, efficaces et sensoriels, fabriqués en France
+                pour révéler durablement votre beauté.
               </p>
 
               <div className="mt-1 flex items-center gap-3">
@@ -108,8 +108,8 @@ export function Footer() {
                 Restez informée
               </h3>
               <p className="text-base leading-relaxed text-white/85">
-                Nos nouveautés, conseils et offres directement dans votre
-                boîte mail.
+                Nos nouveautés, conseils et offres directement dans votre boîte
+                mail.
               </p>
               <form className="flex items-center gap-2">
                 <Input
@@ -156,6 +156,18 @@ export function Footer() {
       >
         HARMONY CURE
       </div>
+
+      <p className="mx-auto max-w-[1440px] px-6 py-4 text-center text-[12px] text-white/70 sm:px-8 lg:px-12">
+        Designed &amp; developed by{" "}
+        <a
+          href="https://www.stallionadvertising.ma/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline decoration-transparent underline-offset-2 transition-colors duration-200 hover:text-white hover:decoration-teal-400"
+        >
+          Stallion Advertising
+        </a>
+      </p>
     </footer>
   );
 }

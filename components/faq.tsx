@@ -65,7 +65,7 @@ export function Faq() {
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   type="button"
                 >
-                  <span className="text-base font-semibold text-[#171715] sm:text-lg">
+                  <span className="text-base font-semibold text-[#171715] sm:text-lg lg:whitespace-nowrap">
                     {item.question}
                   </span>
                   <ChevronDown
