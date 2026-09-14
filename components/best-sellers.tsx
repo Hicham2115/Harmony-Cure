@@ -87,7 +87,7 @@ export function BestSellers() {
             Nos <span className=" text-[#aa6a12]">best-sellers</span>
           </h2>
 
-          <p className="text-sm leading-relaxed text-[#0e0d0d] sm:text-base">
+          <p className="text-base leading-relaxed text-[#0e0d0d] sm:text-lg">
             Découvrez les soins préférés de notre communauté. Des formules
             naturelles, efficaces et sensorielles, plébiscitées chaque jour.
           </p>
@@ -121,10 +121,10 @@ export function BestSellers() {
                 key={product.rank}
               >
                 <div className="relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
-                  <span className="absolute left-3 top-3 rounded-sm bg-[#0e3927] px-2 py-1 text-[10px] font-semibold tracking-wider text-white">
+                  <span className="absolute left-3 top-3 rounded-sm bg-[#0e3927] px-2 py-1 text-xs font-semibold tracking-wider text-white">
                     N°{product.rank}
                   </span>
-                  <span className="absolute left-16 top-3 rounded-sm bg-white/90 px-2 py-1 text-[10px] font-semibold tracking-wider text-[#171715]">
+                  <span className="absolute left-16 top-3 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
                     BEST-SELLER
                   </span>
                   <Leaf

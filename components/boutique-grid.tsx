@@ -258,7 +258,7 @@ export function BoutiqueGrid() {
                 key={product.id}
               >
                 <div className="relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
-                  <span className="absolute left-3 top-3 rounded-sm bg-white/90 px-2 py-1 text-[10px] font-semibold tracking-wider text-[#171715]">
+                  <span className="absolute left-3 top-3 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
                     {product.type.toUpperCase()}
                   </span>
                   <Leaf

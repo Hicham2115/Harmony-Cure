@@ -27,12 +27,14 @@ const NAV_LINKS = [
   { label: "Soins", href: "/#produits" },
   { label: "Cheveux", href: "/#resultats" },
   { label: "À propos", href: "/#histoire" },
+  { label: "Avis", href: "/#avis" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full">
-      <div className="relative  flex items-center justify-center gap-2 bg-[#0d3825] px-4 py-2 text-center text-[9px] font-medium uppercase tracking-[0.1em] text-white sm:px-12 sm:py-2.5 sm:text-[10px] sm:tracking-[0.16em] lg:text-xs">
+      <div className="relative  flex items-center justify-center gap-2 bg-[#0d3825] px-4 py-2 text-center text-xs font-medium uppercase tracking-[0.1em] text-white sm:px-12 sm:py-2.5 sm:tracking-[0.16em]">
         <span className="flex items-center gap-1.5 sm:gap-2">
           <Leaf
             className="size-3 shrink-0 sm:size-3.5"
@@ -44,7 +46,7 @@ export function Header() {
           </span>
         </span>
         <button
-          className="group absolute right-4 hidden items-center gap-1 text-[10px] tracking-[0.14em] text-white/90 transition-colors duration-300 hover:text-[#e2c589] sm:inline-flex sm:right-10"
+          className="group absolute right-4 hidden items-center gap-1 text-xs tracking-[0.14em] text-white/90 transition-colors duration-300 hover:text-[#e2c589] sm:inline-flex sm:right-10"
           type="button"
         >
           FR{" "}
@@ -52,7 +54,7 @@ export function Header() {
         </button>
       </div>
 
-      <div className="grid py-5 grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-black/5 bg-white px-4 py-3 sm:gap-4 sm:px-6 md:px-10 lg:px-[5.5vw]">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-black/5 bg-white px-4 py-2.5 sm:gap-4 sm:px-6 md:px-10 lg:px-[5.5vw]">
         {/* Left side */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Mobile menu trigger */}
@@ -91,11 +93,11 @@ export function Header() {
             aria-label="Harmony Cure, accueil"
           >
             <Leaf
-              className="size-5 shrink-0 rotate-[18deg] text-[#a77d38] sm:size-6"
+              className="size-4.5 shrink-0 rotate-[18deg] text-[#a77d38] sm:size-5"
               fill="currentColor"
               strokeWidth={1.1}
             />
-            <span className="font-serif text-base tracking-[0.1em] sm:text-lg sm:tracking-[0.16em] lg:text-lg">
+            <span className="font-serif text-sm tracking-[0.1em] sm:text-base sm:tracking-[0.16em]">
               HARMONY CURE
             </span>
           </Link>
@@ -103,7 +105,7 @@ export function Header() {
 
         {/* Middle: nav */}
         <NavigationMenu className="max-md:hidden">
-          <NavigationMenuList className="gap-8">
+          <NavigationMenuList className="gap-6">
             {NAV_LINKS.map((link) => (
               <NavigationMenuItem key={link.href}>
                 <NavigationMenuLink

@@ -32,7 +32,7 @@ export function Faq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="bg-white py-16 sm:py-20 lg:py-24">
+    <section id="faq" className="scroll-mt-32 bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
           <p className="flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-[#a77d38]">
@@ -65,7 +65,7 @@ export function Faq() {
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   type="button"
                 >
-                  <span className="text-sm font-semibold text-[#171715] sm:text-base">
+                  <span className="text-base font-semibold text-[#171715] sm:text-lg">
                     {item.question}
                   </span>
                   <ChevronDown
@@ -81,7 +81,7 @@ export function Faq() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="px-5 pb-5 text-sm leading-relaxed text-[#585750] sm:px-6 sm:pb-6 sm:text-base">
+                    <p className="px-5 pb-5 text-base leading-relaxed text-[#585750] sm:px-6 sm:pb-6 sm:text-lg">
                       {item.answer}
                     </p>
                   </div>

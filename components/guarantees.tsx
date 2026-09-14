@@ -62,7 +62,7 @@ export function Guarantees() {
 
           <span className="h-px w-10 bg-[#a77d38]" />
 
-          <p className="text-sm leading-relaxed text-white/90 sm:text-base">
+          <p className="text-base leading-relaxed text-white/90 sm:text-lg">
             Des formules exigeantes, fabriquées en France, pensées pour durer.
           </p>
         </div>
@@ -79,7 +79,7 @@ export function Guarantees() {
               <h3 className="text-base font-bold uppercase leading-snug tracking-wide text-white">
                 {title}
               </h3>
-              <p className="text-sm leading-relaxed text-white/90">
+              <p className="text-base leading-relaxed text-white/90">
                 {description}
               </p>
             </div>

@@ -32,7 +32,7 @@ export function ClinicallyProven() {
 
             <span className="h-px w-10 bg-[#a77d38]" />
 
-            <p className="max-w-sm text-sm leading-relaxed text-white/75 sm:text-base">
+            <p className="max-w-sm text-base leading-relaxed text-white/75 sm:text-lg">
               Tous nos produits sont cliniquement prouvés : des examens ont été
               effectués et les résultats ont été à la hauteur de nos espérances.
             </p>

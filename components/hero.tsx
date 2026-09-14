@@ -78,7 +78,7 @@ export function Hero() {
             </span>
           </h1>
 
-          <p className="max-w-sm lg:max-w-xl text-md leading-relaxed text-[#010101] sm:text-xl">
+          <p className="max-w-sm lg:max-w-xl text-base leading-relaxed text-[#010101] sm:text-xl">
             Des soins naturels et sensoriels, pensés pour révéler durablement
             votre beauté, jour après jour.
           </p>

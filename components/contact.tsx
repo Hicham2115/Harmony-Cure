@@ -42,7 +42,7 @@ function TicketDivider({
 
 export function Contact() {
   return (
-    <section className="bg-white py-16 sm:py-20 lg:py-24">
+    <section id="contact" className="scroll-mt-32 bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
         <div className="relative rounded-[1.75rem] border border-[#0e3927]/12 bg-[#f8f4ec] shadow-[0_24px_70px_-24px_rgba(14,57,39,0.22)]">
           <div className="flex flex-col lg:flex-row lg:items-stretch">
@@ -59,7 +59,7 @@ export function Contact() {
                   Parlons de votre{" "}
                   <span className="text-[#aa6a12]">harmonie</span>
                 </h2>
-                <p className="max-w-sm text-sm leading-relaxed text-[#585750] sm:text-base">
+                <p className="max-w-sm text-base leading-relaxed text-[#585750] sm:text-lg">
                   Une question sur une cure, votre commande ou vos résultats ?
                   Écrivez-nous : une conseillère vous répond en personne.
                 </p>
@@ -71,24 +71,24 @@ export function Contact() {
                     key={row.label}
                     className="flex items-baseline justify-between gap-3 border-b border-dotted border-[#0e3927]/25 pb-2"
                   >
-                    <span className="shrink-0 text-xs font-semibold uppercase tracking-[0.12em] text-[#585750]">
+                    <span className="shrink-0 text-sm font-semibold uppercase tracking-[0.12em] text-[#585750]">
                       {row.label}
                     </span>
                     <span className="text-right">
                       {row.href ? (
                         <a
                           href={row.href}
-                          className="text-sm font-medium text-[#171715] transition-colors hover:text-[#a77d38]"
+                          className="text-base font-medium text-[#171715] transition-colors hover:text-[#a77d38]"
                         >
                           {row.value}
                         </a>
                       ) : (
-                        <span className="text-sm font-medium text-[#171715]">
+                        <span className="text-base font-medium text-[#171715]">
                           {row.value}
                         </span>
                       )}
                       {row.sub && (
-                        <span className="block text-[11px] text-[#585750]/80">
+                        <span className="block text-xs text-[#585750]/80">
                           {row.sub}
                         </span>
                       )}
@@ -115,27 +115,27 @@ export function Contact() {
                   <div className="flex flex-col gap-2">
                     <label
                       htmlFor="contact-first-name"
-                      className="text-xs font-semibold uppercase tracking-[0.12em] text-[#585750]"
+                      className="text-base font-semibold uppercase tracking-[0.12em] text-[#585750]"
                     >
                       Prénom
                     </label>
                     <Input
                       id="contact-first-name"
                       placeholder="Votre prénom"
-                      className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-[#171715] shadow-none placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
+                      className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label
                       htmlFor="contact-last-name"
-                      className="text-xs font-semibold uppercase tracking-[0.12em] text-[#585750]"
+                      className="text-base font-semibold uppercase tracking-[0.12em] text-[#585750]"
                     >
                       Nom
                     </label>
                     <Input
                       id="contact-last-name"
                       placeholder="Votre nom"
-                      className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-[#171715] shadow-none placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
+                      className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
                     />
                   </div>
                 </div>
@@ -143,7 +143,7 @@ export function Contact() {
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="contact-email"
-                    className="text-xs font-semibold uppercase tracking-[0.12em] text-[#585750]"
+                    className="text-base font-semibold uppercase tracking-[0.12em] text-[#585750]"
                   >
                     Email
                   </label>
@@ -151,26 +151,26 @@ export function Contact() {
                     id="contact-email"
                     type="email"
                     placeholder="vous@exemple.com"
-                    className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-[#171715] shadow-none placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
+                    className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
                   />
                 </div>
 
                 <div className="flex flex-1 flex-col gap-2">
                   <label
                     htmlFor="contact-message"
-                    className="text-xs font-semibold uppercase tracking-[0.12em] text-[#585750]"
+                    className="text-base font-semibold uppercase tracking-[0.12em] text-[#585750]"
                   >
                     Votre message
                   </label>
                   <Textarea
                     id="contact-message"
                     placeholder="Parlez-nous de votre routine ou de votre question..."
-                    className="min-h-28 flex-1 resize-none rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 py-2 text-[#171715] shadow-none placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
+                    className="min-h-28 flex-1 resize-none rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 py-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
                   />
                 </div>
 
                 <div className="flex flex-col-reverse items-start justify-between gap-3 sm:flex-row sm:items-center">
-                  <p className="max-w-xs text-[11px] leading-relaxed text-[#585750]/80">
+                  <p className="max-w-xs text-xs leading-relaxed text-[#585750]/80">
                     En envoyant ce message, vous acceptez d&apos;être
                     recontactée par notre équipe.
                   </p>

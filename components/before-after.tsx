@@ -93,10 +93,10 @@ export function BeforeAfter() {
               />
             </ComparisonItem>
 
-            <span className="pointer-events-none absolute left-4 top-4 z-40 rounded-full bg-[#0e3927] px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
+            <span className="pointer-events-none absolute left-4 top-4 z-40 rounded-full bg-[#0e3927] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white">
               Avant
             </span>
-            <span className="pointer-events-none absolute right-4 top-4 z-40 rounded-full bg-[#aa6a12] px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white">
+            <span className="pointer-events-none absolute right-4 top-4 z-40 rounded-full bg-[#aa6a12] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white">
               Après
             </span>
 

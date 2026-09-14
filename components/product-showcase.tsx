@@ -148,7 +148,7 @@ export function ProductShowcase() {
 
             <span className="h-px w-10 bg-[#a77d38]" />
 
-            <p className="max-w-md text-sm leading-relaxed text-[#000000] sm:text-base">
+            <p className="max-w-md text-base leading-relaxed text-[#000000] sm:text-lg">
               {active.description}
             </p>
 

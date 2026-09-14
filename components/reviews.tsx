@@ -78,7 +78,7 @@ function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
 
       {!isPlaying && (
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4">
-          <div className="flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-[#171715]">
+          <div className="flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#171715]">
             {name}
           </div>
           <div className="flex items-center gap-0.5 rounded-full bg-white/90 px-2 py-1 text-[#a77d38]">
@@ -100,7 +100,7 @@ function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
 
 export function Reviews() {
   return (
-    <section className="bg-white py-16 sm:py-20 lg:py-24">
+    <section id="avis" className="scroll-mt-32 bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
           <p className="text-xs font-medium tracking-[0.2em] text-[#a77d38]">
