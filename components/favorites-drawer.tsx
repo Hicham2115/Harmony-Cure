@@ -14,6 +14,7 @@ import {
 import { getProductsByIds } from "@/lib/product-actions";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
+import { useLenisStore } from "@/lib/store/use-lenis";
 
 type FavoriteProduct = Awaited<ReturnType<typeof getProductsByIds>>[number];
 
@@ -42,6 +43,18 @@ export function FavoritesDrawer() {
       .finally(() => setIsLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, favoriteIds.join(",")]);
+
+  useEffect(() => {
+    const lenis = useLenisStore.getState().lenis;
+    if (isOpen) {
+      lenis?.stop();
+    } else {
+      lenis?.start();
+    }
+    return () => {
+      lenis?.start();
+    };
+  }, [isOpen]);
 
   return (
     <Sheet onOpenChange={(open) => !open && closeFavorites()} open={isOpen}>

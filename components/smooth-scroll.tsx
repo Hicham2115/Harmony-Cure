@@ -3,10 +3,14 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
+import { useLenisStore } from "@/lib/store/use-lenis";
+
 export function SmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({ anchors: true });
     let frameId: number;
+
+    useLenisStore.getState().setLenis(lenis);
 
     function raf(time: number) {
       try {
@@ -20,6 +24,7 @@ export function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(frameId);
+      useLenisStore.getState().setLenis(null);
       lenis.destroy();
     };
   }, []);
