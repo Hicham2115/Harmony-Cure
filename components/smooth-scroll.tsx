@@ -9,8 +9,11 @@ export function SmoothScroll() {
     let frameId: number;
 
     function raf(time: number) {
-      lenis.raf(time);
-      frameId = requestAnimationFrame(raf);
+      try {
+        lenis.raf(time);
+      } finally {
+        frameId = requestAnimationFrame(raf);
+      }
     }
 
     frameId = requestAnimationFrame(raf);
