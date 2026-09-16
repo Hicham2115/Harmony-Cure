@@ -11,8 +11,11 @@ import { ClinicallyProven } from "@/components/clinically-proven";
 import { Faq } from "@/components/faq";
 import { Contact } from "@/components/contact";
 import { Footer } from "@/components/footer";
+import { getProducts } from "@/lib/shopify";
+export default async function Home() {
+  const products = await getProducts(10);
+  console.log("Fetched products:", products);
 
-export default function Home() {
   return (
     <div className="flex flex-1 flex-col">
       <Header />

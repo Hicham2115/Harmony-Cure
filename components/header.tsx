@@ -54,7 +54,7 @@ export function Header() {
         </button>
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-black/5 bg-white px-4 py-2.5 sm:gap-4 sm:px-6 md:px-10 lg:px-[5.5vw]">
+      <div className="flex items-center justify-between gap-2 border-b border-black/5 bg-white px-4 py-2.5 sm:gap-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:px-10 lg:px-[5.5vw]">
         {/* Left side */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Mobile menu trigger */}
