@@ -7,6 +7,9 @@ import {
   Roboto,
 } from "next/font/google";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { ScrollToTop } from "@/components/scroll-to-top";
+import { QueryProvider } from "@/components/query-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -114,8 +117,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${roboto.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SmoothScroll />
-        {children}
+        <QueryProvider>
+          <SmoothScroll />
+          <ScrollToTop />
+          {children}
+          <Toaster />
+        </QueryProvider>
       </body>
     </html>
   );

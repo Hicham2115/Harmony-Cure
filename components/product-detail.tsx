@@ -18,6 +18,7 @@ import {
 import type { ShopifyProductDetail } from "@/lib/shopify";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
+import { CodOrderForm } from "@/components/cod-order-form";
 
 const TIERS = [
   { days: 15, multiplier: 1, discount: 0, badge: null },
@@ -325,6 +326,14 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
               </div>
             </div>
           ) : null}
+
+          <CodOrderForm
+            currencyCode={currencyCode}
+            productTitle={product.title}
+            quantity={activeTier.multiplier}
+            unitPrice={activeTier.finalPrice}
+            variantId={variantId}
+          />
         </div>
       </div>
 

@@ -87,8 +87,9 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
               const variantId = product.variants.nodes[0]?.id;
 
               return (
-                <article
+                <Link
                   className="flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-[#a77d38]/40 bg-white sm:w-72"
+                  href={`/boutique/${product.handle}`}
                   key={product.id}
                 >
                   <div className="group relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
@@ -106,7 +107,10 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                       }
                       aria-pressed={isFavorite}
                       className="absolute right-3 top-3 z-10 flex size-8 items-center justify-center rounded-full bg-white/90 text-[#1a2e22] transition-transform hover:scale-105"
-                      onClick={() => toggleFavorite(product.id)}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        toggleFavorite(product.id);
+                      }}
                       type="button"
                     >
                       <Heart
@@ -133,7 +137,10 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="pointer-events-auto flex size-11 cursor-pointer translate-y-4 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform duration-300 ease-out hover:scale-105 group-hover:translate-y-0 disabled:opacity-50"
                         disabled={!variantId}
-                        onClick={() => variantId && addItem(variantId)}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          variantId && addItem(variantId);
+                        }}
                         type="button"
                       >
                         <ShoppingBag className="size-5" />
@@ -170,14 +177,17 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
                         disabled={!variantId}
-                        onClick={() => variantId && addItem(variantId)}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          variantId && addItem(variantId);
+                        }}
                         type="button"
                       >
                         <Plus className="size-4" />
                       </button>
                     </div>
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>
