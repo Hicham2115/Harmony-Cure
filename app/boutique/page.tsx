@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { BoutiqueGrid } from "@/components/boutique-grid";
+import { getProducts } from "@/lib/shopify";
 
 export const metadata: Metadata = {
   title: "Boutique",
@@ -20,7 +21,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BoutiquePage() {
+export default async function BoutiquePage() {
+  const products = await getProducts();
+
   return (
     <div className="flex flex-1 flex-col">
       <Header />
@@ -46,7 +49,7 @@ export default function BoutiquePage() {
 
       <section className="bg-white pb-16 sm:pb-20 lg:pb-24">
         <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
-          <BoutiqueGrid />
+          <BoutiqueGrid products={products} />
         </div>
       </section>
 

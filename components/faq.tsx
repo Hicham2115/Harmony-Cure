@@ -51,7 +51,7 @@ export function Faq() {
           </p>
         </div>
 
-        <div className="mx-auto mt-12 flex max-w-3xl flex-col gap-3 sm:mt-16">
+        <div className="mx-auto mt-12 flex max-w-5xl flex-col gap-3 sm:mt-16">
           {FAQ_ITEMS.map((item, index) => {
             const isOpen = openIndex === index;
             return (
@@ -65,7 +65,7 @@ export function Faq() {
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   type="button"
                 >
-                  <span className="text-base font-semibold text-[#171715] sm:text-lg lg:whitespace-nowrap">
+                  <span className="text-sm font-semibold text-[#171715] sm:text-base">
                     {item.question}
                   </span>
                   <ChevronDown

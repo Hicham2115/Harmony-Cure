@@ -105,7 +105,7 @@ export function ProductShowcase() {
             return (
               <button
                 aria-pressed={isActive}
-                className={`-mb-px border-b-2 pb-3 text-sm tracking-wide transition-colors ${
+                className={`-mb-px cursor-pointer border-b-2 pb-3 text-sm tracking-wide transition-colors ${
                   isActive
                     ? "border-[#a77d38] text-[#171715]"
                     : "border-transparent text-[#040404] hover:text-[#171715]"
@@ -148,7 +148,7 @@ export function ProductShowcase() {
 
             <span className="h-px w-10 bg-[#a77d38]" />
 
-            <p className="max-w-md text-base leading-relaxed text-[#000000] sm:text-lg">
+            <p className="max-w-xl text-base leading-relaxed text-[#000000] sm:text-lg">
               {active.description}
             </p>
 
@@ -160,7 +160,7 @@ export function ProductShowcase() {
 
             <Link
               href="/boutique"
-              className="mt-1 inline-flex w-fit items-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm"
+              className="mt-1 inline-flex w-fit items-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm font-roboto"
             >
               ACHETER MAINTENANT
               <ArrowRight className="size-4" />

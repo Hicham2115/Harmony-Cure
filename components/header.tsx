@@ -41,7 +41,7 @@ export function Header() {
             fill="currentColor"
             strokeWidth={1.2}
           />
-          <span className="leading-tight">
+          <span className="leading-tight font-inter">
             Livraison offerte dès 60€ d&apos;achat en France métropolitaine
           </span>
         </span>

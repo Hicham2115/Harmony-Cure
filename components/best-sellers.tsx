@@ -1,64 +1,37 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  FlaskConical,
   Heart,
   Leaf,
   Plus,
-  ShieldCheck,
+  ShoppingBag,
   Star,
 } from "lucide-react";
 
-const PRODUCTS = [
-  {
-    rank: 1,
-    name: "Sérum Pousse Cheveux",
-    tags: "Stimule • Fortifie • Revitalise",
-    rating: 5,
-    reviews: 1288,
-    price: "29,90 €",
-  },
-  {
-    rank: 2,
-    name: "Shampooing Doux",
-    tags: "Nettoie • Hydrate • Apaise",
-    rating: 5,
-    reviews: 956,
-    price: "19,90 €",
-  },
-  {
-    rank: 3,
-    name: "Masque Nutrition Cheveux",
-    tags: "Nourrit • Répare • Protège",
-    rating: 5,
-    reviews: 842,
-    price: "24,90 €",
-  },
-  {
-    rank: 4,
-    name: "Huile de Ricin 100% Pure",
-    tags: "Fortifie • Densifie • Nourrit",
-    rating: 4,
-    reviews: 674,
-    price: "16,90 €",
-  },
-  {
-    rank: 5,
-    name: "Crème Capillaire Nourrissante",
-    tags: "Nourrit • Discipline • Protège",
-    rating: 5,
-    reviews: 512,
-    price: "22,90 €",
-  },
-];
+import { formatPrice } from "@/lib/format-price";
+import type { ShopifyProduct } from "@/lib/shopify";
 
-export function BestSellers() {
+export function BestSellers({ products }: { products: ShopifyProduct[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  function toggleFavorite(productId: string) {
+    setFavorites((current) => {
+      const next = new Set(current);
+      if (next.has(productId)) {
+        next.delete(productId);
+      } else {
+        next.add(productId);
+      }
+      return next;
+    });
+  }
 
   function scrollByCard(direction: 1 | -1) {
     const scroller = scrollerRef.current;
@@ -87,14 +60,14 @@ export function BestSellers() {
             Nos <span className=" text-[#aa6a12]">best-sellers</span>
           </h2>
 
-          <p className="text-base leading-relaxed text-[#0e0d0d] sm:text-lg">
+          <p className="text-base leading-relaxed text-[#0e0d0d] sm:text-lg font-roboto">
             Découvrez les soins préférés de notre communauté. Des formules
             naturelles, efficaces et sensorielles, plébiscitées chaque jour.
           </p>
 
           <Link
             href="/boutique"
-            className="mt-2 inline-flex w-fit items-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm"
+            className="mt-2 font-roboto inline-flex w-fit items-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm"
           >
             DÉCOUVRIR TOUTES NOS CURES
             <ArrowRight className="size-4" />
@@ -115,64 +88,101 @@ export function BestSellers() {
             className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
             ref={scrollerRef}
           >
-            {PRODUCTS.map((product) => (
-              <article
-                className="flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-[#a77d38]/40 bg-white sm:w-72"
-                key={product.rank}
-              >
-                <div className="relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
-                  <span className="absolute left-3 top-3 rounded-sm bg-[#0e3927] px-2 py-1 text-xs font-semibold tracking-wider text-white">
-                    N°{product.rank}
-                  </span>
-                  <span className="absolute left-16 top-3 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
-                    BEST-SELLER
-                  </span>
-                  <Leaf
-                    aria-hidden="true"
-                    className="size-12 text-[#a77d38]/40"
-                    strokeWidth={1}
-                  />
-                </div>
+            {products.map((product, index) => {
+              const image = product.images.nodes[0];
 
-                <div className="flex flex-1 flex-col gap-2 p-4">
-                  <h3 className="font-heading text-lg text-[#171715]">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs text-[#8a8478]">{product.tags}</p>
+              const isFavorite = favorites.has(product.id);
 
-                  <div className="flex items-center gap-1.5">
-                    <div className="flex text-[#a77d38]">
-                      {Array.from({ length: 5 }).map((_, index) => (
+              return (
+                <article
+                  className="flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-[#a77d38]/40 bg-white sm:w-72"
+                  key={product.id}
+                >
+                  <div className="group relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
+                    <span className="absolute left-3 top-3 z-10 rounded-sm bg-[#0e3927] px-2 py-1 text-xs font-semibold tracking-wider text-white">
+                      N°{index + 1}
+                    </span>
+                    <span className="absolute left-16 top-3 z-10 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
+                      BEST-SELLER
+                    </span>
+                    <button
+                      aria-label={
+                        isFavorite
+                          ? `Retirer ${product.title} des favoris`
+                          : `Ajouter ${product.title} aux favoris`
+                      }
+                      aria-pressed={isFavorite}
+                      className="absolute right-3 top-3 z-10 flex size-8 items-center justify-center rounded-full bg-white/90 text-[#1a2e22] transition-transform hover:scale-105"
+                      onClick={() => toggleFavorite(product.id)}
+                      type="button"
+                    >
+                      <Heart
+                        className="size-4"
+                        fill={isFavorite ? "currentColor" : "none"}
+                      />
+                    </button>
+                    {image ? (
+                      <Image
+                        alt={image.altText ?? product.title}
+                        className="object-cover"
+                        fill
+                        src={image.url}
+                      />
+                    ) : (
+                      <Leaf
+                        aria-hidden="true"
+                        className="size-12 text-[#a77d38]/40"
+                        strokeWidth={1}
+                      />
+                    )}
+                    <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-black/5 pb-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <button
+                        aria-label={`Ajouter ${product.title} au panier`}
+                        className="pointer-events-auto flex size-11 cursor-pointer translate-y-4 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform duration-300 ease-out hover:scale-105 group-hover:translate-y-0"
+                        type="button"
+                      >
+                        <ShoppingBag className="size-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-1 flex-col gap-2 p-4">
+                    <h3 className="font-roboto font-bold text-lg text-[#171715]">
+                      {product.title}
+                    </h3>
+                    {product.description ? (
+                      <p className="line-clamp-2 text-xs text-[#8a8478]">
+                        {product.description}
+                      </p>
+                    ) : null}
+
+                    <div className="flex items-center gap-1.5 text-[#a77d38]">
+                      {Array.from({ length: 5 }).map((_, starIndex) => (
                         <Star
                           className="size-3.5"
-                          fill={
-                            index < product.rating ? "currentColor" : "none"
-                          }
-                          key={index}
+                          fill="currentColor"
+                          key={starIndex}
                           strokeWidth={1.5}
                         />
                       ))}
                     </div>
-                    <span className="text-xs text-[#8a8478]">
-                      ({product.reviews})
-                    </span>
-                  </div>
 
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-base font-semibold text-[#171715]">
-                      {product.price}
-                    </span>
-                    <button
-                      aria-label={`Ajouter ${product.name} au panier`}
-                      className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105"
-                      type="button"
-                    >
-                      <Plus className="size-4" />
-                    </button>
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-base font-semibold text-[#171715]">
+                        {formatPrice(product)}
+                      </span>
+                      <button
+                        aria-label={`Ajouter ${product.title} au panier`}
+                        className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105"
+                        type="button"
+                      >
+                        <Plus className="size-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
 
           <button

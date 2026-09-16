@@ -27,6 +27,7 @@ const PRODUCTS_QUERY = `#graphql
         title
         handle
         description
+        productType
         images(first: 5) {
           nodes {
             url
@@ -55,3 +56,47 @@ export async function getProducts(first = 10) {
 
   return data?.products.nodes ?? [];
 }
+
+export type ShopifyProduct = Awaited<ReturnType<typeof getProducts>>[number];
+
+const PRODUCT_BY_HANDLE_QUERY = `#graphql
+  query ProductByHandle($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      description
+      descriptionHtml
+      productType
+      images(first: 8) {
+        nodes {
+          url
+          altText
+        }
+      }
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+`;
+
+export async function getProductByHandle(handle: string) {
+  const { data, errors } = await shopifyClient.request(
+    PRODUCT_BY_HANDLE_QUERY,
+    { variables: { handle } },
+  );
+
+  if (errors) {
+    throw new Error(errors.message ?? "Failed to fetch product from Shopify");
+  }
+
+  return data?.product ?? null;
+}
+
+export type ShopifyProductDetail = NonNullable<
+  Awaited<ReturnType<typeof getProductByHandle>>
+>;

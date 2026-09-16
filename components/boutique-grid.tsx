@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Leaf, Plus, SlidersHorizontal, Star, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Leaf, Plus, SlidersHorizontal, X } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -10,66 +12,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { formatPrice } from "@/lib/format-price";
+import type { ShopifyProduct } from "@/lib/shopify";
 
-const PRODUCTS = [
-  {
-    id: "serum-pousse-cheveux",
-    name: "Sérum Pousse Cheveux",
-    tags: "Stimule • Fortifie • Revitalise",
-    price: 29.9,
-    rating: 5,
-    reviews: 1288,
-    type: "Sérum",
-    objectif: "Pousse & anti-chute",
-    hairType: "Cheveux fins & sans volume",
-  },
-  {
-    id: "shampooing-doux",
-    name: "Shampooing Doux",
-    tags: "Nettoie • Hydrate • Apaise",
-    price: 19.9,
-    rating: 5,
-    reviews: 956,
-    type: "Shampooing",
-    objectif: "Nettoyage doux",
-    hairType: "Cuir chevelu sensible",
-  },
-  {
-    id: "masque-nutrition-cheveux",
-    name: "Masque Nutrition Cheveux",
-    tags: "Nourrit • Répare • Protège",
-    price: 24.9,
-    rating: 5,
-    reviews: 842,
-    type: "Masque",
-    objectif: "Nutrition intense",
-    hairType: "Cheveux secs & abîmés",
-  },
-  {
-    id: "huile-de-ricin",
-    name: "Huile de Ricin 100% Pure",
-    tags: "Fortifie • Densifie • Nourrit",
-    price: 16.9,
-    rating: 4,
-    reviews: 674,
-    type: "Huile",
-    objectif: "Pousse & anti-chute",
-    hairType: "Tous types",
-  },
-  {
-    id: "creme-capillaire-nourrissante",
-    name: "Crème Capillaire Nourrissante",
-    tags: "Nourrit • Discipline • Protège",
-    price: 22.9,
-    rating: 5,
-    reviews: 512,
-    type: "Crème",
-    objectif: "Nutrition intense",
-    hairType: "Cheveux secs & abîmés",
-  },
-];
-
-const TYPES = ["Sérum", "Shampooing", "Masque", "Huile", "Crème"];
 const OBJECTIFS = [
   "Pousse & anti-chute",
   "Nettoyage doux",
@@ -81,8 +26,6 @@ const HAIR_TYPES = [
   "Cheveux fins & sans volume",
   "Cuir chevelu sensible",
 ];
-
-const MAX_PRICE = 30;
 
 function toggle(list: string[], value: string) {
   return list.includes(value)
@@ -103,7 +46,7 @@ function FilterGroup({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[#171715]">
+      <h3 className="font-roboto text-xs font-semibold uppercase tracking-[0.12em] text-[#171715]">
         {title}
       </h3>
       <div className="flex flex-col gap-2.5">
@@ -116,7 +59,7 @@ function FilterGroup({
               checked={selected.includes(option)}
               onCheckedChange={() => onToggle(option)}
             />
-            <span className="text-sm text-[#585750] transition-colors group-hover:text-[#171715]">
+            <span className="font-roboto text-sm text-[#585750] transition-colors group-hover:text-[#171715]">
               {option}
             </span>
           </label>
@@ -126,46 +69,58 @@ function FilterGroup({
   );
 }
 
-export function BoutiqueGrid() {
-  const [types, setTypes] = useState<string[]>([]);
-  const [objectifs, setObjectifs] = useState<string[]>([]);
-  const [hairTypes, setHairTypes] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<number[]>([0, MAX_PRICE]);
+export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
+  const types = useMemo(
+    () =>
+      Array.from(
+        new Set(products.map((product) => product.productType).filter(Boolean)),
+      ),
+    [products],
+  );
+
+  const maxPrice = useMemo(() => {
+    const prices = products.map((product) =>
+      Number(product.priceRange.minVariantPrice.amount),
+    );
+    return prices.length ? Math.ceil(Math.max(...prices)) : 0;
+  }, [products]);
+
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedObjectifs, setSelectedObjectifs] = useState<string[]>([]);
+  const [selectedHairTypes, setSelectedHairTypes] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<number[]>([0, maxPrice]);
 
   const activeFilterCount =
-    types.length +
-    objectifs.length +
-    hairTypes.length +
-    (priceRange[0] > 0 || priceRange[1] < MAX_PRICE ? 1 : 0);
+    selectedTypes.length +
+    selectedObjectifs.length +
+    selectedHairTypes.length +
+    (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0);
 
   const filtered = useMemo(() => {
-    return PRODUCTS.filter((product) => {
-      if (types.length && !types.includes(product.type)) return false;
-      if (objectifs.length && !objectifs.includes(product.objectif))
+    return products.filter((product) => {
+      if (selectedTypes.length && !selectedTypes.includes(product.productType))
         return false;
-      if (hairTypes.length && !hairTypes.includes(product.hairType))
-        return false;
-      if (product.price < priceRange[0] || product.price > priceRange[1])
-        return false;
+      const price = Number(product.priceRange.minVariantPrice.amount);
+      if (price < priceRange[0] || price > priceRange[1]) return false;
       return true;
     });
-  }, [types, objectifs, hairTypes, priceRange]);
+  }, [products, selectedTypes, priceRange]);
 
   function resetFilters() {
-    setTypes([]);
-    setObjectifs([]);
-    setHairTypes([]);
-    setPriceRange([0, MAX_PRICE]);
+    setSelectedTypes([]);
+    setSelectedObjectifs([]);
+    setSelectedHairTypes([]);
+    setPriceRange([0, maxPrice]);
   }
 
   const filterGroups = (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-3">
-        <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[#171715]">
+        <h3 className="font-roboto text-xs font-semibold uppercase tracking-[0.12em] text-[#171715]">
           Prix
         </h3>
         <Slider
-          max={MAX_PRICE}
+          max={maxPrice}
           min={0}
           onValueChange={(value) =>
             setPriceRange(Array.isArray(value) ? [...value] : [value])
@@ -173,29 +128,35 @@ export function BoutiqueGrid() {
           step={1}
           value={priceRange}
         />
-        <p className="text-sm text-[#585750]">
+        <p className="font-roboto text-sm text-[#585750]">
           {priceRange[0]} € – {priceRange[1]} €
         </p>
       </div>
 
-      <FilterGroup
-        onToggle={(value) => setTypes(toggle(types, value))}
-        options={TYPES}
-        selected={types}
-        title="Type de soin"
-      />
+      {types.length ? (
+        <FilterGroup
+          onToggle={(value) => setSelectedTypes(toggle(selectedTypes, value))}
+          options={types}
+          selected={selectedTypes}
+          title="Type de soin"
+        />
+      ) : null}
 
       <FilterGroup
-        onToggle={(value) => setObjectifs(toggle(objectifs, value))}
+        onToggle={(value) =>
+          setSelectedObjectifs(toggle(selectedObjectifs, value))
+        }
         options={OBJECTIFS}
-        selected={objectifs}
+        selected={selectedObjectifs}
         title="Objectif"
       />
 
       <FilterGroup
-        onToggle={(value) => setHairTypes(toggle(hairTypes, value))}
+        onToggle={(value) =>
+          setSelectedHairTypes(toggle(selectedHairTypes, value))
+        }
         options={HAIR_TYPES}
-        selected={hairTypes}
+        selected={selectedHairTypes}
         title="Type de cheveux"
       />
 
@@ -252,61 +213,67 @@ export function BoutiqueGrid() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((product) => (
-              <article
-                className="flex flex-col overflow-hidden rounded-xl border border-[#a77d38]/20 bg-white transition-shadow hover:shadow-lg"
-                key={product.id}
-              >
-                <div className="relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
-                  <span className="absolute left-3 top-3 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
-                    {product.type.toUpperCase()}
-                  </span>
-                  <Leaf
-                    aria-hidden="true"
-                    className="size-12 text-[#a77d38]/40"
-                    strokeWidth={1}
-                  />
-                </div>
+            {filtered.map((product) => {
+              const image = product.images.nodes[0];
 
-                <div className="flex flex-1 flex-col gap-2 p-4">
-                  <h3 className="font-heading text-lg text-[#171715]">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs text-[#8a8478]">{product.tags}</p>
+              return (
+                <article
+                  className="flex flex-col overflow-hidden rounded-xl border border-[#a77d38]/20 bg-white transition-shadow hover:shadow-lg"
+                  key={product.id}
+                >
+                  <Link
+                    className="relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]"
+                    href={`/boutique/${product.handle}`}
+                  >
+                    {product.productType ? (
+                      <span className="absolute left-3 top-3 z-10 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
+                        {product.productType.toUpperCase()}
+                      </span>
+                    ) : null}
+                    {image ? (
+                      <Image
+                        alt={image.altText ?? product.title}
+                        className="object-cover"
+                        fill
+                        src={image.url}
+                      />
+                    ) : (
+                      <Leaf
+                        aria-hidden="true"
+                        className="size-12 text-[#a77d38]/40"
+                        strokeWidth={1}
+                      />
+                    )}
+                  </Link>
 
-                  <div className="flex items-center gap-1.5">
-                    <div className="flex text-[#a77d38]">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star
-                          className="size-3.5"
-                          fill={
-                            index < product.rating ? "currentColor" : "none"
-                          }
-                          key={index}
-                          strokeWidth={1.5}
-                        />
-                      ))}
+                  <div className="flex flex-1 flex-col gap-2 p-4">
+                    <h3 className="font-heading text-lg text-[#171715]">
+                      <Link href={`/boutique/${product.handle}`}>
+                        {product.title}
+                      </Link>
+                    </h3>
+                    {product.description ? (
+                      <p className="line-clamp-2 text-xs text-[#8a8478]">
+                        {product.description}
+                      </p>
+                    ) : null}
+
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-base font-semibold text-[#171715]">
+                        {formatPrice(product)}
+                      </span>
+                      <button
+                        aria-label={`Ajouter ${product.title} au panier`}
+                        className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105"
+                        type="button"
+                      >
+                        <Plus className="size-4" />
+                      </button>
                     </div>
-                    <span className="text-xs text-[#8a8478]">
-                      ({product.reviews})
-                    </span>
                   </div>
-
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-base font-semibold text-[#171715]">
-                      {product.price.toFixed(2).replace(".", ",")} €
-                    </span>
-                    <button
-                      aria-label={`Ajouter ${product.name} au panier`}
-                      className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105"
-                      type="button"
-                    >
-                      <Plus className="size-4" />
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>
