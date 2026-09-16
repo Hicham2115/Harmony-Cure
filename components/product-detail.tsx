@@ -6,6 +6,7 @@ import Link from "next/link";
 import {
   ChevronDown,
   ChevronRight,
+  Heart,
   Leaf,
   PackageCheck,
   ShieldCheck,
@@ -15,6 +16,8 @@ import {
 } from "lucide-react";
 
 import type { ShopifyProductDetail } from "@/lib/shopify";
+import { useCartStore } from "@/lib/store/use-cart";
+import { useFavoritesStore } from "@/lib/store/use-favorites";
 
 const TIERS = [
   { days: 15, multiplier: 1, discount: 0, badge: null },
@@ -47,6 +50,14 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
   const [openSection, setOpenSection] = useState<string | null>("description");
   const [showStickyBar, setShowStickyBar] = useState(false);
   const ctaRef = useRef<HTMLButtonElement>(null);
+
+  const variantId = product.variants.nodes[0]?.id;
+  const addItem = useCartStore((state) => state.addItem);
+  const isCartLoading = useCartStore((state) => state.isLoading);
+  const isFavorite = useFavoritesStore((state) =>
+    state.favoriteIds.includes(product.id),
+  );
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
 
   const baseAmount = Number(product.priceRange.minVariantPrice.amount);
   const currencyCode = currencyFor(product);
@@ -146,9 +157,27 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             </p>
           ) : null}
 
-          <h1 className="font-roboto text-4xl leading-[0.98] tracking-[-0.02em] text-[#171715] sm:text-5xl">
-            {product.title}
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="font-roboto text-4xl leading-[0.98] tracking-[-0.02em] text-[#171715] sm:text-5xl">
+              {product.title}
+            </h1>
+            <button
+              aria-label={
+                isFavorite
+                  ? `Retirer ${product.title} des favoris`
+                  : `Ajouter ${product.title} aux favoris`
+              }
+              aria-pressed={isFavorite}
+              className="flex size-10 shrink-0 items-center justify-center rounded-full border border-[#a77d38]/30 text-[#1a2e22] transition-transform hover:scale-105"
+              onClick={() => toggleFavorite(product.id)}
+              type="button"
+            >
+              <Heart
+                className="size-4"
+                fill={isFavorite ? "currentColor" : "none"}
+              />
+            </button>
+          </div>
 
           <div className="flex items-center gap-2">
             <div className="flex text-[#a77d38]">
@@ -218,7 +247,9 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           </div>
 
           <button
-            className="mt-1 inline-flex items-center justify-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm"
+            className="mt-1 inline-flex items-center justify-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
+            disabled={!variantId || isCartLoading}
+            onClick={() => variantId && addItem(variantId, activeTier.multiplier)}
             ref={ctaRef}
             type="button"
           >
@@ -324,13 +355,9 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           </div>
 
           <button
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-[#0e3927] px-4 py-2.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:px-6 sm:py-3"
-            onClick={() =>
-              ctaRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              })
-            }
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-[#0e3927] px-4 py-2.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:px-6 sm:py-3"
+            disabled={!variantId || isCartLoading}
+            onClick={() => variantId && addItem(variantId, activeTier.multiplier)}
             type="button"
           >
             <ShoppingBag className="size-4" />

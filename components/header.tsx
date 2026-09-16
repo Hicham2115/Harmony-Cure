@@ -1,13 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import {
-  ChevronDown,
-  Heart,
-  Leaf,
-  Menu,
-  Search,
-  ShoppingBag,
-  User,
-} from "lucide-react";
+import { ChevronDown, Heart, Leaf, Menu, ShoppingBag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +15,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CartDrawer } from "@/components/cart-drawer";
+import { FavoritesDrawer } from "@/components/favorites-drawer";
+import { useCartStore } from "@/lib/store/use-cart";
+import { useFavoritesStore } from "@/lib/store/use-favorites";
 
 const NAV_LINKS = [
   { label: "Boutique", href: "/boutique" },
@@ -32,6 +30,11 @@ const NAV_LINKS = [
 ];
 
 export function Header() {
+  const favoriteCount = useFavoritesStore((state) => state.favoriteIds.length);
+  const openFavorites = useFavoritesStore((state) => state.openFavorites);
+  const cartCount = useCartStore((state) => state.cart?.totalQuantity ?? 0);
+  const openCart = useCartStore((state) => state.openCart);
+
   return (
     <header className="sticky top-0 z-50 w-full">
       <div className="relative  flex items-center justify-center gap-2 bg-[#0d3825] px-4 py-2 text-center text-xs font-medium uppercase tracking-[0.1em] text-white sm:px-12 sm:py-2.5 sm:tracking-[0.16em]">
@@ -140,25 +143,35 @@ export function Header() {
           </Button> */}
           <Button
             aria-label="Favoris"
-            className="group hidden rounded-full text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:text-[#a77d38] sm:inline-flex"
+            className="group relative hidden rounded-full text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:text-[#a77d38] sm:inline-flex"
+            onClick={openFavorites}
             size="icon"
             variant="ghost"
           >
             <Heart className="size-5 transition-transform duration-300 group-hover:fill-current" />
+            {favoriteCount > 0 ? (
+              <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-[#1a3d2e] text-[10px] text-white transition-colors duration-300">
+                {favoriteCount}
+              </span>
+            ) : null}
           </Button>
           <Button
             aria-label="Panier"
             className="relative rounded-full text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:text-[#a77d38]"
+            onClick={openCart}
             size="icon"
             variant="ghost"
           >
             <ShoppingBag className="size-5" />
             <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-[#1a3d2e] text-[10px] text-white transition-colors duration-300">
-              0
+              {cartCount}
             </span>
           </Button>
         </div>
       </div>
+
+      <CartDrawer />
+      <FavoritesDrawer />
     </header>
   );
 }

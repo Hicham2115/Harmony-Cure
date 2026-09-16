@@ -40,6 +40,12 @@ const PRODUCTS_QUERY = `#graphql
             currencyCode
           }
         }
+        variants(first: 1) {
+          nodes {
+            id
+            availableForSale
+          }
+        }
       }
     }
   }
@@ -78,6 +84,12 @@ const PRODUCT_BY_HANDLE_QUERY = `#graphql
         minVariantPrice {
           amount
           currencyCode
+        }
+      }
+      variants(first: 1) {
+        nodes {
+          id
+          availableForSale
         }
       }
     }

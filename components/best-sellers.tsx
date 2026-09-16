@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -16,22 +16,14 @@ import {
 
 import { formatPrice } from "@/lib/format-price";
 import type { ShopifyProduct } from "@/lib/shopify";
+import { useCartStore } from "@/lib/store/use-cart";
+import { useFavoritesStore } from "@/lib/store/use-favorites";
 
 export function BestSellers({ products }: { products: ShopifyProduct[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
-
-  function toggleFavorite(productId: string) {
-    setFavorites((current) => {
-      const next = new Set(current);
-      if (next.has(productId)) {
-        next.delete(productId);
-      } else {
-        next.add(productId);
-      }
-      return next;
-    });
-  }
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
+  const addItem = useCartStore((state) => state.addItem);
 
   function scrollByCard(direction: 1 | -1) {
     const scroller = scrollerRef.current;
@@ -91,7 +83,8 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
             {products.map((product, index) => {
               const image = product.images.nodes[0];
 
-              const isFavorite = favorites.has(product.id);
+              const isFavorite = favoriteIds.includes(product.id);
+              const variantId = product.variants.nodes[0]?.id;
 
               return (
                 <article
@@ -138,7 +131,9 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                     <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-black/5 pb-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
-                        className="pointer-events-auto flex size-11 cursor-pointer translate-y-4 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform duration-300 ease-out hover:scale-105 group-hover:translate-y-0"
+                        className="pointer-events-auto flex size-11 cursor-pointer translate-y-4 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform duration-300 ease-out hover:scale-105 group-hover:translate-y-0 disabled:opacity-50"
+                        disabled={!variantId}
+                        onClick={() => variantId && addItem(variantId)}
                         type="button"
                       >
                         <ShoppingBag className="size-5" />
@@ -173,7 +168,9 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                       </span>
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
-                        className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105"
+                        className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
+                        disabled={!variantId}
+                        onClick={() => variantId && addItem(variantId)}
                         type="button"
                       >
                         <Plus className="size-4" />

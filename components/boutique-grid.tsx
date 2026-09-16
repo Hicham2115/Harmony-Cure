@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Leaf, Plus, SlidersHorizontal, X } from "lucide-react";
+import { Heart, Leaf, Plus, SlidersHorizontal, X } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/popover";
 import { formatPrice } from "@/lib/format-price";
 import type { ShopifyProduct } from "@/lib/shopify";
+import { useCartStore } from "@/lib/store/use-cart";
+import { useFavoritesStore } from "@/lib/store/use-favorites";
 
 const OBJECTIFS = [
   "Pousse & anti-chute",
@@ -70,6 +72,10 @@ function FilterGroup({
 }
 
 export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
+  const addItem = useCartStore((state) => state.addItem);
+
   const types = useMemo(
     () =>
       Array.from(
@@ -215,6 +221,8 @@ export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((product) => {
               const image = product.images.nodes[0];
+              const isFavorite = favoriteIds.includes(product.id);
+              const variantId = product.variants.nodes[0]?.id;
 
               return (
                 <article
@@ -230,6 +238,25 @@ export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
                         {product.productType.toUpperCase()}
                       </span>
                     ) : null}
+                    <button
+                      aria-label={
+                        isFavorite
+                          ? `Retirer ${product.title} des favoris`
+                          : `Ajouter ${product.title} aux favoris`
+                      }
+                      aria-pressed={isFavorite}
+                      className="absolute right-3 top-3 z-10 flex size-8 items-center justify-center rounded-full bg-white/90 text-[#1a2e22] transition-transform hover:scale-105"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        toggleFavorite(product.id);
+                      }}
+                      type="button"
+                    >
+                      <Heart
+                        className="size-4"
+                        fill={isFavorite ? "currentColor" : "none"}
+                      />
+                    </button>
                     {image ? (
                       <Image
                         alt={image.altText ?? product.title}
@@ -264,7 +291,9 @@ export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
                       </span>
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
-                        className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105"
+                        className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
+                        disabled={!variantId}
+                        onClick={() => variantId && addItem(variantId)}
                         type="button"
                       >
                         <Plus className="size-4" />
