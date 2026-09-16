@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronDown, Heart, Leaf, Menu, ShoppingBag } from "lucide-react";
+
+import logo from "@/app/assets/logo.webp";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -92,17 +95,15 @@ export function Header() {
 
           <Link
             href="/"
-            className="flex items-center gap-1.5 whitespace-nowrap text-[#1c1d1a] sm:gap-2"
+            className="flex items-center whitespace-nowrap"
             aria-label="Harmony Cure, accueil"
           >
-            <Leaf
-              className="size-4.5 shrink-0 rotate-[18deg] text-[#a77d38] sm:size-5"
-              fill="currentColor"
-              strokeWidth={1.1}
+            <Image
+              alt="Harmony Cure"
+              className="h-9 w-auto origin-left scale-150 sm:h-11 sm:scale-[1.7]"
+              priority
+              src={logo}
             />
-            <span className="font-serif text-sm tracking-[0.1em] sm:text-base sm:tracking-[0.16em]">
-              HARMONY CURE
-            </span>
           </Link>
         </div>
 

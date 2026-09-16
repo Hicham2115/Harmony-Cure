@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Camera, Leaf, Mail, Share2 } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Camera, Mail, Share2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { PAYMENT_METHODS } from "@/components/payment-icons";
+import logo from "@/app/assets/logo.webp";
 
 const SHOP_LINKS = [
   { label: "Boutique", href: "/boutique" },
@@ -43,17 +45,14 @@ export function Footer() {
             <div className="flex flex-col gap-3">
               <Link
                 href="/"
-                className="flex items-center gap-2 whitespace-nowrap"
+                className="flex items-center whitespace-nowrap"
                 aria-label="Harmony Cure, accueil"
               >
-                <Leaf
-                  className="size-6 shrink-0 rotate-18 text-[#e2c589]"
-                  fill="currentColor"
-                  strokeWidth={1.1}
+                <Image
+                  alt="Harmony Cure"
+                  className="h-9 w-auto origin-left scale-150 invert sm:h-11 sm:scale-[1.7]"
+                  src={logo}
                 />
-                <span className="font-serif text-xl tracking-[0.16em] text-white">
-                  HARMONY CURE
-                </span>
               </Link>
 
               <p className="max-w-xs text-base leading-relaxed text-white/85">
@@ -163,7 +162,7 @@ export function Footer() {
           href="https://www.stallionadvertising.ma/"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline decoration-transparent underline-offset-2 transition-colors duration-200 hover:text-white hover:decoration-teal-400"
+          className="underline mb-20 decoration-transparent underline-offset-2 transition-colors duration-200 hover:text-white hover:decoration-teal-400"
         >
           Stallion Advertising
         </a>
