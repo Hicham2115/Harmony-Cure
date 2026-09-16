@@ -114,7 +114,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
           {images.length > 1 ? (
             <div className="flex gap-3">
-              {images.map((image, index) => (
+              {images.map((image: { url: string; altText: string | null }, index: number) => (
                 <button
                   aria-label={`Voir l'image ${index + 1}`}
                   aria-pressed={index === activeImage}
