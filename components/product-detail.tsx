@@ -47,7 +47,7 @@ function formatAmount(amount: number, currencyCode: string) {
 export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
   const images = product.images.nodes;
   const [activeImage, setActiveImage] = useState(0);
-  const [selectedTier, setSelectedTier] = useState(2);
+  const [selectedTier, setSelectedTier] = useState(0);
   const [openSection, setOpenSection] = useState<string | null>("description");
   const [showStickyBar, setShowStickyBar] = useState(false);
   const ctaRef = useRef<HTMLButtonElement>(null);
@@ -290,10 +290,10 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           </div>
 
           {product.descriptionHtml ? (
-            <div className="mt-2 overflow-hidden rounded-xl border border-[#a77d38]/20">
+            <div className="mt-2 overflow-hidden rounded-2xl border border-[#a77d38]/20 bg-[#faf8f4]">
               <button
                 aria-expanded={openSection === "description"}
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-[#a77d38]/5"
                 onClick={() =>
                   setOpenSection(
                     openSection === "description" ? null : "description",
@@ -301,8 +301,13 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                 }
                 type="button"
               >
-                <span className="font-roboto text-sm font-semibold text-[#171715]">
-                  Description
+                <span className="flex items-center gap-3">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0e3927] text-[#e2c589]">
+                    <Leaf className="size-4" fill="currentColor" strokeWidth={1} />
+                  </span>
+                  <span className="font-roboto text-sm font-semibold tracking-wide text-[#171715]">
+                    Description
+                  </span>
                 </span>
                 <ChevronDown
                   className={`size-4 shrink-0 text-[#a77d38] transition-transform duration-300 ${
@@ -318,8 +323,9 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                 }`}
               >
                 <div className="overflow-hidden">
+                  <div className="mx-5 mb-5 h-px bg-linear-to-r from-[#a77d38]/40 via-[#a77d38]/10 to-transparent" />
                   <div
-                    className="px-5 pb-5 font-inter text-sm leading-relaxed text-[#585750] [&_a]:text-[#a77d38] [&_a]:underline [&_li]:mb-1 [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-[#171715] [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-5"
+                    className="px-5 pb-6 font-inter text-[15px] leading-7 text-[#585750] [&_a]:text-[#a77d38] [&_a]:underline [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:font-roboto [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-[#171715] [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-roboto [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-[#171715] [&_li]:mb-1.5 [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-[#171715] [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-5"
                     dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
                   />
                 </div>
@@ -360,6 +366,11 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             </span>
             <span className="font-roboto text-sm text-[#585750]">
               {formatAmount(activeTier.finalPrice, currencyCode)}
+              {activeTier.multiplier > 1 ? (
+                <span className="ml-1 text-xs text-[#a77d38]">
+                  (× {activeTier.multiplier} · {activeTier.days} jours)
+                </span>
+              ) : null}
             </span>
           </div>
 
