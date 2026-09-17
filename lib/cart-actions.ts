@@ -68,7 +68,7 @@ export type ShopifyCart = NonNullable<ReturnType<typeof normalizeCart>>;
 export async function createCart(merchandiseId: string, quantity: number) {
   const { data, errors } = await shopifyClient.request(
     `#graphql
-      mutation CartCreate($lines: [CartLineInput!]!) {
+      mutation CartCreate($lines: [CartLineInput!]!) @inContext(country: FR) {
         cartCreate(input: { lines: $lines }) {
           cart { ...CartFields }
           userErrors { field message }
@@ -93,7 +93,7 @@ export async function addCartLine(
 ) {
   const { data, errors } = await shopifyClient.request(
     `#graphql
-      mutation CartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+      mutation CartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) @inContext(country: FR) {
         cartLinesAdd(cartId: $cartId, lines: $lines) {
           cart { ...CartFields }
           userErrors { field message }
@@ -118,7 +118,7 @@ export async function updateCartLine(
 ) {
   const { data, errors } = await shopifyClient.request(
     `#graphql
-      mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+      mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) @inContext(country: FR) {
         cartLinesUpdate(cartId: $cartId, lines: $lines) {
           cart { ...CartFields }
           userErrors { field message }
@@ -139,7 +139,7 @@ export async function updateCartLine(
 export async function removeCartLine(cartId: string, lineId: string) {
   const { data, errors } = await shopifyClient.request(
     `#graphql
-      mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+      mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) @inContext(country: FR) {
         cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
           cart { ...CartFields }
           userErrors { field message }
@@ -160,7 +160,7 @@ export async function removeCartLine(cartId: string, lineId: string) {
 export async function fetchCart(cartId: string) {
   const { data, errors } = await shopifyClient.request(
     `#graphql
-      query Cart($cartId: ID!) {
+      query Cart($cartId: ID!) @inContext(country: FR) {
         cart(id: $cartId) { ...CartFields }
       }
       ${CART_FRAGMENT}

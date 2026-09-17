@@ -11,7 +11,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/lib/store/use-cart";
-import { useLenisStore } from "@/lib/store/use-lenis";
 
 function formatAmount(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("fr-FR", {
@@ -36,19 +35,7 @@ export function CartDrawer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const lenis = useLenisStore.getState().lenis;
-    if (isOpen) {
-      lenis?.stop();
-    } else {
-      lenis?.start();
-    }
-    return () => {
-      lenis?.start();
-    };
-  }, [isOpen]);
-
-  const lines = cart?.lines.nodes ?? [];
+  const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
 
   return (
     <Sheet onOpenChange={(open) => !open && closeCart()} open={isOpen}>
@@ -100,11 +87,7 @@ export function CartDrawer() {
                       aria-label="Diminuer la quantité"
                       className="flex size-6 items-center justify-center rounded-full border border-[#a77d38]/40 text-[#171715] disabled:opacity-40"
                       disabled={isLoading}
-                      onClick={() =>
-                        line.quantity > 1
-                          ? updateItem(line.id, line.quantity - 1)
-                          : removeItem(line.id)
-                      }
+                      onClick={() => updateItem(line.id, line.quantity - 1)}
                       type="button"
                     >
                       <Minus className="size-3" />

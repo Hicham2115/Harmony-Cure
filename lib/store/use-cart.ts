@@ -12,6 +12,10 @@ import {
   type ShopifyCart,
 } from "@/lib/cart-actions";
 
+function hasValidLines(cart: ShopifyCart | null): cart is ShopifyCart {
+  return !!cart && cart.lines.nodes.some((line) => line.quantity > 0);
+}
+
 type CartState = {
   cartId: string | null;
   cart: ShopifyCart | null;
@@ -42,7 +46,10 @@ export const useCartStore = create<CartState>()(
         set({ isLoading: true });
         try {
           const cart = await fetchCart(cartId);
-          set(cart ? { cart } : { cart: null, cartId: null });
+          set(hasValidLines(cart) ? { cart } : { cart: null, cartId: null });
+        } catch (error) {
+          console.error("Failed to load cart, resetting it:", error);
+          set({ cart: null, cartId: null });
         } finally {
           set({ isLoading: false });
         }
@@ -52,9 +59,23 @@ export const useCartStore = create<CartState>()(
         set({ isLoading: true });
         try {
           const { cartId } = get();
-          const cart = cartId
-            ? await addCartLine(cartId, merchandiseId, quantity)
-            : await createCart(merchandiseId, quantity);
+          let cart: ShopifyCart | null = null;
+          try {
+            cart = cartId
+              ? await addCartLine(cartId, merchandiseId, quantity)
+              : await createCart(merchandiseId, quantity);
+          } catch (error) {
+            if (!cartId) throw error;
+            // Existing cart is stale or invalid — start a fresh one.
+            console.error("Cart was invalid, starting a new one:", error);
+            cart = await createCart(merchandiseId, quantity);
+          }
+
+          if (cartId && !hasValidLines(cart)) {
+            // The existing cart silently failed to add the line — retry fresh.
+            cart = await createCart(merchandiseId, quantity);
+          }
+
           set({ cart, cartId: cart?.id ?? null, isOpen: true });
         } finally {
           set({ isLoading: false });
@@ -62,12 +83,19 @@ export const useCartStore = create<CartState>()(
       },
 
       updateItem: async (lineId, quantity) => {
+        if (quantity < 1) {
+          await get().removeItem(lineId);
+          return;
+        }
         const { cartId } = get();
         if (!cartId) return;
         set({ isLoading: true });
         try {
           const cart = await updateCartLine(cartId, lineId, quantity);
           set({ cart });
+        } catch (error) {
+          console.error("Failed to update cart, resetting it:", error);
+          set({ cart: null, cartId: null });
         } finally {
           set({ isLoading: false });
         }
@@ -80,6 +108,9 @@ export const useCartStore = create<CartState>()(
         try {
           const cart = await removeCartLine(cartId, lineId);
           set({ cart });
+        } catch (error) {
+          console.error("Failed to update cart, resetting it:", error);
+          set({ cart: null, cartId: null });
         } finally {
           set({ isLoading: false });
         }
