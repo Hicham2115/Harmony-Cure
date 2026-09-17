@@ -112,3 +112,17 @@ export async function getProductByHandle(handle: string) {
 export type ShopifyProductDetail = NonNullable<
   Awaited<ReturnType<typeof getProductByHandle>>
 >;
+
+export async function getRandomProducts(excludeId: string, count = 4) {
+  const products = await getProducts(20);
+  const candidates = products.filter(
+    (product: ShopifyProduct) => product.id !== excludeId,
+  );
+
+  for (let i = candidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+  }
+
+  return candidates.slice(0, count);
+}

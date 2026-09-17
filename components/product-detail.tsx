@@ -126,27 +126,32 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
           {images.length > 1 ? (
             <div className="flex gap-3">
-              {images.map((image: { url: string; altText: string | null }, index: number) => (
-                <button
-                  aria-label={`Voir l'image ${index + 1}`}
-                  aria-pressed={index === activeImage}
-                  className={`relative size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors sm:size-20 ${
-                    index === activeImage
-                      ? "border-[#a77d38]"
-                      : "border-transparent"
-                  }`}
-                  key={image.url}
-                  onClick={() => setActiveImage(index)}
-                  type="button"
-                >
-                  <Image
-                    alt={image.altText ?? product.title}
-                    className="object-cover"
-                    fill
-                    src={image.url}
-                  />
-                </button>
-              ))}
+              {images.map(
+                (
+                  image: { url: string; altText: string | null },
+                  index: number,
+                ) => (
+                  <button
+                    aria-label={`Voir l'image ${index + 1}`}
+                    aria-pressed={index === activeImage}
+                    className={`relative size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors sm:size-20 ${
+                      index === activeImage
+                        ? "border-[#a77d38]"
+                        : "border-transparent"
+                    }`}
+                    key={image.url}
+                    onClick={() => setActiveImage(index)}
+                    type="button"
+                  >
+                    <Image
+                      alt={image.altText ?? product.title}
+                      className="object-cover"
+                      fill
+                      src={image.url}
+                    />
+                  </button>
+                ),
+              )}
             </div>
           ) : null}
         </div>
@@ -250,7 +255,9 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           <button
             className="mt-1 inline-flex items-center justify-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
             disabled={!variantId || isCartLoading}
-            onClick={() => variantId && addItem(variantId, activeTier.multiplier)}
+            onClick={() =>
+              variantId && addItem(variantId, activeTier.multiplier)
+            }
             ref={ctaRef}
             type="button"
           >
@@ -303,7 +310,11 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
               >
                 <span className="flex items-center gap-3">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0e3927] text-[#e2c589]">
-                    <Leaf className="size-4" fill="currentColor" strokeWidth={1} />
+                    <Leaf
+                      className="size-4"
+                      fill="currentColor"
+                      strokeWidth={1}
+                    />
                   </span>
                   <span className="font-roboto text-sm font-semibold tracking-wide text-[#171715]">
                     Description
@@ -326,7 +337,9 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                   <div className="mx-5 mb-5 h-px bg-linear-to-r from-[#a77d38]/40 via-[#a77d38]/10 to-transparent" />
                   <div
                     className="px-5 pb-6 font-inter text-[15px] leading-7 text-[#585750] [&_a]:text-[#a77d38] [&_a]:underline [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:font-roboto [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-[#171715] [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-roboto [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-[#171715] [&_li]:mb-1.5 [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-[#171715] [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-5"
-                    dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+                    dangerouslySetInnerHTML={{
+                      __html: product.descriptionHtml,
+                    }}
                   />
                 </div>
               </div>
@@ -377,7 +390,9 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           <button
             className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-[#0e3927] px-4 py-2.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:px-6 sm:py-3"
             disabled={!variantId || isCartLoading}
-            onClick={() => variantId && addItem(variantId, activeTier.multiplier)}
+            onClick={() =>
+              variantId && addItem(variantId, activeTier.multiplier)
+            }
             type="button"
           >
             <ShoppingBag className="size-4" />

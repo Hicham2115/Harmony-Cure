@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ProductDetail } from "@/components/product-detail";
-import { getProductByHandle } from "@/lib/shopify";
+import { RelatedProducts } from "@/components/related-products";
+import { getProductByHandle, getRandomProducts } from "@/lib/shopify";
+import { Reviews } from "@/components/reviews";
+import { Guarantees } from "@/components/guarantees";
 
 export async function generateMetadata(
   props: PageProps<"/boutique/[handle]">,
@@ -35,10 +38,15 @@ export default async function ProductPage(
     notFound();
   }
 
+  const relatedProducts = await getRandomProducts(product.id);
+
   return (
     <div className="flex flex-1 flex-col">
       <Header />
       <ProductDetail product={product} />
+      <Reviews />
+      <Guarantees />
+      <RelatedProducts products={relatedProducts} />
       <Footer />
     </div>
   );
