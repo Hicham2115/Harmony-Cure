@@ -7,8 +7,10 @@ import {
   Roboto,
 } from "next/font/google";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { CanOrderProvider } from "@/components/can-order-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { canOrderFromVisitorCountry } from "@/lib/shipping-countries";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -109,7 +111,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const canOrder = await canOrderFromVisitorCountry();
+
   return (
     <html
       lang="fr"
@@ -117,9 +121,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>
-          <ScrollToTop />
-          {children}
-          <Toaster />
+          <CanOrderProvider canOrder={canOrder}>
+            <ScrollToTop />
+            {children}
+            <Toaster />
+          </CanOrderProvider>
         </QueryProvider>
       </body>
     </html>

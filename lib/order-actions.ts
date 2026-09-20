@@ -2,6 +2,7 @@
 
 import { shopifyAdminRequest } from "@/lib/shopify-admin";
 import { codOrderSchema } from "@/lib/schemas/cod-order";
+import { assertVisitorCanOrder } from "@/lib/shipping-countries";
 
 function splitName(fullName: string) {
   const parts = fullName.trim().split(/\s+/);
@@ -17,6 +18,8 @@ export async function createCodOrder(input: {
   phone: string;
   address: string;
 }) {
+  await assertVisitorCanOrder();
+
   const parsed = codOrderSchema.safeParse(input);
   if (!parsed.success) {
     throw new Error(parsed.error.issues[0]?.message ?? "Champs invalides.");

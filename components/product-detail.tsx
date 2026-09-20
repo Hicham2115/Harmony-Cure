@@ -18,6 +18,7 @@ import {
 import type { ShopifyProductDetail } from "@/lib/shopify";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
+import { useCanOrder } from "@/components/can-order-provider";
 import { CodOrderForm } from "@/components/cod-order-form";
 
 const TIERS = [
@@ -54,6 +55,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
   const variantId = product.variants.nodes[0]?.id;
   const addItem = useCartStore((state) => state.addItem);
+  const canOrder = useCanOrder();
   const isCartLoading = useCartStore((state) => state.isLoading);
   const isFavorite = useFavoritesStore((state) =>
     state.favoriteIds.includes(product.id),
@@ -254,7 +256,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
           <button
             className="mt-1 inline-flex items-center justify-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
-            disabled={!variantId || isCartLoading}
+            disabled={!variantId || isCartLoading || !canOrder}
             onClick={() =>
               variantId && addItem(variantId, activeTier.multiplier)
             }
@@ -262,8 +264,14 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             type="button"
           >
             <ShoppingBag className="size-4" />
-            AJOUTER AU PANIER
+            {canOrder ? "AJOUTER AU PANIER" : "RUPTURE DE STOCK"}
           </button>
+
+          {canOrder ? null : (
+            <p className="font-inter text-xs text-red-600">
+              Ce produit n&apos;est pas disponible dans votre pays.
+            </p>
+          )}
 
           <p className="flex items-center gap-1.5 font-inter text-xs text-[#8a8478]">
             <ShieldCheck className="size-3.5 shrink-0 text-[#a77d38]" />
@@ -346,19 +354,21 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             </div>
           ) : null}
 
-          <CodOrderForm
-            currencyCode={currencyCode}
-            productTitle={product.title}
-            quantity={activeTier.multiplier}
-            unitPrice={activeTier.finalPrice}
-            variantId={variantId}
-          />
+          {canOrder ? (
+            <CodOrderForm
+              currencyCode={currencyCode}
+              productTitle={product.title}
+              quantity={activeTier.multiplier}
+              unitPrice={activeTier.finalPrice}
+              variantId={variantId}
+            />
+          ) : null}
         </div>
       </div>
 
       <div
         className={`fixed inset-x-0 bottom-0 z-40 border-t border-[#a77d38]/20 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ${
-          showStickyBar ? "translate-y-0" : "translate-y-full"
+          showStickyBar && canOrder ? "translate-y-0" : "translate-y-full"
         }`}
       >
         <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-6 py-3 sm:px-10 lg:px-[5.8vw]">

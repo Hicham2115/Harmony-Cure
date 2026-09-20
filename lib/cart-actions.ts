@@ -1,6 +1,7 @@
 "use server";
 
 import { shopifyClient } from "@/lib/shopify";
+import { assertVisitorCanOrder } from "@/lib/shipping-countries";
 
 const CART_FRAGMENT = `#graphql
   fragment CartFields on Cart {
@@ -66,6 +67,8 @@ function normalizeCart(cart: unknown) {
 export type ShopifyCart = NonNullable<ReturnType<typeof normalizeCart>>;
 
 export async function createCart(merchandiseId: string, quantity: number) {
+  await assertVisitorCanOrder();
+
   const { data, errors } = await shopifyClient.request(
     `#graphql
       mutation CartCreate($lines: [CartLineInput!]!) @inContext(country: FR) {
@@ -91,6 +94,8 @@ export async function addCartLine(
   merchandiseId: string,
   quantity: number,
 ) {
+  await assertVisitorCanOrder();
+
   const { data, errors } = await shopifyClient.request(
     `#graphql
       mutation CartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) @inContext(country: FR) {

@@ -16,6 +16,7 @@ import {
 
 import { formatPrice } from "@/lib/format-price";
 import type { ShopifyProduct } from "@/lib/shopify";
+import { useCanOrder } from "@/components/can-order-provider";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 
@@ -24,6 +25,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const addItem = useCartStore((state) => state.addItem);
+  const canOrder = useCanOrder();
 
   function scrollByCard(direction: 1 | -1) {
     const scroller = scrollerRef.current;
@@ -136,7 +138,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="pointer-events-auto flex size-11 cursor-pointer translate-y-4 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform duration-300 ease-out hover:scale-105 group-hover:translate-y-0 disabled:opacity-50"
-                        disabled={!variantId}
+                        disabled={!variantId || !canOrder}
                         onClick={(event) => {
                           event.preventDefault();
                           variantId && addItem(variantId);
@@ -176,7 +178,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
-                        disabled={!variantId}
+                        disabled={!variantId || !canOrder}
                         onClick={(event) => {
                           event.preventDefault();
                           variantId && addItem(variantId);

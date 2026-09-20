@@ -6,6 +6,7 @@ import { Heart, Leaf, Plus } from "lucide-react";
 
 import { formatPrice } from "@/lib/format-price";
 import type { ShopifyProduct } from "@/lib/shopify";
+import { useCanOrder } from "@/components/can-order-provider";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 
@@ -13,6 +14,7 @@ export function RelatedProducts({ products }: { products: ShopifyProduct[] }) {
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const addItem = useCartStore((state) => state.addItem);
+  const canOrder = useCanOrder();
 
   if (products.length === 0) return null;
 
@@ -86,7 +88,7 @@ export function RelatedProducts({ products }: { products: ShopifyProduct[] }) {
                   <button
                     aria-label={`Ajouter ${product.title} au panier`}
                     className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
-                    disabled={!variantId}
+                    disabled={!variantId || !canOrder}
                     onClick={() => variantId && addItem(variantId)}
                     type="button"
                   >

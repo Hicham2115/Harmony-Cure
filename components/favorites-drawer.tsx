@@ -12,6 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { getProductsByIds } from "@/lib/product-actions";
+import { useCanOrder } from "@/components/can-order-provider";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 
@@ -30,6 +31,7 @@ export function FavoritesDrawer() {
   const closeFavorites = useFavoritesStore((state) => state.closeFavorites);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const addItem = useCartStore((state) => state.addItem);
+  const canOrder = useCanOrder();
 
   const [products, setProducts] = useState<FavoriteProduct[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +106,7 @@ export function FavoritesDrawer() {
                     <button
                       aria-label={`Ajouter ${product.title} au panier`}
                       className="mt-1 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#cdbb98] px-3 py-1 font-roboto text-[11px] font-semibold text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
-                      disabled={!variantId}
+                      disabled={!variantId || !canOrder}
                       onClick={() => variantId && addItem(variantId)}
                       type="button"
                     >
