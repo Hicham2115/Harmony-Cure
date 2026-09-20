@@ -48,7 +48,7 @@ export function Header() {
             strokeWidth={1.2}
           />
           <span className="leading-tight font-inter">
-            Livraison offerte dès 60€ d&apos;achat en France métropolitaine
+            Livraison gratuite à partir de 70€ — Ne ratez pas l’offre !
           </span>
         </span>
         <button

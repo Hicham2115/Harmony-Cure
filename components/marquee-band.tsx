@@ -4,7 +4,7 @@ const MESSAGES = [
   "Soins 100% naturels",
   "Fabriqué en France",
   "Cruelty free",
-  "Livraison offerte dès 60€",
+  "Livraison offerte dès 70€",
   "Sans ingrédients nocifs",
   "Satisfait ou remboursé",
 ];
