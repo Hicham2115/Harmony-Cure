@@ -129,14 +129,14 @@ export function Footer() {
           </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-2.5 border-t border-white/10 pt-6 sm:justify-start">
-            {PAYMENT_METHODS.map(({ label, Mark }) => (
-              <span
-                className="flex h-8 min-w-14 items-center justify-center rounded-md border border-white/10 bg-white px-3"
+            {PAYMENT_METHODS.map(({ label, src }) => (
+              <Image
+                alt={label}
+                className="h-8 w-auto"
                 key={label}
+                src={src}
                 title={label}
-              >
-                <Mark />
-              </span>
+              />
             ))}
           </div>
 
