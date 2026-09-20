@@ -11,10 +11,12 @@ import collageneImage from "@/app/assets/collagene_main.webp";
 import coupeFaimImage from "@/app/assets/coupe_main.webp";
 import packLoveImage from "@/app/assets/pack_love.webp";
 import packPoidsImage from "@/app/assets/pack_poids.webp";
+import type { ShopifyProduct } from "@/lib/shopify";
 
 const CATEGORIES = [
   {
     id: "pack-love",
+    handle: "pack-harmony-love-collagene-marin-anti-chute-vegan",
     tabLabel: "Pack Love",
     eyebrow: "PACK LOVE",
     title: "Collagène marin",
@@ -30,6 +32,7 @@ const CATEGORIES = [
   },
   {
     id: "pack-perte-de-poids",
+    handle: "pack-perte-de-poids",
     tabLabel: "Pack Perte de Poids",
     eyebrow: "PACK PERTE DE POIDS",
     title: "Brûle-graisses",
@@ -41,6 +44,7 @@ const CATEGORIES = [
   },
   {
     id: "anti-chute",
+    handle: "anti-chute-de-cheveux",
     tabLabel: "Anti-Chute",
     eyebrow: "ANTI-CHUTE",
     title: "Anti-Chute de Cheveux",
@@ -52,6 +56,7 @@ const CATEGORIES = [
   },
   {
     id: "collagene",
+    handle: "collagene-marin",
     tabLabel: "Collagène",
     eyebrow: "COLLAGÈNE",
     title: "Collagène Marin",
@@ -63,6 +68,7 @@ const CATEGORIES = [
   },
   {
     id: "brule-graisses",
+    handle: "bruleur-de-graisses-naturel",
     tabLabel: "Brûle-graisses",
     eyebrow: "BRÛLE-GRAISSES",
     title: "Brûle-graisses naturel",
@@ -74,6 +80,7 @@ const CATEGORIES = [
   },
   {
     id: "coupe-faim",
+    handle: "coupe-faim-naturel",
     tabLabel: "Coupe-faim",
     eyebrow: "COUPE-FAIM",
     title: "Coupe-faim naturel",
@@ -88,10 +95,13 @@ const CATEGORIES = [
 const TRUST_LINE =
   "Livraison offerte dès 60€ · Paiement sécurisé · Satisfait ou remboursé";
 
-export function ProductShowcase() {
+export function ProductShowcase({ products }: { products: ShopifyProduct[] }) {
   const [activeId, setActiveId] = useState(CATEGORIES[0].id);
   const active =
     CATEGORIES.find((category) => category.id === activeId) ?? CATEGORIES[0];
+  const isProductAvailable = products.some(
+    (product) => product.handle === active.handle,
+  );
 
   return (
     <section
@@ -159,7 +169,9 @@ export function ProductShowcase() {
             ) : null}
 
             <Link
-              href="/boutique"
+              href={
+                isProductAvailable ? `/boutique/${active.handle}` : "/boutique"
+              }
               className="mt-1 inline-flex w-fit items-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm font-roboto"
             >
               ACHETER MAINTENANT

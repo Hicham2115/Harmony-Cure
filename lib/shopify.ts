@@ -1,5 +1,7 @@
 import { createStorefrontApiClient } from "@shopify/storefront-api-client";
 
+import { shopifyAdminRequest } from "@/lib/shopify-admin";
+
 const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
 const publicAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
@@ -51,16 +53,38 @@ const PRODUCTS_QUERY = `#graphql
   }
 `;
 
+// The Storefront API can't filter by stock (needs an unavailable scope), so ask the Admin API.
+async function getInStockProductIds() {
+  const { data, errors } = await shopifyAdminRequest<{
+    products: { nodes: { id: string }[] };
+  }>(`#graphql
+    query InStockProducts {
+      products(first: 250, query: "inventory_total:>1") {
+        nodes { id }
+      }
+    }
+  `);
+
+  if (errors) {
+    throw new Error("Failed to fetch product inventory from Shopify");
+  }
+
+  return new Set((data?.products.nodes ?? []).map((product) => product.id));
+}
+
 export async function getProducts(first = 10) {
-  const { data, errors } = await shopifyClient.request(PRODUCTS_QUERY, {
-    variables: { first },
-  });
+  const [{ data, errors }, inStockIds] = await Promise.all([
+    shopifyClient.request(PRODUCTS_QUERY, { variables: { first } }),
+    getInStockProductIds(),
+  ]);
 
   if (errors) {
     throw new Error(errors.message ?? "Failed to fetch products from Shopify");
   }
 
-  return data?.products.nodes ?? [];
+  return (data?.products.nodes ?? []).filter((product: { id: string }) =>
+    inStockIds.has(product.id),
+  );
 }
 
 export type ShopifyProduct = Awaited<ReturnType<typeof getProducts>>[number];

@@ -22,7 +22,7 @@ export default async function Home() {
       <Hero />
       <MarqueeBand />
       <BestSellers products={products} />
-      <ProductShowcase />
+      <ProductShowcase products={products} />
       <BeforeAfter />
       <OurStory />
       <Reviews />

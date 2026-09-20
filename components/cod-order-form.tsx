@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -15,6 +16,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { OrderSuccessDialog } from "@/components/order-success-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createCodOrder } from "@/lib/order-actions";
@@ -42,6 +44,9 @@ export function CodOrderForm({
   unitPrice: number;
   currencyCode: string;
 }) {
+  const [confirmedOrderName, setConfirmedOrderName] = useState<string | null>(
+    null,
+  );
   const subtotal = unitPrice * quantity;
   const total = subtotal + SHIPPING_FEE;
 
@@ -64,10 +69,7 @@ export function CodOrderForm({
         ...values,
       }),
     onSuccess: (order) => {
-      brandToast.success(
-        `Commande ${order.name} confirmée`,
-        "Nous vous contacterons pour la livraison.",
-      );
+      setConfirmedOrderName(order.name);
       form.reset();
     },
     onError: (error) => {
@@ -248,6 +250,11 @@ export function CodOrderForm({
           Paiement à la livraison
         </span>
       </div>
+
+      <OrderSuccessDialog
+        onClose={() => setConfirmedOrderName(null)}
+        orderName={confirmedOrderName}
+      />
     </form>
   );
 }
