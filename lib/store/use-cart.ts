@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { toast } from "sonner";
 
 import {
   addCartLine,
@@ -77,6 +78,13 @@ export const useCartStore = create<CartState>()(
           }
 
           set({ cart, cartId: cart?.id ?? null, isOpen: true });
+        } catch (error) {
+          console.error("Failed to add item to cart:", error);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Impossible d'ajouter ce produit au panier.",
+          );
         } finally {
           set({ isLoading: false });
         }

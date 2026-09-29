@@ -6,8 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 const INFO_ROWS = [
   {
     label: "Email",
-    value: "harmonycuree@gmail.com",
-    href: "mailto:harmonycuree@gmail.com",
+    value: "contact@harmonycure.fr",
+    href: "mailto:contact@harmonycure.fr",
   },
   {
     label: "Disponibilité",
@@ -98,7 +98,7 @@ export function Contact() {
               </div>
 
               <a
-                href="mailto:harmonycuree@gmail.com"
+                href="mailto:contact@harmonycure.fr"
                 className="mt-1 inline-flex w-fit items-center gap-2.5 rounded-sm bg-[#0e3927] px-6 py-3.5 text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0e3927]/90 sm:text-sm"
               >
                 <Mail className="size-3.5" strokeWidth={2} />

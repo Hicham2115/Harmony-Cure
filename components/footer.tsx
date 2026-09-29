@@ -21,7 +21,7 @@ const HELP_LINKS = [
 const SOCIALS = [
   { icon: Camera, label: "Instagram", href: "https://instagram.com" },
   { icon: Share2, label: "Facebook", href: "https://facebook.com" },
-  { icon: Mail, label: "Email", href: "mailto:harmonycuree@gmail.com" },
+  { icon: Mail, label: "Email", href: "mailto:contact@harmonycure.fr" },
 ];
 
 function FooterLink({ href, label }: { href: string; label: string }) {

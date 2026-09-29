@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Leaf, Phone, Truck } from "lucide-react";
+import { CheckCircle2, Leaf, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,23 +44,21 @@ export function OrderSuccessDialog({
             <CheckCircle2 className="size-9 text-[#e2c589]" strokeWidth={1.5} />
           </span>
           <DialogTitle className="font-roboto text-xl font-semibold text-white">
-            Merci pour votre commande !
+            Votre commande a bien été enregistrée !
           </DialogTitle>
           <DialogDescription className="font-inter text-sm text-white/80">
             Commande{" "}
             <span className="font-semibold text-[#e2c589]">{orderName}</span>{" "}
-            confirmée
+            confirmée avec succès
           </DialogDescription>
         </div>
 
-        <div className="flex flex-col gap-3 px-6 py-6 font-inter text-sm text-[#585750]">
-          <p className="flex items-center gap-3">
+        <div className="flex flex-col items-center px-6 py-7 font-inter text-center text-base text-[#585750]">
+          <p className="flex max-w-sm flex-col items-center gap-2 leading-relaxed">
             <Phone className="size-4 shrink-0 text-[#a77d38]" />
-            Nous vous contacterons très bientôt pour confirmer la livraison.
-          </p>
-          <p className="flex items-center gap-3">
-            <Truck className="size-4 shrink-0 text-[#a77d38]" />
-            Paiement en espèces à la réception de votre colis.
+            Votre commande sera préparée et livrée sous
+            <br />
+            24 à 48 heures.
           </p>
         </div>
 

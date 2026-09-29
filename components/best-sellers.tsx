@@ -20,12 +20,24 @@ import { useCanOrder } from "@/components/can-order-provider";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 
+const BEST_SELLER_HANDLES = [
+  "pack-harmony-love-collagene-marin-anti-chute-vegan",
+  "pack-perte-de-poids",
+  "anti-chute-de-cheveux",
+  "collagene-marin",
+  "bruleur-de-graisses-naturel",
+  "coupe-faim-naturel",
+];
+
 export function BestSellers({ products }: { products: ShopifyProduct[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const addItem = useCartStore((state) => state.addItem);
   const canOrder = useCanOrder();
+  const bestSellers = BEST_SELLER_HANDLES.map((handle) =>
+    products.find((product) => product.handle === handle),
+  ).filter((product): product is ShopifyProduct => Boolean(product));
 
   function scrollByCard(direction: 1 | -1) {
     const scroller = scrollerRef.current;
@@ -82,16 +94,15 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
             className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
             ref={scrollerRef}
           >
-            {products.map((product, index) => {
+            {bestSellers.map((product, index) => {
               const image = product.images.nodes[0];
 
               const isFavorite = favoriteIds.includes(product.id);
               const variantId = product.variants.nodes[0]?.id;
 
               return (
-                <Link
+                <article
                   className="flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-[#a77d38]/40 bg-white sm:w-72"
-                  href={`/boutique/${product.handle}`}
                   key={product.id}
                 >
                   <div className="group relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
@@ -109,10 +120,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                       }
                       aria-pressed={isFavorite}
                       className="absolute right-3 top-3 z-10 flex size-8 items-center justify-center rounded-full bg-white/90 text-[#1a2e22] transition-transform hover:scale-105"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        toggleFavorite(product.id);
-                      }}
+                      onClick={() => toggleFavorite(product.id)}
                       type="button"
                     >
                       <Heart
@@ -120,28 +128,36 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                         fill={isFavorite ? "currentColor" : "none"}
                       />
                     </button>
-                    {image ? (
-                      <Image
-                        alt={image.altText ?? product.title}
-                        className="object-cover"
-                        fill
-                        src={image.url}
-                      />
-                    ) : (
-                      <Leaf
-                        aria-hidden="true"
-                        className="size-12 text-[#a77d38]/40"
-                        strokeWidth={1}
-                      />
-                    )}
-                    <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-black/5 pb-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <Link
+                      aria-label={`Voir ${product.title}`}
+                      className="absolute inset-0"
+                      href={`/boutique/${product.handle}`}
+                    >
+                      {image ? (
+                        <Image
+                          alt={image.altText ?? product.title}
+                          className="object-cover"
+                          fill
+                          src={image.url}
+                        />
+                      ) : (
+                        <span className="flex size-full items-center justify-center">
+                          <Leaf
+                            aria-hidden="true"
+                            className="size-12 text-[#a77d38]/40"
+                            strokeWidth={1}
+                          />
+                        </span>
+                      )}
+                    </Link>
+                    <div className="pointer-events-none absolute inset-0 z-10 flex items-end justify-center bg-black/5 pb-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="pointer-events-auto flex size-11 cursor-pointer translate-y-4 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform duration-300 ease-out hover:scale-105 group-hover:translate-y-0 disabled:opacity-50"
                         disabled={!variantId || !canOrder}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          variantId && addItem(variantId);
+                        onClick={() => {
+                          if (!variantId) return;
+                          void addItem(variantId);
                         }}
                         type="button"
                       >
@@ -152,7 +168,9 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
 
                   <div className="flex flex-1 flex-col gap-2 p-4">
                     <h3 className="font-roboto font-bold text-lg text-[#171715]">
-                      {product.title}
+                      <Link href={`/boutique/${product.handle}`}>
+                        {product.title}
+                      </Link>
                     </h3>
                     {product.description ? (
                       <p className="line-clamp-2 text-xs text-[#8a8478]">
@@ -179,9 +197,9 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
                         disabled={!variantId || !canOrder}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          variantId && addItem(variantId);
+                        onClick={() => {
+                          if (!variantId) return;
+                          void addItem(variantId);
                         }}
                         type="button"
                       >
@@ -189,7 +207,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                       </button>
                     </div>
                   </div>
-                </Link>
+                </article>
               );
             })}
           </div>
