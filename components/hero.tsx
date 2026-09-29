@@ -55,7 +55,7 @@ export function Hero() {
         playsInline
         preload="metadata"
       />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-white via-white/50 to-white/30 sm:via-white/55 sm:to-white/90 lg:from-white/80 lg:via-black/5 lg:to-transparent" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-white via-white/50 to-white/30 sm:via-white/55 sm:to-white/90 lg:from-white/80 lg:via-white/5 lg:to-white/0" />
 
       <div className="relative z-20 mx-auto flex min-h-110 max-w-[1600px] items-center px-6 py-16 sm:px-10 sm:py-20 lg:min-h-110 lg:px-[5.8vw] lg:py-28">
         <div className="flex max-w-lg flex-col gap-5 sm:max-w-xl lg:max-w-6xl lg:gap-6">

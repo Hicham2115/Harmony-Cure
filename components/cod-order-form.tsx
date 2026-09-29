@@ -35,19 +35,19 @@ export function CodOrderForm({
   variantId,
   productTitle,
   quantity,
-  unitPrice,
+  totalPrice,
   currencyCode,
 }: {
   variantId: string | undefined;
   productTitle: string;
   quantity: number;
-  unitPrice: number;
+  totalPrice: number;
   currencyCode: string;
 }) {
   const [confirmedOrderName, setConfirmedOrderName] = useState<string | null>(
     null,
   );
-  const subtotal = unitPrice * quantity;
+  const subtotal = totalPrice;
   const total = subtotal + SHIPPING_FEE;
 
   function formatAmount(amount: number) {

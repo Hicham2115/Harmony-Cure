@@ -4,11 +4,83 @@ import { shopifyAdminRequest } from "@/lib/shopify-admin";
 import { codOrderSchema } from "@/lib/schemas/cod-order";
 import { assertVisitorCanOrder } from "@/lib/shipping-countries";
 
+const COD_TOTALS_BY_HANDLE = {
+  "anti-chute-de-cheveux": {
+    1: 37.99,
+    2: 73.98,
+    3: 107.97,
+    4: 139.96,
+  },
+  "bruleur-de-graisses-naturel": {
+    1: 39.9,
+    2: 77.8,
+    3: 113.7,
+    4: 147.6,
+  },
+  "collagene-marin": {
+    1: 35.99,
+    2: 69.98,
+    3: 103.97,
+    4: 131.96,
+  },
+  "coupe-faim-naturel": {
+    1: 29.99,
+    2: 57.98,
+    3: 83.97,
+    4: 107.96,
+  },
+  "pack-harmony-love-collagene-marin-anti-chute-vegan": {
+    1: 74,
+    2: 146,
+    3: 216,
+    4: 284,
+  },
+  "pack-perte-de-poids": {
+    1: 68.99,
+    2: 129.98,
+    3: 196.97,
+    4: 257.96,
+  },
+  "pack-perte-de-poids-1-mois": {
+    1: 129.99,
+    2: 257.98,
+    3: 383.97,
+    4: 507.96,
+  },
+} as const;
+
 function splitName(fullName: string) {
   const parts = fullName.trim().split(/\s+/);
   const firstName = parts[0] ?? fullName;
   const lastName = parts.slice(1).join(" ") || firstName;
   return { firstName, lastName };
+}
+
+async function getCodUnitPrice(variantId: string, quantity: number) {
+  const { data, errors } = await shopifyAdminRequest<{
+    productVariant: { product: { handle: string } } | null;
+  }>(
+    `#graphql
+      query ProductVariantForCodPrice($id: ID!) {
+        productVariant(id: $id) {
+          product { handle }
+        }
+      }
+    `,
+    { id: variantId },
+  );
+
+  const handle = data?.productVariant?.product.handle;
+  const totals = handle
+    ? COD_TOTALS_BY_HANDLE[handle as keyof typeof COD_TOTALS_BY_HANDLE]
+    : undefined;
+
+  if (errors || !totals) {
+    return undefined;
+  }
+
+  const total = totals[quantity as keyof typeof totals];
+  return total ? (total / quantity).toFixed(2) : undefined;
 }
 
 export async function createCodOrder(input: {
@@ -26,6 +98,10 @@ export async function createCodOrder(input: {
   }
 
   const { firstName, lastName } = splitName(parsed.data.fullName);
+  const originalUnitPrice = await getCodUnitPrice(
+    input.variantId,
+    input.quantity,
+  );
 
   const { data, errors } = await shopifyAdminRequest<{
     draftOrderCreate: {
@@ -43,7 +119,13 @@ export async function createCodOrder(input: {
     `,
     {
       input: {
-        lineItems: [{ variantId: input.variantId, quantity: input.quantity }],
+        lineItems: [
+          {
+            variantId: input.variantId,
+            quantity: input.quantity,
+            ...(originalUnitPrice ? { originalUnitPrice } : {}),
+          },
+        ],
         shippingAddress: {
           firstName,
           lastName,

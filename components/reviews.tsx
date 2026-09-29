@@ -12,18 +12,101 @@ import {
 } from "@/components/ui/carousel";
 
 const REVIEWS = [
-  { name: "@asmabaklouti", product: "Harmony Cure", video: "/videos/reviews/asmabaklouti-4.mp4" },
-  { name: "@fatine_in_paris", product: "Harmony Cure", video: "/videos/reviews/fatine-2.mp4" },
-  { name: "@fatine_in_paris", product: "Harmony Cure", video: "/videos/reviews/fatine-3.mp4" },
-  { name: "@imenbourguiba_", product: "Harmony Cure", video: "/videos/reviews/imen-2.mp4" },
-  { name: "Cliente vérifiée", product: "Harmony Cure", video: "/videos/reviews/general-1.mp4" },
-  { name: "Cliente vérifiée", product: "Harmony Cure", video: "/videos/reviews/general-2.mp4" },
-  { name: "Cliente vérifiée", product: "Harmony Cure", video: "/videos/reviews/general-3.mp4" },
-  { name: "Cliente vérifiée", product: "Pack HarmonyLove", video: "/videos/reviews/pack-love-1.mp4" },
-  { name: "Cliente vérifiée", product: "Pack HarmonyLove", video: "/videos/reviews/pack-love-3.mp4" },
-  { name: "Cliente vérifiée", product: "Pack HarmonyLove", video: "/videos/reviews/pack-love-4.mp4" },
-  { name: "Cliente vérifiée", product: "Pack Brûleur de Graisse", video: "/videos/reviews/pack-bruleur-1.mp4" },
-  { name: "Cliente vérifiée", product: "Pack Brûleur de Graisse", video: "/videos/reviews/pack-bruleur-2.mp4" },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/asmabaklouti-4.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/fatine-2.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/fatine-3.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/imen-2.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/general-1.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/general-2.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/general-3.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Pack HarmonyLove",
+    video: "/videos/reviews/pack-love-1.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Pack HarmonyLove",
+    video: "/videos/reviews/pack-love-3.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Pack HarmonyLove",
+    video: "/videos/reviews/pack-love-4.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Pack Brûleur de Graisse",
+    video: "/videos/reviews/pack-bruleur-1.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Pack Brûleur de Graisse",
+    video: "/videos/reviews/pack-bruleur-2.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/2ddbaef7fba7454eb07c8831a7c0b373.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/5c74989e304a4c9cadc0c329069d8938.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/6f76b8133a1e4f0e8c372229378e4c3c.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/89904fc74b3d472e9db60a55e05765a8.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/HCreview1.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/b1423e447fb44ed58e05d1e042e0fcd1.mp4",
+  },
+  {
+    name: "Cliente vérifiée",
+    product: "Harmony Cure",
+    video: "/videos/reviews/ccc7864e08df43d6b81433b9d9b127bf.mp4",
+  },
 ];
 
 function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
@@ -73,7 +156,12 @@ function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
           </div>
           <div className="flex items-center gap-0.5 rounded-full bg-white/90 px-2 py-1 text-[#a77d38]">
             {Array.from({ length: 5 }).map((_, index) => (
-              <Star className="size-2.5" fill="currentColor" key={index} strokeWidth={0} />
+              <Star
+                className="size-2.5"
+                fill="currentColor"
+                key={index}
+                strokeWidth={0}
+              />
             ))}
           </div>
         </div>
@@ -81,7 +169,9 @@ function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
 
       {!isPlaying && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/75 via-black/25 to-transparent p-4 pt-14 transition-transform duration-300 group-hover:-translate-y-0.5">
-          <p className="text-xs uppercase tracking-wide text-white/80">{product}</p>
+          <p className="text-xs uppercase tracking-wide text-white/80">
+            {product}
+          </p>
         </div>
       )}
     </div>
@@ -90,7 +180,10 @@ function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
 
 export function Reviews() {
   return (
-    <section id="avis" className="scroll-mt-32 bg-white py-16 sm:py-20 lg:py-24">
+    <section
+      id="avis"
+      className="scroll-mt-32 bg-white py-16 sm:py-20 lg:py-24"
+    >
       <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
           <p className="text-xs font-medium tracking-[0.2em] text-[#a77d38]">

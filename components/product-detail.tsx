@@ -22,10 +22,224 @@ import { useCanOrder } from "@/components/can-order-provider";
 import { CodOrderForm } from "@/components/cod-order-form";
 
 const TIERS = [
-  { days: 15, multiplier: 1, discount: 0, badge: null },
-  { days: 30, multiplier: 2, discount: 0.05, badge: "MEILLEURE AFFAIRE" },
-  { days: 45, multiplier: 3, discount: 0.1, badge: "LE PLUS POPULAIRE" },
-  { days: 60, multiplier: 4, discount: 0.15, badge: "OFFRE PREMIUM" },
+  { days: 15, period: "15 jours", multiplier: 1, discount: 0, badge: null },
+  {
+    days: 30,
+    period: "30 jours",
+    multiplier: 2,
+    discount: 0.05,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 45,
+    period: "45 jours",
+    multiplier: 3,
+    discount: 0.1,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 60,
+    period: "60 jours",
+    multiplier: 4,
+    discount: 0.15,
+    badge: "OFFRE PREMIUM",
+  },
+] as const;
+
+const ANTI_CHUTE_TIERS = [
+  { days: 30, period: "1 mois", multiplier: 1, discount: 0, badge: null },
+  {
+    days: 60,
+    period: "2 mois",
+    multiplier: 2,
+    discount: 0,
+    price: 73.98,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 90,
+    period: "3 mois",
+    multiplier: 3,
+    discount: 0,
+    price: 107.97,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 120,
+    period: "4 mois",
+    multiplier: 4,
+    discount: 0,
+    price: 139.96,
+    badge: "OFFRE PREMIUM",
+  },
+] as const;
+
+const FAT_BURNER_TIERS = [
+  { days: 15, period: "15 jours", multiplier: 1, discount: 0, price: 39.9, badge: null },
+  {
+    days: 30,
+    period: "30 jours",
+    multiplier: 2,
+    discount: 0,
+    price: 77.8,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 45,
+    period: "45 jours",
+    multiplier: 3,
+    discount: 0,
+    price: 113.7,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 60,
+    period: "60 jours",
+    multiplier: 4,
+    discount: 0,
+    price: 147.6,
+    badge: "OFFRE PREMIUM",
+  },
+] as const;
+
+const COLLAGEN_TIERS = [
+  { days: 30, period: "1 mois", multiplier: 1, discount: 0, price: 35.99, badge: null },
+  {
+    days: 60,
+    period: "2 mois",
+    multiplier: 2,
+    discount: 0,
+    price: 69.98,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 90,
+    period: "3 mois",
+    multiplier: 3,
+    discount: 0,
+    price: 103.97,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 120,
+    period: "4 mois",
+    multiplier: 4,
+    discount: 0,
+    price: 131.96,
+    badge: "OFFRE PREMIUM",
+  },
+] as const;
+
+const APPETITE_SUPPRESSANT_TIERS = [
+  { days: 15, period: "15 jours", multiplier: 1, discount: 0, price: 29.99, badge: null },
+  {
+    days: 30,
+    period: "30 jours",
+    multiplier: 2,
+    discount: 0,
+    price: 57.98,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 45,
+    period: "45 jours",
+    multiplier: 3,
+    discount: 0,
+    price: 83.97,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 60,
+    period: "60 jours",
+    multiplier: 4,
+    discount: 0,
+    price: 107.96,
+    badge: "OFFRE PREMIUM",
+  },
+] as const;
+
+const HARMONY_LOVE_TIERS = [
+  { days: 30, period: "1 mois", multiplier: 1, discount: 0, price: 74, badge: null },
+  {
+    days: 60,
+    period: "2 mois",
+    multiplier: 2,
+    discount: 0,
+    price: 146,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 90,
+    period: "3 mois",
+    multiplier: 3,
+    discount: 0,
+    price: 216,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 120,
+    period: "4 mois",
+    multiplier: 4,
+    discount: 0,
+    price: 284,
+    badge: "OFFRE PREMIUM",
+  },
+] as const;
+
+const WEIGHT_LOSS_PACK_TIERS = [
+  { days: 15, period: "15 jours", multiplier: 1, discount: 0, price: 68.99, badge: null },
+  {
+    days: 30,
+    period: "30 jours",
+    multiplier: 2,
+    discount: 0,
+    price: 129.98,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 45,
+    period: "45 jours",
+    multiplier: 3,
+    discount: 0,
+    price: 196.97,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 60,
+    period: "60 jours",
+    multiplier: 4,
+    discount: 0,
+    price: 257.96,
+    badge: "OFFRE PREMIUM",
+  },
+] as const;
+
+const ONE_MONTH_WEIGHT_LOSS_PACK_TIERS = [
+  { days: 30, period: "Acheter 1", multiplier: 1, discount: 0, price: 129.99, badge: null },
+  {
+    days: 60,
+    period: "Acheter 2",
+    multiplier: 2,
+    discount: 0,
+    price: 257.98,
+    badge: "MEILLEURE AFFAIRE",
+  },
+  {
+    days: 90,
+    period: "Acheter 3",
+    multiplier: 3,
+    discount: 0,
+    price: 383.97,
+    badge: "LE PLUS POPULAIRE",
+  },
+  {
+    days: 120,
+    period: "Acheter 4",
+    multiplier: 4,
+    discount: 0,
+    price: 507.96,
+    badge: "OFFRE PREMIUM",
+  },
 ] as const;
 
 const DELIVERY_STEPS = [
@@ -82,15 +296,31 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
     return () => observer.disconnect();
   }, []);
 
-  const tierPricing = useMemo(
-    () =>
-      TIERS.map((tier) => {
+  const tierPricing = useMemo(() => {
+    const tiers =
+      product.handle === "anti-chute-de-cheveux"
+        ? ANTI_CHUTE_TIERS
+        : product.handle === "bruleur-de-graisses-naturel"
+          ? FAT_BURNER_TIERS
+          : product.handle === "collagene-marin"
+            ? COLLAGEN_TIERS
+            : product.handle === "coupe-faim-naturel"
+              ? APPETITE_SUPPRESSANT_TIERS
+              : product.handle ===
+                  "pack-harmony-love-collagene-marin-anti-chute-vegan"
+                ? HARMONY_LOVE_TIERS
+                : product.handle === "pack-perte-de-poids"
+                  ? WEIGHT_LOSS_PACK_TIERS
+                  : product.handle === "pack-perte-de-poids-1-mois"
+                    ? ONE_MONTH_WEIGHT_LOSS_PACK_TIERS
+                    : TIERS;
+
+    return tiers.map((tier) => {
         const fullPrice = baseAmount * tier.multiplier;
-        const finalPrice = fullPrice * (1 - tier.discount);
-        return { ...tier, fullPrice, finalPrice };
-      }),
-    [baseAmount],
-  );
+        const finalPrice = "price" in tier ? tier.price : fullPrice * (1 - tier.discount);
+        return { ...tier, fullPrice, finalPrice, hasDiscount: finalPrice < fullPrice };
+      });
+  }, [baseAmount, product.handle]);
 
   const activeTier = tierPricing[selectedTier];
 
@@ -209,7 +439,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             <span className="font-roboto text-3xl font-semibold text-[#171715]">
               {formatAmount(activeTier.finalPrice, currencyCode)}
             </span>
-            {activeTier.discount > 0 ? (
+            {activeTier.hasDiscount ? (
               <span className="font-roboto text-base text-[#8a8478] line-through">
                 {formatAmount(activeTier.fullPrice, currencyCode)}
               </span>
@@ -239,11 +469,11 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                     </span>
                   ) : null}
                   <span className="font-roboto text-sm font-semibold text-[#171715]">
-                    {tier.days} jours
+                    {tier.period}
                   </span>
                   <span className="font-roboto text-xs text-[#585750]">
                     {formatAmount(tier.finalPrice, currencyCode)}
-                    {tier.discount > 0 ? (
+                    {tier.hasDiscount ? (
                       <span className="ml-1 text-[#8a8478] line-through">
                         {formatAmount(tier.fullPrice, currencyCode)}
                       </span>
@@ -359,7 +589,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
               currencyCode={currencyCode}
               productTitle={product.title}
               quantity={activeTier.multiplier}
-              unitPrice={activeTier.finalPrice}
+              totalPrice={activeTier.finalPrice}
               variantId={variantId}
             />
           ) : null}
@@ -391,7 +621,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
               {formatAmount(activeTier.finalPrice, currencyCode)}
               {activeTier.multiplier > 1 ? (
                 <span className="ml-1 text-xs text-[#a77d38]">
-                  (× {activeTier.multiplier} · {activeTier.days} jours)
+                  (× {activeTier.multiplier} · {activeTier.period})
                 </span>
               ) : null}
             </span>

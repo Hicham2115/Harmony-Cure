@@ -138,6 +138,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   scrollbar-color: #0e3927 #f1ede6;
   scrollbar-width: thin;
 }
@@ -175,6 +176,10 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .animate-marquee {
     animation: none;
   }
