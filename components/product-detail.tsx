@@ -275,7 +275,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
           <p className="flex items-center gap-1.5 font-inter text-xs text-[#8a8478]">
             <ShieldCheck className="size-3.5 shrink-0 text-[#a77d38]" />
-            Livraison offerte dès 60€ · Paiement sécurisé · Satisfait ou
+            Livraison offerte dès 70€ · Paiement sécurisé · Satisfait ou
             remboursé
           </p>
 

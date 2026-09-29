@@ -243,7 +243,7 @@ export function CodOrderForm({
       <div className="flex flex-wrap items-center justify-center gap-3 border-t border-[#a77d38]/20 bg-white/60 px-5 py-3">
         <span className="inline-flex items-center gap-1.5 font-inter text-xs text-[#585750]">
           <Truck className="size-3.5 text-[#a77d38]" />
-          Livraison 24-48h
+          Livraison offerte dès 70€
         </span>
         <span className="inline-flex items-center gap-1.5 font-inter text-xs text-[#585750]">
           <Banknote className="size-3.5 text-[#a77d38]" />

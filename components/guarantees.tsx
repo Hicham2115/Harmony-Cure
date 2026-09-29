@@ -17,9 +17,9 @@ const GUARANTEES = [
       "Tous nos produits sont fabriqués en France, garantissant qualité, expertise et savoir-faire local à chaque étape de leur fabrication.",
   },
   {
-    title: "Livraison dans le monde",
+    title: "Livraison offerte dès 70€",
     description:
-      "Nous proposons la livraison internationale afin que nos produits de qualité vous parviennent facilement, où que vous soyez dans le monde.",
+      "Profitez de la livraison offerte dès 70€ d'achat.",
   },
 ];
 

@@ -93,7 +93,7 @@ const CATEGORIES = [
 ];
 
 const TRUST_LINE =
-  "Livraison offerte dès 60€ · Paiement sécurisé · Satisfait ou remboursé";
+  "Livraison offerte dès 70€ · Paiement sécurisé · Satisfait ou remboursé";
 
 export function ProductShowcase({ products }: { products: ShopifyProduct[] }) {
   const [activeId, setActiveId] = useState(CATEGORIES[0].id);
