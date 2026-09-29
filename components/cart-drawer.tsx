@@ -36,6 +36,18 @@ export function CartDrawer() {
   }, []);
 
   const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
+  const lineSubtotal = lines.reduce(
+    (total, line) => total + Number(line.merchandise.price.amount) * line.quantity,
+    0,
+  );
+  const shopifySubtotal = Number(cart?.cost.subtotalAmount.amount ?? 0);
+  const subtotal = shopifySubtotal > 0 ? shopifySubtotal : lineSubtotal;
+  const hasAppliedDiscount = cart?.discountCodes.some(
+    (discount) => discount.applicable,
+  );
+  const shopifyTotal = Number(cart?.cost.totalAmount.amount ?? 0);
+  const total = hasAppliedDiscount || shopifyTotal > 0 ? shopifyTotal : subtotal;
+  const shippingAmount = total > subtotal ? total - subtotal : 0;
 
   return (
     <Sheet onOpenChange={(open) => !open && closeCart()} open={isOpen}>
@@ -127,17 +139,28 @@ export function CartDrawer() {
               <span>Sous-total</span>
               <span>
                 {formatAmount(
-                  cart.cost.subtotalAmount.amount,
+                  String(subtotal),
                   cart.cost.subtotalAmount.currencyCode,
                 )}
               </span>
             </div>
-            {cart.cost.totalAmount.amount !== cart.cost.subtotalAmount.amount ? (
+            {shippingAmount > 0 ? (
+              <div className="flex items-center justify-between font-roboto text-sm text-[#585750]">
+                <span>Livraison Express</span>
+                <span>
+                  {formatAmount(
+                    String(shippingAmount),
+                    cart.cost.totalAmount.currencyCode,
+                  )}
+                </span>
+              </div>
+            ) : null}
+            {total !== subtotal ? (
               <div className="flex items-center justify-between font-roboto text-sm font-semibold text-[#171715]">
                 <span>Total</span>
                 <span>
                   {formatAmount(
-                    cart.cost.totalAmount.amount,
+                    String(total),
                     cart.cost.totalAmount.currencyCode,
                   )}
                 </span>

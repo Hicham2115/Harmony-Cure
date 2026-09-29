@@ -19,8 +19,6 @@ import type { ShopifyProductDetail } from "@/lib/shopify";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 import { useCanOrder } from "@/components/can-order-provider";
-import { CodOrderForm } from "@/components/cod-order-form";
-import { PromoCodeForm } from "@/components/promo-code-form";
 
 const TIERS = [
   { days: 15, period: "15 jours", multiplier: 1, discount: 0, badge: null },
@@ -585,17 +583,6 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             </div>
           ) : null}
 
-          <PromoCodeForm productId={product.id} />
-
-          {canOrder ? (
-            <CodOrderForm
-              currencyCode={currencyCode}
-              productTitle={product.title}
-              quantity={activeTier.multiplier}
-              totalPrice={activeTier.finalPrice}
-              variantId={variantId}
-            />
-          ) : null}
         </div>
       </div>
 
