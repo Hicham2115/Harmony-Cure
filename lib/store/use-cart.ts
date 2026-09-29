@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import {
   addCartLine,
+  applyCartDiscount,
   createCart,
   fetchCart,
   removeCartLine,
@@ -28,6 +29,7 @@ type CartState = {
   addItem: (merchandiseId: string, quantity?: number) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
+  applyDiscount: (discountCode: string) => Promise<void>;
 };
 
 export const useCartStore = create<CartState>()(
@@ -119,6 +121,25 @@ export const useCartStore = create<CartState>()(
         } catch (error) {
           console.error("Failed to update cart, resetting it:", error);
           set({ cart: null, cartId: null });
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      applyDiscount: async (discountCode) => {
+        const { cartId } = get();
+        if (!cartId) {
+          throw new Error("Ajoutez d'abord ce produit au panier.");
+        }
+
+        set({ isLoading: true });
+        try {
+          const cart = await applyCartDiscount(cartId, discountCode);
+          set({ cart });
+
+          if (!cart?.discountCodes.some((code) => code.applicable)) {
+            throw new Error("Ce code promo n'est pas valide pour votre panier.");
+          }
         } finally {
           set({ isLoading: false });
         }

@@ -132,6 +132,17 @@ export function CartDrawer() {
                 )}
               </span>
             </div>
+            {cart.cost.totalAmount.amount !== cart.cost.subtotalAmount.amount ? (
+              <div className="flex items-center justify-between font-roboto text-sm font-semibold text-[#171715]">
+                <span>Total</span>
+                <span>
+                  {formatAmount(
+                    cart.cost.totalAmount.amount,
+                    cart.cost.totalAmount.currencyCode,
+                  )}
+                </span>
+              </div>
+            ) : null}
             <a
               className="inline-flex w-full items-center justify-center rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm"
               href={cart.checkoutUrl}

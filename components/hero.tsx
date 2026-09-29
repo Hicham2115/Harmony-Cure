@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -7,6 +8,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import heroImage from "@/app/assets/hero.png";
 
 const TRUST_BADGES = [
   { icon: Leaf, label: "Naturel & sain" },
@@ -44,21 +46,19 @@ const PROMISES = [
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-white">
-      <video
+      <Image
         aria-hidden="true"
         className="absolute inset-0 z-0 size-full object-cover object-[62%_center] lg:object-[68%_center]"
-        src="/videos/hero.mp4"
-        poster="/videos/hero-poster.jpg"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        src={heroImage}
       />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-white via-white/50 to-white/30 sm:via-white/55 sm:to-white/90 lg:from-white/80 lg:via-white/5 lg:to-white/0" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-white/90 via-white/65 to-transparent sm:via-white/60 lg:from-white/90 lg:via-white/30 lg:to-transparent" />
 
       <div className="relative z-20 mx-auto flex min-h-110 max-w-[1600px] items-center px-6 py-16 sm:px-10 sm:py-20 lg:min-h-110 lg:px-[5.8vw] lg:py-28">
-        <div className="flex max-w-lg flex-col gap-5 sm:max-w-xl lg:max-w-6xl lg:gap-6">
+        <div className="flex max-w-lg flex-col gap-5 sm:max-w-xl lg:max-w-[700px] lg:gap-6">
           <p className="flex font-inter items-center gap-3 text-[13px] font-semibold tracking-[0.2em] text-[#000000] sm:text-xs">
             <span className="h-px w-9  bg-current" />
             <Leaf
@@ -68,7 +68,7 @@ export function Hero() {
             SOINS NATURELS &amp; MADE IN FRANCE
           </p>
 
-          <h1 className="font-heading text-4xl leading-[1.15] tracking-[-0.01em] text-[#171715] sm:text-5xl sm:leading-[1.1] lg:text-[88px] lg:leading-[1.05]">
+          <h1 className="font-heading text-4xl leading-[1.15] tracking-[-0.01em] text-[#171715] sm:text-5xl sm:leading-[1.1] lg:text-[clamp(3.75rem,4.7vw,5rem)] lg:leading-[1.05]">
             La Beauté En
             <br />
             <span className="mt-1 inline-block sm:mt-2">Harmonie Avec</span>
@@ -78,7 +78,7 @@ export function Hero() {
             </span>
           </h1>
 
-          <p className="max-w-sm lg:max-w-lg text-base leading-relaxed text-[#010101] sm:text-lg">
+          <p className="max-w-sm text-base leading-relaxed text-[#010101] sm:text-lg">
             Des soins naturels et sensoriels, pensés pour révéler durablement
             votre beauté, jour après jour.
           </p>

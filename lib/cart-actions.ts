@@ -2,6 +2,14 @@
 
 import { shopifyClient } from "@/lib/shopify";
 import { assertVisitorCanOrder } from "@/lib/shipping-countries";
+import { z } from "zod";
+
+const promoCodeSchema = z
+  .string()
+  .trim()
+  .min(1, "Saisissez un code promo.")
+  .max(64, "Code promo invalide.")
+  .regex(/^[A-Za-z0-9_-]+$/, "Code promo invalide.");
 
 const CART_FRAGMENT = `#graphql
   fragment CartFields on Cart {
@@ -13,6 +21,14 @@ const CART_FRAGMENT = `#graphql
         amount
         currencyCode
       }
+      totalAmount {
+        amount
+        currencyCode
+      }
+    }
+    discountCodes {
+      code
+      applicable
     }
     lines(first: 50) {
       nodes {
@@ -47,7 +63,11 @@ function normalizeCart(cart: unknown) {
     id: string;
     checkoutUrl: string;
     totalQuantity: number;
-    cost: { subtotalAmount: { amount: string; currencyCode: string } };
+    cost: {
+      subtotalAmount: { amount: string; currencyCode: string };
+      totalAmount: { amount: string; currencyCode: string };
+    };
+    discountCodes: { code: string; applicable: boolean }[];
     lines: {
       nodes: {
         id: string;
@@ -160,6 +180,34 @@ export async function removeCartLine(cartId: string, lineId: string) {
   if (userErrors?.length) throw new Error(userErrors[0].message);
 
   return normalizeCart(data?.cartLinesRemove?.cart);
+}
+
+export async function applyCartDiscount(cartId: string, discountCode: string) {
+  await assertVisitorCanOrder();
+
+  const parsedCode = promoCodeSchema.safeParse(discountCode);
+  if (!parsedCode.success) {
+    throw new Error(parsedCode.error.issues[0]?.message ?? "Code promo invalide.");
+  }
+
+  const { data, errors } = await shopifyClient.request(
+    `#graphql
+      mutation CartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) @inContext(country: FR) {
+        cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+          cart { ...CartFields }
+          userErrors { field message }
+        }
+      }
+      ${CART_FRAGMENT}
+    `,
+    { variables: { cartId, discountCodes: [parsedCode.data] } },
+  );
+
+  if (errors) throw new Error(errors.message ?? "Impossible d'appliquer le code promo.");
+  const userErrors = data?.cartDiscountCodesUpdate?.userErrors;
+  if (userErrors?.length) throw new Error(userErrors[0].message);
+
+  return normalizeCart(data?.cartDiscountCodesUpdate?.cart);
 }
 
 export async function fetchCart(cartId: string) {
