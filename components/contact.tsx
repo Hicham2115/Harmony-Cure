@@ -1,4 +1,9 @@
+"use client";
+
+import { useMutation } from "@tanstack/react-query";
+import { type FormEvent } from "react";
 import { ArrowRight, Leaf, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,6 +46,29 @@ function TicketDivider({
 }
 
 export function Contact() {
+  const sendContact = useMutation({
+    mutationFn: async (payload: Record<string, FormDataEntryValue>) => {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.error ?? "Impossible d'envoyer le message.");
+      }
+    },
+    onSuccess: () => toast.success("Votre message a bien été envoyé."),
+    onError: (error) => toast.error(error.message),
+  });
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    await sendContact.mutateAsync(Object.fromEntries(new FormData(form)));
+    form.reset();
+  }
+
   return (
     <section id="contact" className="scroll-mt-32 bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
@@ -110,7 +138,7 @@ export function Contact() {
             <TicketDivider orientation="horizontal" />
 
             <div className="flex flex-col gap-6 p-8 sm:p-10 lg:basis-[58%] lg:p-12">
-              <form className="flex flex-1 flex-col gap-6">
+              <form className="flex flex-1 flex-col gap-6" onSubmit={handleSubmit}>
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="flex flex-col gap-2">
                     <label
@@ -121,6 +149,7 @@ export function Contact() {
                     </label>
                     <Input
                       id="contact-first-name"
+                      name="firstName"
                       placeholder="Votre prénom"
                       className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
                     />
@@ -134,6 +163,7 @@ export function Contact() {
                     </label>
                     <Input
                       id="contact-last-name"
+                      name="lastName"
                       placeholder="Votre nom"
                       className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
                     />
@@ -149,6 +179,7 @@ export function Contact() {
                   </label>
                   <Input
                     id="contact-email"
+                    name="email"
                     type="email"
                     placeholder="vous@exemple.com"
                     className="h-auto rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 pb-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
@@ -164,6 +195,7 @@ export function Contact() {
                   </label>
                   <Textarea
                     id="contact-message"
+                    name="message"
                     placeholder="Parlez-nous de votre routine ou de votre question..."
                     className="min-h-28 flex-1 resize-none rounded-none border-0 border-b border-[#0e3927]/20 bg-transparent px-0 py-2 text-base text-[#171715] shadow-none placeholder:text-base placeholder:text-[#585750]/40 focus-visible:border-[#a77d38] focus-visible:ring-0"
                   />
@@ -175,10 +207,11 @@ export function Contact() {
                     recontactée par notre équipe.
                   </p>
                   <button
+                    disabled={sendContact.isPending}
                     type="submit"
                     className="inline-flex shrink-0 items-center gap-2.5 rounded-sm bg-[#0e3927] px-6 py-3.5 text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0e3927]/90 sm:text-sm"
                   >
-                    ENVOYER MA DEMANDE
+                    {sendContact.isPending ? "ENVOI EN COURS..." : "ENVOYER MA DEMANDE"}
                     <ArrowRight className="size-3.5" strokeWidth={2} />
                   </button>
                 </div>

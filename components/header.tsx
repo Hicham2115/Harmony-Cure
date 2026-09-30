@@ -14,10 +14,13 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/cart-drawer";
 import { FavoritesDrawer } from "@/components/favorites-drawer";
 import { useCartStore } from "@/lib/store/use-cart";
@@ -40,7 +43,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full">
-      <div className="relative  flex items-center justify-center gap-2 bg-[#0d3825] px-4 py-2 text-center text-xs font-medium uppercase tracking-[0.1em] text-white sm:px-12 sm:py-2.5 sm:tracking-[0.16em]">
+      <div className="relative flex items-center justify-center gap-1.5 bg-[#0d3825] px-3 py-2 text-center text-[10px] font-medium uppercase tracking-[0.04em] text-white sm:gap-2 sm:px-12 sm:py-2.5 sm:text-xs sm:tracking-[0.16em]">
         <span className="flex items-center gap-1.5 sm:gap-2">
           <Leaf
             className="size-3 shrink-0 sm:size-3.5"
@@ -60,12 +63,13 @@ export function Header() {
         </button> */}
       </div>
 
-      <div className="flex items-center justify-between gap-2 border-b border-black/5 bg-white px-4 py-2.5 sm:gap-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:px-10 lg:px-[5.5vw]">
+      <div className="relative flex items-center justify-between gap-2 border-b border-black/5 bg-white px-4 py-2.5 sm:gap-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:px-10 lg:px-[5.5vw]">
         {/* Left side */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Mobile menu trigger */}
-          <Popover>
-            <PopoverTrigger asChild>
+          <Sheet>
+            <SheetTrigger
+              render={
               <Button
                 aria-label="Ouvrir le menu"
                 className="rounded-full text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:text-[#a77d38] md:hidden"
@@ -74,28 +78,41 @@ export function Header() {
               >
                 <Menu className="size-5" />
               </Button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-56 p-1 md:hidden">
-              <NavigationMenu className="max-w-none *:w-full">
-                <NavigationMenuList className="flex-col items-start gap-0">
-                  {NAV_LINKS.map((link) => (
-                    <NavigationMenuItem className="w-full" key={link.href}>
-                      <NavigationMenuLink
-                        className="w-full py-1.5 text-sm"
+            }
+            />
+            <SheetContent
+              className="w-[82%] max-w-sm border-r border-[#b68b43]/25 bg-[#fffdf8] px-5"
+              side="left"
+            >
+              <SheetHeader className="border-b border-[#0e3927]/10 px-0 pb-5 pt-4">
+                <SheetTitle className="font-heading text-2xl tracking-wide text-[#0e3927]">
+                  Harmony Cure
+                </SheetTitle>
+                <p className="font-inter text-[10px] uppercase tracking-[0.18em] text-[#a77d38]">
+                  La beauté au naturel
+                </p>
+              </SheetHeader>
+              <nav className="flex flex-col gap-1 pt-5">
+                {NAV_LINKS.map((link) => (
+                  <SheetClose
+                    key={link.href}
+                    render={
+                      <Link
+                        className="rounded-xl px-4 py-3.5 font-inter text-base font-medium text-[#1a2e22] transition-colors hover:bg-[#f7f3eb] hover:text-[#a77d38]"
                         href={link.href}
-                      >
-                        {link.label}
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </PopoverContent>
-          </Popover>
+                      />
+                    }
+                  >
+                    {link.label}
+                  </SheetClose>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
 
           <Link
             href="/"
-            className="flex items-center whitespace-nowrap"
+            className="absolute left-1/2 flex -translate-x-1/2 items-center whitespace-nowrap md:static md:translate-x-0"
             aria-label="Harmony Cure, accueil"
           >
             <Image

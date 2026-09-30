@@ -3,23 +3,23 @@ import { Leaf } from "lucide-react";
 const MILESTONES = [
   {
     title: "Une conviction avant tout",
-    text: "La beauté et le bien-être sont essentiels pour se sentir pleinement soi-même.",
+    text: "La beauté et le bien-être sont essentiels pour se sentir pleinement soi-même, rayonner avec confiance et avancer chaque jour en harmonie.",
   },
   {
     title: "Naissance des premiers produits",
-    text: "L'Anti-Chute et le Collagène Marin, formulés bien avant que tout ne bascule.",
+    text: "L'Anti-Chute et le Collagène Marin voient le jour après des recherches approfondies, bien avant que tout ne bascule.",
   },
   {
     title: "Un tournant inattendu",
-    text: "Un diagnostic de sclérose en plaques fragilise mes cheveux et ma peau.",
+    text: "Un diagnostic de sclérose en plaques fragilise mes cheveux et ma peau, transformant profondément mon rapport au soin et à la confiance.",
   },
   {
     title: "Une force retrouvée",
-    text: "Mes propres produits deviennent mon allié : vitalité, éclat, confiance.",
+    text: "Mes propres produits deviennent mes alliés au quotidien : ils m'aident à retrouver vitalité, éclat et confiance, jour après jour.",
   },
   {
     title: "De l'intime à la mission",
-    text: "Harmony Cure devient une mission : redonner espoir à toutes les femmes.",
+    text: "Harmony Cure devient une mission : redonner espoir et confiance à toutes les femmes qui souhaitent prendre soin d'elles.",
   },
 ];
 
@@ -55,7 +55,7 @@ export function OurStory() {
           </p>
         </div>
 
-        <div className="relative mx-auto mt-16 max-w-5xl sm:mt-20">
+        <div className="relative mx-auto mt-16 max-w-7xl sm:mt-20">
           <div className="absolute top-1.5 right-0 left-0 hidden h-px bg-[#0e3927]/15 sm:block" />
 
           <div className="grid gap-10 sm:grid-cols-5 sm:gap-6">

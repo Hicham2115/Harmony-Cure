@@ -1,6 +1,11 @@
+"use client";
+
+import { useMutation } from "@tanstack/react-query";
+import { type FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Camera, Mail, Share2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { PAYMENT_METHODS } from "@/components/payment-icons";
@@ -37,6 +42,31 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 }
 
 export function Footer() {
+  const subscribe = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.error ?? "Impossible de vous inscrire.");
+      }
+    },
+    onSuccess: () => toast.success("Inscription confirmée."),
+    onError: (error) => toast.error(error.message),
+  });
+
+  async function handleNewsletterSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const email = new FormData(form).get("email");
+    if (typeof email !== "string") return;
+    await subscribe.mutateAsync(email);
+    form.reset();
+  }
+
   return (
     <footer className="relative overflow-hidden bg-[#0e3927] pb-2">
       <div className="mx-auto max-w-[1600px] px-6 pt-10 sm:px-10 lg:px-[5.8vw]">
@@ -110,15 +140,17 @@ export function Footer() {
                 Nos nouveautés, conseils et offres directement dans votre boîte
                 mail.
               </p>
-              <form className="flex items-center gap-2">
+              <form className="flex items-center gap-2" onSubmit={handleNewsletterSubmit}>
                 <Input
                   aria-label="Adresse email"
+                  name="email"
                   className="h-11 border-white/20 bg-white/5 text-base text-white placeholder:text-base placeholder:text-white/50 focus-visible:border-[#e2c589] focus-visible:ring-[#e2c589]/30"
                   placeholder="Votre email"
                   type="email"
                 />
                 <button
                   aria-label="S'inscrire"
+                  disabled={subscribe.isPending}
                   className="group flex size-11 shrink-0 items-center justify-center rounded-md bg-[#e2c589] text-[#0e3927] transition-colors hover:bg-[#f0d9a5]"
                   type="submit"
                 >

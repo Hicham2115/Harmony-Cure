@@ -31,12 +31,12 @@ export function ClinicallyProven() {
 
             <span className="h-px w-10 bg-[#a77d38]" />
 
-            <p className="max-w-sm text-base leading-relaxed text-white/75 sm:text-lg">
+            <p className="max-w-lg text-base leading-relaxed text-white sm:text-lg">
               Nos cures sont formulées et fabriquées en France, dans un
               laboratoire pharmaceutique qui respecte des normes strictes de
               qualité et de sécurité. Chaque ingrédient est sélectionné avec
               soin, pour des compléments dont vous connaissez l&apos;origine.
-              <span className="mt-4 block">
+              <span className="mt-4 block w-full">
                 Chaque formule est déclarée auprès des autorités françaises.
               </span>
             </p>

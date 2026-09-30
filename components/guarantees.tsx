@@ -18,8 +18,7 @@ const GUARANTEES = [
   },
   {
     title: "Livraison offerte dès 70€",
-    description:
-      "Profitez de la livraison offerte dès 70€ d'achat.",
+    description: "Profitez de la livraison offerte dès 70€ d'achat.",
   },
 ];
 
@@ -67,19 +66,19 @@ export function Guarantees() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-5 sm:mt-16 sm:grid-cols-2 lg:grid-cols-2">
           {GUARANTEES.map(({ title, description }) => (
             <div
-              className="flex flex-col rounded-lg bg-white/5 items-center gap-4 p-10 text-center transition-transform duration-300 hover:-translate-y-1"
+              className="group flex min-h-[260px] flex-col items-center gap-4 rounded-2xl border border-white/10 bg-[#194a37] p-6 text-center shadow-[0_14px_40px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-[#e0c88a]/45 hover:bg-[#1c503d] sm:p-7"
               key={title}
             >
-              <div className="flex size-14 items-center justify-center rounded-full border-2 border-[#a77d38] text-[#a77d38]">
-                <Check className="size-6" strokeWidth={2} />
+              <div className="flex size-16 shrink-0 items-center justify-center rounded-full border border-[#e0c88a]/75 bg-[#0e3927]/60 text-[#e0c88a] transition-transform duration-300 group-hover:scale-105">
+                <Check className="size-7" strokeWidth={1.8} />
               </div>
-              <h3 className="text-base font-bold uppercase leading-snug tracking-wide text-white">
+              <h3 className="max-w-[28rem] text-base font-bold uppercase leading-snug tracking-[0.08em] text-white">
                 {title}
               </h3>
-              <p className="text-base leading-relaxed text-white/90">
+              <p className="max-w-[19rem] text-[15px] leading-7 text-white/80">
                 {description}
               </p>
             </div>
