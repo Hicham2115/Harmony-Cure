@@ -242,9 +242,9 @@ const ONE_MONTH_WEIGHT_LOSS_PACK_TIERS = [
 ] as const;
 
 const DELIVERY_STEPS = [
-  { icon: ShoppingBag, label: "Commandé", detail: "Aujourd'hui" },
+  { icon: ShoppingBag, label: "Commandé", detail: "Sous 24-48h" },
   { icon: Truck, label: "Préparé", detail: "Sous 24-48h" },
-  { icon: PackageCheck, label: "Livré", detail: "Sous 3-5 jours" },
+  { icon: PackageCheck, label: "Livré", detail: "Sous 24-48h" },
 ];
 
 function currencyFor(product: ShopifyProductDetail) {
@@ -453,7 +453,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
               {tierPricing.map((tier, index) => (
                 <button
                   aria-pressed={selectedTier === index}
-                  className={`relative flex flex-col gap-0.5 rounded-lg border px-4 py-3 text-left transition-colors ${
+                    className={`relative flex min-h-20 flex-col gap-0.5 rounded-lg border px-3 py-3 text-left transition-colors sm:px-4 ${
                     selectedTier === index
                       ? "border-[#0e3927] bg-[#0e3927]/5"
                       : "border-[#a77d38]/30 hover:border-[#a77d38]"
@@ -463,7 +463,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                   type="button"
                 >
                   {tier.badge ? (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-[#171715] px-2 py-0.5 font-roboto text-[10px] font-semibold tracking-wide text-white">
+                    <span className="absolute -top-3 left-1/2 w-max max-w-[calc(100%-0.5rem)] -translate-x-1/2 rounded-full bg-[#171715] px-2 py-1 text-center font-roboto text-[9px] font-semibold leading-tight tracking-wide text-white sm:text-[10px]">
                       {tier.badge}
                     </span>
                   ) : null}
