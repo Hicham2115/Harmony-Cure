@@ -48,7 +48,7 @@ export function Guarantees() {
         />
       </svg>
 
-      <div className="relative mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-[5.8vw]">
+      <div className="relative mx-auto max-w-[1600px] px-4 sm:px-7 lg:px-[4vw]">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
           <p className="flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-[#e0c88a]">
             <Leaf className="size-3.5" strokeWidth={1.2} />
