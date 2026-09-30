@@ -114,16 +114,27 @@ export function Hero() {
         <div className="relative m-4 overflow-visible rounded-[2rem] border-2 border-[#b68b43] lg:m-6">
           <Image
             alt="Produits Harmony Cure"
-            className="rounded-[1.8rem] object-cover object-center"
+            className="rounded-[1.8rem] object-cover object-right"
             fill
             priority
             sizes="58vw"
             src={heroImage}
           />
-          <div className="absolute -left-8 top-16 flex size-28 items-center justify-center rounded-full border-2 border-[#b68b43] bg-[#d2a64e] text-center font-heading text-sm uppercase leading-tight tracking-[0.08em] text-[#171715] shadow-lg lg:-left-10">
-            Fabriqué
-            <br />
-            en France
+          <div className="absolute -left-7 top-16 flex size-28 items-center justify-center rounded-full border-2 border-[#a9782f] bg-[radial-gradient(circle_at_35%_25%,#f2d28a_0%,#d2a64e_58%,#bc8834_100%)] p-1.5 text-center shadow-[0_10px_20px_rgba(38,29,14,0.2)] lg:-left-8">
+            <span className="flex size-full flex-col items-center justify-center rounded-full border border-[#f8dfa0]/90 px-3 text-[#332614] shadow-[inset_0_0_0_1px_rgba(120,78,20,0.35)]">
+              <Leaf className="mb-0.5 size-4 -rotate-12 text-[#70501e]" strokeWidth={1.5} />
+              <span className="font-heading text-[11px] uppercase leading-none tracking-[0.08em]">
+                Fabriqué
+              </span>
+              <span className="my-2 flex h-[3px] w-16 overflow-hidden">
+                <i className="w-1/3 bg-[#1d4775]" />
+                <i className="w-1/3 bg-[#f8f1df]" />
+                <i className="w-1/3 bg-[#b7343e]" />
+              </span>
+              <span className="font-heading text-[10px] uppercase leading-none tracking-[0.08em]">
+                En France
+              </span>
+            </span>
           </div>
         </div>
       </div>
