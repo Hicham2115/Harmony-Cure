@@ -47,7 +47,7 @@ export function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-white">
       <div className="bg-[#f7f3eb] pb-8 sm:hidden">
-        <div className="relative mx-4 aspect-[16/9] overflow-hidden rounded-b-[2rem] border-x border-b border-[#b68b43] bg-[#f7f3eb]">
+        <div className="relative mx-4 aspect-[16/10] overflow-hidden rounded-b-[2rem] border-x border-b border-[#b68b43] bg-[#f7f3eb]">
           <Image
             alt="Produits Harmony Cure"
             className="object-cover object-center"
@@ -60,25 +60,25 @@ export function Hero() {
             Soins · France
           </span>
         </div>
-        <div className="relative -mt-8 mx-4 rounded-t-[2rem] bg-[#0e3927] px-6 pb-7 pt-12 text-white shadow-[0_-12px_35px_rgba(14,57,39,0.16)]">
+        <div className="relative -mt-8 mx-4 rounded-t-[2rem] bg-[#0e3927] px-5 pb-6 pt-10 text-white shadow-[0_-12px_35px_rgba(14,57,39,0.16)]">
           <p className="font-inter text-[10px] font-semibold uppercase tracking-[0.2em] text-[#e0c88a]">
             La beauté au naturel
           </p>
           <span className="mt-4 block h-px w-12 bg-[#e0c88a]" />
-          <h1 className="mt-5 font-heading text-[clamp(2.5rem,12vw,4rem)] leading-[0.95] tracking-[-0.03em] text-[#fffaf0]">
+          <h1 className="mt-4 font-heading text-[clamp(2rem,9vw,3rem)] leading-[0.95] tracking-[-0.03em] text-[#fffaf0]">
             La Beauté
             <br />
             En Harmonie
             <br />
             <span className="text-[#e0c88a]">Avec la Nature</span>
           </h1>
-          <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-white/75">
+          <p className="mt-5 max-w-sm text-[13px] leading-relaxed text-white/75">
             Des soins naturels et sensoriels, pensés pour révéler durablement
             votre beauté, jour après jour.
           </p>
           <Link
             href="/boutique"
-            className="mt-7 inline-flex w-full items-center justify-between rounded-full bg-[#fff7e8] px-5 py-4 font-roboto text-xs font-semibold tracking-[0.08em] text-[#0e3927]"
+            className="mt-6 inline-flex w-full items-center justify-between rounded-full bg-[#fff7e8] px-5 py-3.5 font-roboto text-[11px] font-semibold tracking-[0.08em] text-[#0e3927]"
           >
             DÉCOUVRIR LA BOUTIQUE
             <ArrowRight className="size-5 text-[#b68b43]" />
