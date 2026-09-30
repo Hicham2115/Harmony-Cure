@@ -112,6 +112,7 @@ const REVIEWS = [
 function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const poster = `/videos/reviews/posters/${video.split("/").pop()?.replace(".mp4", ".jpg")}`;
 
   const handlePlay = () => {
     const el = videoRef.current;
@@ -131,6 +132,7 @@ function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
         onClick={!isPlaying ? handlePlay : undefined}
         playsInline
         preload="metadata"
+        poster={poster}
         ref={videoRef}
         src={video}
       />
