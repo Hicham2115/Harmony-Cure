@@ -43,10 +43,10 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full">
-      <div className="relative flex items-center justify-center gap-1.5 bg-[#0d3825] px-3 py-2 text-center text-[10px] font-medium uppercase tracking-[0.04em] text-white sm:gap-2 sm:px-12 sm:py-2.5 sm:text-xs sm:tracking-[0.16em]">
+      <div className="relative flex items-center justify-center gap-1.5 bg-[#0d3825] px-2.5 py-1.5 text-center text-[9px] font-medium uppercase tracking-[0.02em] text-white sm:gap-2 sm:px-12 sm:py-2.5 sm:text-xs sm:tracking-[0.16em]">
         <span className="flex items-center gap-1.5 sm:gap-2">
           <Leaf
-            className="size-3 shrink-0 sm:size-3.5"
+            className="size-2.5 shrink-0 sm:size-3.5"
             fill="currentColor"
             strokeWidth={1.2}
           />
