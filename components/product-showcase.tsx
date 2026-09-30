@@ -6,11 +6,11 @@ import Link from "next/link";
 import { ArrowRight, Leaf } from "lucide-react";
 
 import antiChuteImage from "@/app/assets/anti_chute.webp";
-import bruleGraissesImage from "@/app/assets/Brule.webp";
+import bruleGraissesImage from "@/app/assets/Brule.png";
 import collageneImage from "@/app/assets/collagene_main.webp";
-import coupeFaimImage from "@/app/assets/coupe_main.webp";
+import coupeFaimImage from "@/app/assets/coupe_main.png";
 import packLoveImage from "@/app/assets/pack_love.webp";
-import packPoidsImage from "@/app/assets/pack_poids.webp";
+import packPoidsImage from "@/app/assets/pack_poids.png";
 import type { ShopifyProduct } from "@/lib/shopify";
 
 const CATEGORIES = [

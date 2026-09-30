@@ -28,6 +28,7 @@ const PRODUCTS_QUERY = `#graphql
         handle
         description
         productType
+        tags
         images(first: 5) {
           nodes {
             url
@@ -65,6 +66,46 @@ export async function getProducts(first = 10) {
 
 export type ShopifyProduct = Awaited<ReturnType<typeof getProducts>>[number];
 
+const STOREFRONT_FILTERS_QUERY = `#graphql
+  query StorefrontFilters {
+    products(first: 1) {
+      filters {
+        id
+        label
+        type
+        values {
+          id
+          label
+          count
+          input
+        }
+      }
+    }
+  }
+`;
+
+export type ShopifyStorefrontFilter = {
+  id: string;
+  label: string;
+  type: "BOOLEAN" | "LIST" | "PRICE_RANGE";
+  values: {
+    id: string;
+    label: string;
+    count: number;
+    input: unknown;
+  }[];
+};
+
+export async function getStorefrontFilters(): Promise<ShopifyStorefrontFilter[]> {
+  const { data, errors } = await shopifyClient.request(STOREFRONT_FILTERS_QUERY);
+
+  if (errors) {
+    throw new Error(errors.message ?? "Failed to fetch Shopify filters");
+  }
+
+  return (data?.products.filters ?? []) as ShopifyStorefrontFilter[];
+}
+
 const PRODUCT_BY_HANDLE_QUERY = `#graphql
   query ProductByHandle($handle: String!) {
     product(handle: $handle) {
@@ -74,6 +115,7 @@ const PRODUCT_BY_HANDLE_QUERY = `#graphql
       description
       descriptionHtml
       productType
+      tags
       images(first: 8) {
         nodes {
           url

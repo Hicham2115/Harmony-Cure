@@ -13,27 +13,59 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatPrice } from "@/lib/format-price";
-import type { ShopifyProduct } from "@/lib/shopify";
+import type { ShopifyProduct, ShopifyStorefrontFilter } from "@/lib/shopify";
 import { useCanOrder } from "@/components/can-order-provider";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
-
-const OBJECTIFS = [
-  "Pousse & anti-chute",
-  "Nettoyage doux",
-  "Nutrition intense",
-];
-const HAIR_TYPES = [
-  "Tous types",
-  "Cheveux secs & abîmés",
-  "Cheveux fins & sans volume",
-  "Cuir chevelu sensible",
-];
 
 function toggle(list: string[], value: string) {
   return list.includes(value)
     ? list.filter((item) => item !== value)
     : [...list, value];
+}
+
+type FilterInput = {
+  available?: boolean;
+  handles?: string[];
+  productType?: string;
+  tag?: string;
+};
+
+function parseFilterInput(input: unknown): FilterInput | null {
+  if (typeof input === "object" && input !== null) {
+    return input as FilterInput;
+  }
+
+  if (typeof input !== "string") return null;
+
+  try {
+    return JSON.parse(input) as FilterInput;
+  } catch {
+    return null;
+  }
+}
+
+function canApplyFilter(input: FilterInput | null) {
+  return Boolean(
+    input?.available !== undefined ||
+      input?.handles ||
+      input?.productType ||
+      input?.tag,
+  );
+}
+
+function matchesFilter(product: ShopifyProduct, input: FilterInput) {
+  if (input.available !== undefined) {
+    return product.variants.nodes.some(
+      (variant: { availableForSale: boolean }) =>
+        variant.availableForSale === input.available,
+    );
+  }
+
+  if (input.productType) return product.productType === input.productType;
+  if (input.tag) return product.tags.includes(input.tag);
+  if (input.handles) return input.handles.includes(product.handle);
+  return true;
 }
 
 function FilterGroup({
@@ -43,7 +75,7 @@ function FilterGroup({
   onToggle,
 }: {
   title: string;
-  options: string[];
+  options: { id: string; label: string }[];
   selected: string[];
   onToggle: (value: string) => void;
 }) {
@@ -56,14 +88,14 @@ function FilterGroup({
         {options.map((option) => (
           <label
             className="group flex cursor-pointer items-center gap-2.5"
-            key={option}
+            key={option.id}
           >
             <Checkbox
-              checked={selected.includes(option)}
-              onCheckedChange={() => onToggle(option)}
+              checked={selected.includes(option.id)}
+              onCheckedChange={() => onToggle(option.id)}
             />
             <span className="font-roboto text-sm text-[#585750] transition-colors group-hover:text-[#171715]">
-              {option}
+              {option.label}
             </span>
           </label>
         ))}
@@ -72,19 +104,114 @@ function FilterGroup({
   );
 }
 
-export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
+export function BoutiqueGrid({
+  filters,
+  products,
+}: {
+  filters: ShopifyStorefrontFilter[];
+  products: ShopifyProduct[];
+}) {
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const addItem = useCartStore((state) => state.addItem);
   const canOrder = useCanOrder();
 
-  const types = useMemo(
-    () =>
-      Array.from(
-        new Set(products.map((product) => product.productType).filter(Boolean)),
-      ),
-    [products],
-  );
+  const filterGroups = useMemo(() => {
+    const shopifyGroups = filters
+      .map((filter) => ({
+        ...filter,
+        values: filter.values.filter((value) =>
+          canApplyFilter(parseFilterInput(value.input)),
+        ),
+      }))
+      .filter((filter) => filter.values.length > 0 && filter.type !== "PRICE_RANGE");
+
+    if (shopifyGroups.length > 0) return shopifyGroups;
+
+    const tags = Array.from(new Set(products.flatMap((product) => product.tags)));
+
+    if (tags.length > 0) {
+      return [
+        {
+          id: "product-tags",
+          label: "Catégorie",
+          type: "LIST" as const,
+          values: tags.map((tag) => ({
+            id: tag,
+            label: tag,
+            count: products.filter((product) => product.tags.includes(tag)).length,
+            input: { tag },
+          })),
+        },
+      ];
+    }
+
+    const byTitle = (terms: string[]) =>
+      products
+        .filter((product) =>
+          terms.some((term) => product.title.toLowerCase().includes(term)),
+        )
+        .map((product) => product.handle);
+
+    const objectives = [
+      {
+        id: "weight",
+        label: "Gestion du poids",
+        handles: byTitle(["perte de poids", "brûleur", "coupe-faim"]),
+      },
+      {
+        id: "hair",
+        label: "Cheveux & anti-chute",
+        handles: byTitle(["anti-chute", "harmony love"]),
+      },
+      {
+        id: "skin",
+        label: "Peau & collagène",
+        handles: byTitle(["collagène", "harmony love"]),
+      },
+    ].filter((objective) => objective.handles.length > 0);
+
+    const packs = products
+      .filter((product) => product.title.toLowerCase().startsWith("pack"))
+      .map((product) => product.handle);
+    const individualCures = products
+      .filter((product) => !packs.includes(product.handle))
+      .map((product) => product.handle);
+
+    return [
+      {
+        id: "objective",
+        label: "Objectif",
+        type: "LIST" as const,
+        values: objectives.map((objective) => ({
+          id: objective.id,
+          label: objective.label,
+          count: objective.handles.length,
+          input: { handles: objective.handles },
+        })),
+      },
+      {
+        id: "format",
+        label: "Format",
+        type: "LIST" as const,
+        values: [
+          { id: "packs", label: "Packs", handles: packs },
+          {
+            id: "individual-cures",
+            label: "Cures individuelles",
+            handles: individualCures,
+          },
+        ]
+          .filter((format) => format.handles.length > 0)
+          .map((format) => ({
+            id: format.id,
+            label: format.label,
+            count: format.handles.length,
+            input: { handles: format.handles },
+          })),
+      },
+    ].filter((filter) => filter.values.length > 0);
+  }, [filters, products]);
 
   const maxPrice = useMemo(() => {
     const prices = products.map((product) =>
@@ -93,35 +220,42 @@ export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
     return prices.length ? Math.ceil(Math.max(...prices)) : 0;
   }, [products]);
 
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedObjectifs, setSelectedObjectifs] = useState<string[]>([]);
-  const [selectedHairTypes, setSelectedHairTypes] = useState<string[]>([]);
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, maxPrice]);
 
   const activeFilterCount =
-    selectedTypes.length +
-    selectedObjectifs.length +
-    selectedHairTypes.length +
+    selectedValues.length +
     (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0);
 
   const filtered = useMemo(() => {
     return products.filter((product) => {
-      if (selectedTypes.length && !selectedTypes.includes(product.productType))
-        return false;
+      for (const group of filterGroups) {
+        const selectedInGroup = group.values.filter((value) =>
+          selectedValues.includes(`${group.id}:${value.id}`),
+        );
+
+        if (
+          selectedInGroup.length > 0 &&
+          !selectedInGroup.some((value) => {
+            const input = parseFilterInput(value.input);
+            return input ? matchesFilter(product, input) : false;
+          })
+        ) {
+          return false;
+        }
+      }
       const price = Number(product.priceRange.minVariantPrice.amount);
       if (price < priceRange[0] || price > priceRange[1]) return false;
       return true;
     });
-  }, [products, selectedTypes, priceRange]);
+  }, [filterGroups, products, selectedValues, priceRange]);
 
   function resetFilters() {
-    setSelectedTypes([]);
-    setSelectedObjectifs([]);
-    setSelectedHairTypes([]);
+    setSelectedValues([]);
     setPriceRange([0, maxPrice]);
   }
 
-  const filterGroups = (
+  const filterControls = (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-3">
         <h3 className="font-roboto text-xs font-semibold uppercase tracking-[0.12em] text-[#171715]">
@@ -141,32 +275,20 @@ export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
         </p>
       </div>
 
-      {types.length ? (
-        <FilterGroup
-          onToggle={(value) => setSelectedTypes(toggle(selectedTypes, value))}
-          options={types}
-          selected={selectedTypes}
-          title="Type de soin"
-        />
-      ) : null}
-
-      <FilterGroup
-        onToggle={(value) =>
-          setSelectedObjectifs(toggle(selectedObjectifs, value))
-        }
-        options={OBJECTIFS}
-        selected={selectedObjectifs}
-        title="Objectif"
-      />
-
-      <FilterGroup
-        onToggle={(value) =>
-          setSelectedHairTypes(toggle(selectedHairTypes, value))
-        }
-        options={HAIR_TYPES}
-        selected={selectedHairTypes}
-        title="Type de cheveux"
-      />
+      {filterGroups.map((group) => {
+        return (
+          <FilterGroup
+            key={group.id}
+            onToggle={(value) => setSelectedValues(toggle(selectedValues, value))}
+            options={group.values.map((value) => ({
+              id: `${group.id}:${value.id}`,
+              label: value.label,
+            }))}
+            selected={selectedValues}
+            title={group.label}
+          />
+        );
+      })}
 
       {activeFilterCount > 0 ? (
         <button
@@ -184,7 +306,7 @@ export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
   return (
     <div className="grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-14">
       <aside className="hidden lg:block">
-        <div className="sticky top-24">{filterGroups}</div>
+        <div className="sticky top-24">{filterControls}</div>
       </aside>
 
       <div>
@@ -196,7 +318,7 @@ export function BoutiqueGrid({ products }: { products: ShopifyProduct[] }) {
               {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
             </PopoverTrigger>
             <PopoverContent align="start" className="w-72 p-5">
-              {filterGroups}
+              {filterControls}
             </PopoverContent>
           </Popover>
 
