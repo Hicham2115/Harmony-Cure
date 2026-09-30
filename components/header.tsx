@@ -51,13 +51,13 @@ export function Header() {
             Livraison gratuite à partir de 70€ — Ne ratez pas l’offre !
           </span>
         </span>
-        <button
+        {/* <button
           className="group absolute right-4 hidden items-center gap-1 text-xs tracking-[0.14em] text-white/90 transition-colors duration-300 hover:text-[#e2c589] sm:inline-flex sm:right-10"
           type="button"
         >
           FR{" "}
           <ChevronDown className="size-3 transition-transform duration-300 group-hover:translate-y-0.5" />
-        </button>
+        </button> */}
       </div>
 
       <div className="flex items-center justify-between gap-2 border-b border-black/5 bg-white px-4 py-2.5 sm:gap-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:px-10 lg:px-[5.5vw]">
