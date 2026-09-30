@@ -42,7 +42,7 @@ export function OurStory() {
         </div>
 
         <div className="mx-auto mt-10 max-w-5xl sm:mt-14">
-          <p className="font-heading text-2xl text-center leading-relaxed text-[#171715] italic sm:text-3xl">
+          <p className="px-2 text-center font-heading text-xl leading-[1.55] text-[#171715] italic sm:px-0 sm:text-3xl sm:leading-relaxed">
             « Je suis à l&apos;origine d&apos;Harmony Cure, une marque née de
             mon propre parcours. Après avoir traversé une épreuve de santé qui a
             fragilisé mes cheveux et ma peau, j&apos;ai trouvé dans mes formules

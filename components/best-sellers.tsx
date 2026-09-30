@@ -83,7 +83,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
         <div className="relative mt-12 sm:mt-16">
           <button
             aria-label="Produit précédent"
-            className="absolute left-0 top-1/3 z-10 hidden size-10 -translate-x-4 -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform hover:scale-105 sm:flex"
+            className="absolute left-0 top-1/3 z-10 flex size-9 -translate-x-2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform hover:scale-105 sm:-translate-x-4 sm:size-10"
             onClick={() => scrollByCard(-1)}
             type="button"
           >
@@ -214,7 +214,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
 
           <button
             aria-label="Produit suivant"
-            className="absolute right-0 top-1/3 z-10 hidden size-10 -translate-y-1/2 translate-x-4 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform hover:scale-105 sm:flex"
+            className="absolute right-0 top-1/3 z-10 flex size-9 -translate-y-1/2 translate-x-2 items-center justify-center rounded-full bg-white text-[#1a2e22] shadow-md transition-transform hover:scale-105 sm:translate-x-4 sm:size-10"
             onClick={() => scrollByCard(1)}
             type="button"
           >
