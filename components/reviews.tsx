@@ -151,10 +151,10 @@ function ReviewCard({ name, product, video }: (typeof REVIEWS)[number]) {
 
       {!isPlaying && (
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4">
-          <div className="flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#171715]">
+          <div className="hidden items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#171715] sm:flex">
             {name}
           </div>
-          <div className="flex items-center gap-0.5 rounded-full bg-white/90 px-2 py-1 text-[#a77d38]">
+          <div className="hidden items-center gap-0.5 rounded-full bg-white/90 px-2 py-1 text-[#a77d38] sm:flex">
             {Array.from({ length: 5 }).map((_, index) => (
               <Star
                 className="size-2.5"
@@ -200,7 +200,7 @@ export function Reviews() {
             Des retours authentiques de notre communauté, en vidéo.
           </p>
 
-          <div className="mt-1 flex items-center gap-2.5">
+          <div className="mt-1 hidden items-center gap-2.5 sm:flex">
             <div className="flex items-center gap-0.5 text-[#a77d38]">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star
@@ -233,8 +233,8 @@ export function Reviews() {
             ))}
           </CarouselContent>
 
-          <CarouselPrevious className="-left-4 hidden border-[#a77d38]/30 bg-white text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:border-[#a77d38] hover:bg-white hover:text-[#a77d38] sm:-left-5 sm:flex" />
-          <CarouselNext className="-right-4 hidden border-[#a77d38]/30 bg-white text-[#1a2e22] transition-all duration-300 hover:scale-105 hover:border-[#a77d38] hover:bg-white hover:text-[#a77d38] sm:-right-5 sm:flex" />
+          <CarouselPrevious className="-left-2 flex size-9 border-[#a77d38]/30 bg-white text-[#1a2e22] shadow-md transition-all duration-300 hover:scale-105 hover:border-[#a77d38] hover:bg-white hover:text-[#a77d38] sm:-left-5 sm:size-10" />
+          <CarouselNext className="-right-2 flex size-9 border-[#a77d38]/30 bg-white text-[#1a2e22] shadow-md transition-all duration-300 hover:scale-105 hover:border-[#a77d38] hover:bg-white hover:text-[#a77d38] sm:-right-5 sm:size-10" />
         </Carousel>
       </div>
     </section>
