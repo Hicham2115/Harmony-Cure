@@ -55,7 +55,7 @@ export function Hero() {
         sizes="100vw"
         src={heroImage}
       />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-white/90 via-white/65 to-transparent sm:via-white/60 lg:from-white/90 lg:via-white/20 lg:to-transparent" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-white/90 via-white/65 to-transparent sm:via-white/60 lg:from-white/90 lg:via-white/10 lg:to-transparent" />
 
       <div className="relative z-20 mx-auto flex min-h-110 max-w-[1600px] items-center px-6 py-16 sm:px-10 sm:py-20 lg:min-h-110 lg:px-[5.8vw] lg:py-28">
         <div className="flex max-w-lg flex-col gap-5 sm:max-w-xl lg:max-w-[700px] lg:gap-6">
