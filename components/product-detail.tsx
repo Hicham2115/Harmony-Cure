@@ -158,7 +158,7 @@ const APPETITE_SUPPRESSANT_TIERS = [
 ] as const;
 
 const HARMONY_LOVE_TIERS = [
-  { days: 30, period: "1 mois", multiplier: 1, discount: 0, price: 74, badge: null },
+  { days: 30, period: "1 mois", multiplier: 1, discount: 0, badge: null },
   {
     days: 60,
     period: "2 mois",
@@ -277,6 +277,12 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
   const baseAmount = Number(product.priceRange.minVariantPrice.amount);
   const currencyCode = currencyFor(product);
+  const tierBaseAmount =
+    product.handle === "pack-harmony-love-collagene-marin-anti-chute-vegan"
+      ? 72.99
+      : baseAmount;
+  const isHarmonyLovePack =
+    product.handle === "pack-harmony-love-collagene-marin-anti-chute-vegan";
 
   useEffect(() => {
     const cta = ctaRef.current;
@@ -315,11 +321,19 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                     : TIERS;
 
     return tiers.map((tier) => {
-        const fullPrice = baseAmount * tier.multiplier;
+        const fullPrice =
+          isHarmonyLovePack && tier.multiplier > 1
+            ? (72.99 + 1) * tier.multiplier
+            : tierBaseAmount * tier.multiplier;
         const finalPrice = "price" in tier ? tier.price : fullPrice * (1 - tier.discount);
-        return { ...tier, fullPrice, finalPrice, hasDiscount: finalPrice < fullPrice };
+        return {
+          ...tier,
+          fullPrice,
+          finalPrice,
+          hasDiscount: finalPrice < fullPrice,
+        };
       });
-  }, [baseAmount, product.handle]);
+  }, [isHarmonyLovePack, tierBaseAmount, product.handle]);
 
   const activeTier = tierPricing[selectedTier];
 

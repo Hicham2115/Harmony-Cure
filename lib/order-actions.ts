@@ -30,7 +30,7 @@ const COD_TOTALS_BY_HANDLE = {
     4: 107.96,
   },
   "pack-harmony-love-collagene-marin-anti-chute-vegan": {
-    1: 74,
+    1: 72.99,
     2: 146,
     3: 216,
     4: 284,
