@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Leaf, Minus, Plus, X } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Sheet,
@@ -11,6 +12,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/lib/store/use-cart";
+import type { ShopifyCart } from "@/lib/cart-actions";
+import { createTierCheckout } from "@/lib/order-actions";
 
 function formatAmount(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("fr-FR", {
@@ -19,9 +22,40 @@ function formatAmount(amount: string, currencyCode: string) {
   }).format(Number(amount));
 }
 
+function selectedUnitPrice(line: ShopifyCart["lines"]["nodes"][number]) {
+  const value = line.attributes.find(
+    (attribute) => attribute.key === "selected-unit-price",
+  )?.value;
+  const amount = Number(value);
+  return Number.isFinite(amount) && amount > 0
+    ? amount
+    : Number(line.merchandise.price.amount);
+}
+
+function selectedLineTotal(line: ShopifyCart["lines"]["nodes"][number]) {
+  const attributes = line.attributes;
+  const selectedTotal = Number(
+    attributes.find((attribute) => attribute.key === "selected-tier-total")?.value,
+  );
+  const selectedQuantity = Number(
+    attributes.find((attribute) => attribute.key === "selected-tier-quantity")?.value,
+  );
+
+  if (
+    Number.isFinite(selectedTotal) &&
+    selectedTotal > 0 &&
+    selectedQuantity === line.quantity
+  ) {
+    return selectedTotal;
+  }
+
+  return selectedUnitPrice(line) * line.quantity;
+}
+
 export function CartDrawer() {
   const {
     cart,
+    cartId,
     isOpen,
     isLoading,
     closeCart,
@@ -29,6 +63,7 @@ export function CartDrawer() {
     updateItem,
     removeItem,
   } = useCartStore();
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
   useEffect(() => {
     hydrate();
@@ -37,17 +72,34 @@ export function CartDrawer() {
 
   const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
   const lineSubtotal = lines.reduce(
-    (total, line) => total + Number(line.merchandise.price.amount) * line.quantity,
+    (total, line) => total + selectedLineTotal(line),
     0,
   );
-  const shopifySubtotal = Number(cart?.cost.subtotalAmount.amount ?? 0);
-  const subtotal = shopifySubtotal > 0 ? shopifySubtotal : lineSubtotal;
+  const subtotal = lineSubtotal;
   const hasAppliedDiscount = cart?.discountCodes.some(
     (discount) => discount.applicable,
   );
   const shopifyTotal = Number(cart?.cost.totalAmount.amount ?? 0);
-  const total = hasAppliedDiscount || shopifyTotal > 0 ? shopifyTotal : subtotal;
-  const shippingAmount = total > subtotal ? total - subtotal : 0;
+  const total =
+    hasAppliedDiscount && shopifyTotal > 0 ? shopifyTotal : subtotal;
+  const shippingAmount = hasAppliedDiscount && total > subtotal ? total - subtotal : 0;
+
+  async function goToCheckout() {
+    if (!cartId) return;
+    setIsCreatingCheckout(true);
+    try {
+      const invoiceUrl = await createTierCheckout(cartId);
+      window.location.assign(invoiceUrl);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible d'ouvrir le paiement Shopify.",
+      );
+    } finally {
+      setIsCreatingCheckout(false);
+    }
+  }
 
   return (
     <Sheet onOpenChange={(open) => !open && closeCart()} open={isOpen}>
@@ -89,7 +141,7 @@ export function CartDrawer() {
                   </span>
                   <span className="font-roboto text-xs text-[#8a8478]">
                     {formatAmount(
-                      line.merchandise.price.amount,
+                      String(selectedLineTotal(line)),
                       line.merchandise.price.currencyCode,
                     )}
                   </span>
@@ -166,12 +218,14 @@ export function CartDrawer() {
                 </span>
               </div>
             ) : null}
-            <a
-              className="inline-flex w-full items-center justify-center rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] sm:text-sm"
-              href={cart.checkoutUrl}
+            <button
+              className="inline-flex w-full items-center justify-center rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
+              disabled={isCreatingCheckout || isLoading}
+              onClick={goToCheckout}
+              type="button"
             >
-              PASSER À LA CAISSE
-            </a>
+              {isCreatingCheckout ? "OUVERTURE DU PAIEMENT…" : "PASSER À LA CAISSE"}
+            </button>
           </div>
         ) : null}
       </SheetContent>

@@ -501,7 +501,13 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             className="mt-1 inline-flex items-center justify-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
             disabled={!variantId || isCartLoading || !canOrder}
             onClick={() =>
-              variantId && addItem(variantId, activeTier.multiplier)
+              variantId &&
+              addItem(
+                variantId,
+                activeTier.multiplier,
+                activeTier.finalPrice / activeTier.multiplier,
+                activeTier.finalPrice,
+              )
             }
             ref={ctaRef}
             type="button"
@@ -635,7 +641,13 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-[#0e3927] px-4 py-2.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:px-6 sm:py-3"
             disabled={!variantId || isCartLoading}
             onClick={() =>
-              variantId && addItem(variantId, activeTier.multiplier)
+              variantId &&
+              addItem(
+                variantId,
+                activeTier.multiplier,
+                activeTier.finalPrice / activeTier.multiplier,
+                activeTier.finalPrice,
+              )
             }
             type="button"
           >

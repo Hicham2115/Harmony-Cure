@@ -26,7 +26,12 @@ type CartState = {
   openCart: () => void;
   closeCart: () => void;
   hydrate: () => Promise<void>;
-  addItem: (merchandiseId: string, quantity?: number) => Promise<void>;
+  addItem: (
+    merchandiseId: string,
+    quantity?: number,
+    selectedUnitPrice?: number,
+    selectedTierTotal?: number,
+  ) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   applyDiscount: (discountCode: string) => Promise<void>;
@@ -58,25 +63,67 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      addItem: async (merchandiseId, quantity = 1) => {
+      addItem: async (
+        merchandiseId,
+        quantity = 1,
+        selectedUnitPrice,
+        selectedTierTotal,
+      ) => {
         set({ isLoading: true });
         try {
           const { cartId } = get();
           let cart: ShopifyCart | null = null;
           try {
-            cart = cartId
-              ? await addCartLine(cartId, merchandiseId, quantity)
-              : await createCart(merchandiseId, quantity);
+            const oldLine = get().cart?.lines.nodes.find(
+              (line) =>
+                line.merchandise.id === merchandiseId &&
+                line.quantity === quantity &&
+                !line.attributes.some(
+                  (attribute) => attribute.key === "selected-unit-price",
+                ),
+            );
+            cart = cartId && oldLine && selectedUnitPrice !== undefined
+              ? await updateCartLine(
+                  cartId,
+                  oldLine.id,
+                  quantity,
+                  selectedUnitPrice,
+                  selectedTierTotal,
+                )
+              : cartId
+                ? await addCartLine(
+                    cartId,
+                    merchandiseId,
+                    quantity,
+                    selectedUnitPrice,
+                    selectedTierTotal,
+                  )
+                : await createCart(
+                    merchandiseId,
+                    quantity,
+                    selectedUnitPrice,
+                    selectedTierTotal,
+                  );
           } catch (error) {
             if (!cartId) throw error;
             // Existing cart is stale or invalid — start a fresh one.
             console.error("Cart was invalid, starting a new one:", error);
-            cart = await createCart(merchandiseId, quantity);
+            cart = await createCart(
+              merchandiseId,
+              quantity,
+              selectedUnitPrice,
+              selectedTierTotal,
+            );
           }
 
           if (cartId && !hasValidLines(cart)) {
             // The existing cart silently failed to add the line — retry fresh.
-            cart = await createCart(merchandiseId, quantity);
+            cart = await createCart(
+              merchandiseId,
+              quantity,
+              selectedUnitPrice,
+              selectedTierTotal,
+            );
           }
 
           set({ cart, cartId: cart?.id ?? null, isOpen: true });

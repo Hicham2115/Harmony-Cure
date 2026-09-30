@@ -1,6 +1,7 @@
 "use server";
 
 import { shopifyAdminRequest } from "@/lib/shopify-admin";
+import { fetchCart } from "@/lib/cart-actions";
 import { codOrderSchema } from "@/lib/schemas/cod-order";
 import { assertVisitorCanOrder } from "@/lib/shipping-countries";
 
@@ -48,6 +49,146 @@ const COD_TOTALS_BY_HANDLE = {
     4: 507.96,
   },
 } as const;
+
+const TIER_TOTALS_BY_HANDLE: Record<string, number[]> = {
+  "anti-chute-de-cheveux": [37.99, 73.98, 107.97, 139.96],
+  "bruleur-de-graisses-naturel": [39.9, 77.8, 113.7, 147.6],
+  "collagene-marin": [35.99, 69.98, 103.97, 131.96],
+  "coupe-faim-naturel": [29.99, 57.98, 83.97, 107.96],
+  "pack-harmony-love-collagene-marin-anti-chute-vegan": [72.99, 146, 216, 284],
+  "pack-perte-de-poids": [68.99, 129.98, 196.97, 257.96],
+  "pack-perte-de-poids-1-mois": [129.99, 257.98, 383.97, 507.96],
+};
+
+function getSelectedTierTotal(
+  handle: string,
+  quantity: number,
+  baseUnitPrice: number,
+  attributes: { key: string; value: string }[],
+) {
+  const unitPriceAttribute = attributes.find(
+    (attribute) => attribute.key === "selected-unit-price",
+  );
+  if (!unitPriceAttribute) return null;
+  const selectedUnitPrice = Number(unitPriceAttribute.value);
+  if (!Number.isFinite(selectedUnitPrice) || selectedUnitPrice <= 0) {
+    throw new Error("Le prix du pack sélectionné n'est pas valide.");
+  }
+
+  const selectedQuantity = Number(
+    attributes.find((attribute) => attribute.key === "selected-tier-quantity")?.value,
+  );
+  const selectedTotal = Number(
+    attributes.find((attribute) => attribute.key === "selected-tier-total")?.value,
+  );
+  const tierTotals = TIER_TOTALS_BY_HANDLE[handle] ?? [
+    baseUnitPrice,
+    baseUnitPrice * 2 * 0.95,
+    baseUnitPrice * 3 * 0.9,
+    baseUnitPrice * 4 * 0.85,
+  ];
+  const expectedTierTotal = tierTotals[selectedQuantity - 1];
+  const validUnitPrices = tierTotals.map((total, index) =>
+    Math.round((total / (index + 1)) * 100),
+  );
+  if (
+    !validUnitPrices.includes(Math.round(selectedUnitPrice * 100))
+  ) {
+    throw new Error("Le prix du pack sélectionné n'est plus valide.");
+  }
+
+  if (
+    quantity === selectedQuantity &&
+    expectedTierTotal !== undefined &&
+    Math.round(expectedTierTotal * 100) === Math.round(selectedTotal * 100)
+  ) {
+    return expectedTierTotal;
+  }
+
+  return Math.round(selectedUnitPrice * quantity * 100) / 100;
+}
+
+export async function createTierCheckout(cartId: string) {
+  await assertVisitorCanOrder();
+
+  if (!cartId.startsWith("gid://shopify/Cart/") || cartId.length > 512) {
+    throw new Error("Panier invalide.");
+  }
+
+  const cart = await fetchCart(cartId);
+  if (!cart || cart.lines.nodes.length === 0) {
+    throw new Error("Votre panier est vide.");
+  }
+
+  const lineItems = cart.lines.nodes.map((line) => {
+    const baseUnitPrice = Number(line.merchandise.price.amount);
+    const selectedTotal = getSelectedTierTotal(
+      line.merchandise.product.handle,
+      line.quantity,
+      baseUnitPrice,
+      line.attributes,
+    );
+    if (selectedTotal === null) {
+      return { variantId: line.merchandise.id, quantity: line.quantity };
+    }
+
+    const baseTotal = baseUnitPrice * line.quantity;
+    if (selectedTotal < baseTotal) {
+      return {
+        variantId: line.merchandise.id,
+        quantity: line.quantity,
+        appliedDiscount: {
+          title: "Prix du pack sélectionné",
+          value: Number((baseUnitPrice - selectedTotal / line.quantity).toFixed(4)),
+          valueType: "FIXED_AMOUNT",
+        },
+      };
+    }
+
+    return {
+      variantId: line.merchandise.id,
+      quantity: line.quantity,
+      priceOverride: {
+        amount: (selectedTotal / line.quantity).toFixed(2),
+        currencyCode: line.merchandise.price.currencyCode,
+      },
+    };
+  });
+
+  const { data, errors } = await shopifyAdminRequest<{
+    draftOrderCreate: {
+      draftOrder: { invoiceUrl: string | null } | null;
+      userErrors: { field: string[]; message: string }[];
+    };
+  }>(
+    `#graphql
+      mutation CreateTierCheckout($input: DraftOrderInput!) {
+        draftOrderCreate(input: $input) {
+          draftOrder { invoiceUrl }
+          userErrors { field message }
+        }
+      }
+    `,
+    {
+      input: {
+        lineItems,
+        discountCodes: cart.discountCodes
+          .filter((discount) => discount.applicable)
+          .map((discount) => discount.code),
+        allowDiscountCodesInCheckout: true,
+        note: "Commande via Harmony Cure — prix du pack sélectionné",
+      },
+    },
+  );
+
+  if (errors) throw new Error("Erreur Shopify lors de la création du paiement.");
+  const userErrors = data?.draftOrderCreate.userErrors;
+  if (userErrors?.length) throw new Error(userErrors[0].message);
+
+  const invoiceUrl = data?.draftOrderCreate.draftOrder?.invoiceUrl;
+  if (!invoiceUrl) throw new Error("Shopify n'a pas fourni le lien de paiement.");
+  return invoiceUrl;
+}
 
 function splitName(fullName: string) {
   const parts = fullName.trim().split(/\s+/);
