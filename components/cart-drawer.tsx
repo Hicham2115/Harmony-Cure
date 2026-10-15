@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/lib/store/use-cart";
 import type { ShopifyCart } from "@/lib/cart-actions";
-import { createTierCheckout } from "@/lib/order-actions";
 import { getProductTierTotal } from "@/lib/product-pricing";
 
 function formatAmount(amount: string, currencyCode: string) {
@@ -73,7 +72,10 @@ export function CartDrawer() {
 
     setIsCreatingCheckout(true);
     try {
-      const checkoutUrl = await createTierCheckout(cartId);
+      const checkoutUrl = cart?.checkoutUrl;
+      if (!checkoutUrl) {
+        throw new Error("Shopify n'a pas fourni le lien de paiement.");
+      }
       window.location.assign(checkoutUrl);
     } catch (error) {
       toast.error(
