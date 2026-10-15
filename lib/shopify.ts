@@ -1,11 +1,14 @@
 import { createStorefrontApiClient } from "@shopify/storefront-api-client";
 
-const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
+const storeDomain =
+  process.env.SHOPIFY_STOREFRONT_API_DOMAIN ??
+  process.env.SHOPIFY_ADMIN_API_DOMAIN ??
+  process.env.SHOPIFY_STORE_DOMAIN;
 const publicAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
 if (!storeDomain || !publicAccessToken) {
   throw new Error(
-    "Missing SHOPIFY_STORE_DOMAIN or SHOPIFY_STOREFRONT_ACCESS_TOKEN in .env.local",
+    "Set SHOPIFY_ADMIN_API_DOMAIN (or SHOPIFY_STOREFRONT_API_DOMAIN) and SHOPIFY_STOREFRONT_ACCESS_TOKEN in .env.",
   );
 }
 
@@ -20,8 +23,8 @@ export const shopifyClient = createStorefrontApiClient({
 });
 
 const PRODUCTS_QUERY = `#graphql
-  query Products($first: Int!) {
-    products(first: $first) {
+  query Products($first: Int!, $after: String) {
+    products(first: $first, after: $after) {
       nodes {
         id
         title
@@ -48,20 +51,62 @@ const PRODUCTS_QUERY = `#graphql
           }
         }
       }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
   }
 `;
 
-export async function getProducts(first = 10) {
-  const { data, errors } = await shopifyClient.request(PRODUCTS_QUERY, {
-    variables: { first },
-  });
+type ProductPage = {
+  products: {
+    nodes: {
+      id: string;
+      title: string;
+      handle: string;
+      description: string;
+      productType: string;
+      tags: string[];
+      images: { nodes: { url: string; altText: string | null }[] };
+      priceRange: {
+        minVariantPrice: { amount: string; currencyCode: string };
+      };
+      variants: { nodes: { id: string; availableForSale: boolean }[] };
+    }[];
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  };
+};
 
-  if (errors) {
-    throw new Error(errors.message ?? "Failed to fetch products from Shopify");
+export async function getProducts(limit?: number) {
+  const products: ProductPage["products"]["nodes"] = [];
+  let after: string | null = null;
+
+  while (limit === undefined || products.length < limit) {
+    const first = Math.min(limit ? limit - products.length : 250, 250);
+    const response: { data?: ProductPage; errors?: { message?: string } } =
+      await shopifyClient.request<ProductPage>(PRODUCTS_QUERY, {
+        variables: { first, after },
+      });
+
+    if (response.errors) {
+      throw new Error(
+        response.errors.message ?? "Failed to fetch products from Shopify",
+      );
+    }
+
+    const connection: ProductPage["products"] | undefined =
+      response.data?.products;
+    products.push(...(connection?.nodes ?? []));
+
+    if (!connection?.pageInfo.hasNextPage || !connection.pageInfo.endCursor) {
+      break;
+    }
+
+    after = connection.pageInfo.endCursor;
   }
 
-  return data?.products.nodes ?? [];
+  return products;
 }
 
 export type ShopifyProduct = Awaited<ReturnType<typeof getProducts>>[number];
