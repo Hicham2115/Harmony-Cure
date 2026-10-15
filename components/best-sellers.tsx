@@ -20,15 +20,6 @@ import { useCanOrder } from "@/components/can-order-provider";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 
-const BEST_SELLER_HANDLES = [
-  "pack-harmony-love-collagene-marin-anti-chute-vegan",
-  "pack-perte-de-poids",
-  "anti-chute-de-cheveux",
-  "collagene-marin",
-  "bruleur-de-graisses-naturel",
-  "coupe-faim-naturel",
-];
-
 export function BestSellers({ products }: { products: ShopifyProduct[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
@@ -36,9 +27,9 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
   const addItem = useCartStore((state) => state.addItem);
   const isCartLoading = useCartStore((state) => state.isLoading);
   const canOrder = useCanOrder();
-  const bestSellers = BEST_SELLER_HANDLES.map((handle) =>
-    products.find((product) => product.handle === handle),
-  ).filter((product): product is ShopifyProduct => Boolean(product));
+  const bestSellers = products
+    .filter((product) => product.variants.nodes[0]?.availableForSale)
+    .slice(0, 6);
 
   function scrollByCard(direction: 1 | -1) {
     const scroller = scrollerRef.current;
@@ -197,7 +188,7 @@ export function BestSellers({ products }: { products: ShopifyProduct[] }) {
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
-                        disabled={!variantId || !canOrder}
+                        disabled={!variantId || !canOrder || isCartLoading}
                         onClick={() => {
                           if (!variantId) return;
                           void addItem(variantId);
