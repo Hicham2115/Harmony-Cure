@@ -34,6 +34,16 @@ const CART_FRAGMENT = `#graphql
       nodes {
         id
         quantity
+        cost {
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
         attributes {
           key
           value
@@ -76,6 +86,10 @@ function normalizeCart(cart: unknown) {
       nodes: {
         id: string;
         quantity: number;
+        cost: {
+          subtotalAmount: { amount: string; currencyCode: string };
+          totalAmount: { amount: string; currencyCode: string };
+        };
         attributes: { key: string; value: string }[];
         merchandise: {
           id: string;
@@ -94,18 +108,8 @@ export type ShopifyCart = NonNullable<ReturnType<typeof normalizeCart>>;
 export async function createCart(
   merchandiseId: string,
   quantity: number,
-  selectedUnitPrice?: number,
-  selectedTierTotal?: number,
 ) {
   await assertVisitorCanOrder();
-
-  const attributes = selectedUnitPrice === undefined || selectedTierTotal === undefined
-    ? []
-    : [
-        { key: "selected-unit-price", value: selectedUnitPrice.toFixed(2) },
-        { key: "selected-tier-total", value: selectedTierTotal.toFixed(2) },
-        { key: "selected-tier-quantity", value: String(quantity) },
-      ];
 
   const { data, errors } = await shopifyClient.request(
     `#graphql
@@ -117,7 +121,7 @@ export async function createCart(
       }
       ${CART_FRAGMENT}
     `,
-    { variables: { lines: [{ merchandiseId, quantity, attributes }] } },
+    { variables: { lines: [{ merchandiseId, quantity }] } },
   );
 
   if (errors) throw new Error(errors.message ?? "Failed to create cart");
@@ -131,18 +135,8 @@ export async function addCartLine(
   cartId: string,
   merchandiseId: string,
   quantity: number,
-  selectedUnitPrice?: number,
-  selectedTierTotal?: number,
 ) {
   await assertVisitorCanOrder();
-
-  const attributes = selectedUnitPrice === undefined || selectedTierTotal === undefined
-    ? []
-    : [
-        { key: "selected-unit-price", value: selectedUnitPrice.toFixed(2) },
-        { key: "selected-tier-total", value: selectedTierTotal.toFixed(2) },
-        { key: "selected-tier-quantity", value: String(quantity) },
-      ];
 
   const { data, errors } = await shopifyClient.request(
     `#graphql
@@ -154,7 +148,7 @@ export async function addCartLine(
       }
       ${CART_FRAGMENT}
     `,
-    { variables: { cartId, lines: [{ merchandiseId, quantity, attributes }] } },
+    { variables: { cartId, lines: [{ merchandiseId, quantity }] } },
   );
 
   if (errors) throw new Error(errors.message ?? "Failed to add to cart");
@@ -168,17 +162,7 @@ export async function updateCartLine(
   cartId: string,
   lineId: string,
   quantity: number,
-  selectedUnitPrice?: number,
-  selectedTierTotal?: number,
 ) {
-  const attributes = selectedUnitPrice === undefined || selectedTierTotal === undefined
-    ? undefined
-    : [
-        { key: "selected-unit-price", value: selectedUnitPrice.toFixed(2) },
-        { key: "selected-tier-total", value: selectedTierTotal.toFixed(2) },
-        { key: "selected-tier-quantity", value: String(quantity) },
-      ];
-
   const { data, errors } = await shopifyClient.request(
     `#graphql
       mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) @inContext(country: FR) {
@@ -189,7 +173,7 @@ export async function updateCartLine(
       }
       ${CART_FRAGMENT}
     `,
-    { variables: { cartId, lines: [{ id: lineId, quantity, attributes }] } },
+    { variables: { cartId, lines: [{ id: lineId, quantity }] } },
   );
 
   if (errors) throw new Error(errors.message ?? "Failed to update cart");
@@ -220,14 +204,7 @@ export async function removeCartLine(cartId: string, lineId: string) {
   return normalizeCart(data?.cartLinesRemove?.cart);
 }
 
-export async function applyCartDiscount(cartId: string, discountCode: string) {
-  await assertVisitorCanOrder();
-
-  const parsedCode = promoCodeSchema.safeParse(discountCode);
-  if (!parsedCode.success) {
-    throw new Error(parsedCode.error.issues[0]?.message ?? "Code promo invalide.");
-  }
-
+async function updateCartDiscountCodes(cartId: string, discountCodes: string[]) {
   const { data, errors } = await shopifyClient.request(
     `#graphql
       mutation CartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) @inContext(country: FR) {
@@ -238,7 +215,7 @@ export async function applyCartDiscount(cartId: string, discountCode: string) {
       }
       ${CART_FRAGMENT}
     `,
-    { variables: { cartId, discountCodes: [parsedCode.data] } },
+    { variables: { cartId, discountCodes } },
   );
 
   if (errors) throw new Error(errors.message ?? "Impossible d'appliquer le code promo.");
@@ -246,6 +223,22 @@ export async function applyCartDiscount(cartId: string, discountCode: string) {
   if (userErrors?.length) throw new Error(userErrors[0].message);
 
   return normalizeCart(data?.cartDiscountCodesUpdate?.cart);
+}
+
+export async function applyCartDiscount(cartId: string, discountCode: string) {
+  await assertVisitorCanOrder();
+
+  const parsedCode = promoCodeSchema.safeParse(discountCode);
+  if (!parsedCode.success) {
+    throw new Error(parsedCode.error.issues[0]?.message ?? "Code promo invalide.");
+  }
+
+  return updateCartDiscountCodes(cartId, [parsedCode.data]);
+}
+
+export async function removeCartDiscount(cartId: string) {
+  await assertVisitorCanOrder();
+  return updateCartDiscountCodes(cartId, []);
 }
 
 export async function fetchCart(cartId: string) {
