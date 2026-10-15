@@ -69,6 +69,7 @@ export const useCartStore = create<CartState>()(
         selectedUnitPrice,
         selectedTierTotal,
       ) => {
+        if (get().isLoading) return;
         set({ isLoading: true });
         try {
           const { cartId } = get();
