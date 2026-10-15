@@ -117,7 +117,7 @@ export function Header() {
           >
             <Image
               alt="Harmony Cure"
-              className="h-9 w-auto origin-left scale-150 sm:h-11 sm:scale-[1.7]"
+              className="h-9 w-auto origin-center scale-150 sm:h-11 sm:scale-[1.7] md:origin-left"
               priority
               src={logo}
             />
