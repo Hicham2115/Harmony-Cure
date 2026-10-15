@@ -392,18 +392,18 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
   const activeTier = tierPricing[selectedTier];
 
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-10 sm:px-10 sm:py-14 lg:px-[5.8vw]">
-      <nav className="mb-8 flex items-center gap-1.5 text-xs text-[#8a8478]">
+    <div className="mx-auto max-w-[1400px] px-4 pt-4 pb-28 sm:px-10 sm:py-14 lg:px-[5.8vw] lg:pb-14">
+      <nav className="mb-4 flex min-w-0 items-center gap-1.5 text-[11px] text-[#8a8478] sm:text-xs lg:mb-8">
         <Link className="hover:text-[#171715]" href="/boutique">
           Boutique
         </Link>
         <ChevronRight className="size-3.5" />
-        <span className="text-[#171715]">{product.title}</span>
+        <span className="min-w-0 truncate text-[#171715]">{product.title}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <div className="flex flex-col gap-3">
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-[#f1ede4]">
+      <div className="grid gap-0 lg:grid-cols-2 lg:gap-16">
+        <div className="-mx-4 flex min-w-0 flex-col gap-3 sm:mx-0">
+          <div className="relative aspect-[0.94] overflow-hidden rounded-none bg-[#f1ede4] sm:rounded-2xl lg:aspect-square">
             {images.length ? (
               <Image
                 alt={images[activeImage]?.altText ?? product.title}
@@ -424,7 +424,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           </div>
 
           {images.length > 1 ? (
-            <div className="flex gap-3">
+            <div className="flex gap-2 overflow-x-auto px-4 sm:gap-3 sm:px-0">
               {images.map(
                 (
                   image: { url: string; altText: string | null },
@@ -433,7 +433,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                   <button
                     aria-label={`Voir l'image ${index + 1}`}
                     aria-pressed={index === activeImage}
-                    className={`relative size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors sm:size-20 ${
+                    className={`relative size-14 shrink-0 overflow-hidden rounded-lg border-2 transition-colors sm:size-20 ${
                       index === activeImage
                         ? "border-[#a77d38]"
                         : "border-transparent"
@@ -455,15 +455,15 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-5">
+        <div className="relative z-10 -mt-5 -mx-4 flex flex-col gap-4 rounded-t-[24px] bg-white px-4 pt-6 pb-5 lg:mx-0 lg:mt-0 lg:gap-5 lg:rounded-none lg:bg-transparent lg:px-0 lg:pt-0 lg:pb-0">
           {product.productType ? (
-            <p className="font-roboto text-xs font-medium tracking-[0.2em] text-[#a77d38]">
+            <p className="font-roboto text-[10px] font-medium tracking-[0.2em] text-[#a77d38] sm:text-xs">
               {product.productType.toUpperCase()}
             </p>
           ) : null}
 
           <div className="flex items-start justify-between gap-4">
-            <h1 className="font-roboto text-4xl leading-[0.98] tracking-[-0.02em] text-[#171715] sm:text-5xl">
+            <h1 className="font-roboto text-3xl leading-[1.02] tracking-[-0.02em] text-[#171715] sm:text-5xl">
               {product.title}
             </h1>
             <button
@@ -473,7 +473,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                   : `Ajouter ${product.title} aux favoris`
               }
               aria-pressed={isFavorite}
-              className="flex size-10 shrink-0 items-center justify-center rounded-full border border-[#a77d38]/30 text-[#1a2e22] transition-transform hover:scale-105"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#a77d38]/30 text-[#1a2e22] transition-transform hover:scale-105 sm:size-10"
               onClick={() => toggleFavorite(product.id)}
               type="button"
             >
@@ -484,7 +484,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 -mt-1">
             <div className="flex text-[#a77d38]">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star
@@ -519,11 +519,11 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                 ? "Achetez plus, économisez plus"
                 : "Choisissez la quantité"}
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               {tierPricing.map((tier, index) => (
                 <button
                   aria-pressed={selectedTier === index}
-                  className={`relative flex min-h-20 flex-col gap-0.5 rounded-lg border px-3 py-3 text-left transition-colors sm:px-4 ${
+                  className={`relative flex min-h-[76px] flex-col justify-center gap-0.5 rounded-xl border px-3 py-3 text-left transition-colors sm:min-h-20 sm:rounded-lg sm:px-4 ${
                     selectedTier === index
                       ? "border-[#0e3927] bg-[#0e3927]/5"
                       : "border-[#a77d38]/30 hover:border-[#a77d38]"
@@ -554,7 +554,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           </div>
 
           <button
-            className="mt-1 inline-flex items-center justify-center gap-3 rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
+            className="mt-1 inline-flex min-h-14 items-center justify-center gap-3 rounded-md bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
             disabled={!variantId || isCartLoading || !canOrder}
             onClick={() =>
               variantId &&
@@ -573,25 +573,25 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             </p>
           )}
 
-          <p className="flex items-center gap-1.5 whitespace-nowrap font-inter text-[10px] text-[#8a8478] sm:text-xs">
+          <p className="flex items-start gap-1.5 font-inter text-[11px] leading-5 text-[#8a8478] sm:text-xs">
             <ShieldCheck className="size-3.5 shrink-0 text-[#a77d38]" />
             Livraison offerte dès 70€ · Paiement sécurisé · Satisfait ou
             remboursé
           </p>
 
-          <div className="mt-2 flex items-center justify-between border-t border-[#a77d38]/20 pt-6">
+          <div className="mt-1 flex items-center justify-between border-t border-[#a77d38]/20 pt-5 lg:mt-2 lg:pt-6">
             {DELIVERY_STEPS.map((step, index) => (
               <div
                 className="flex flex-1 flex-col items-center gap-2 text-center"
                 key={step.label}
               >
-                <div className="flex size-10 items-center justify-center rounded-full bg-[#0e3927] text-white">
-                  <step.icon className="size-4" />
+                <div className="flex size-8 items-center justify-center rounded-full bg-[#0e3927] text-white sm:size-10">
+                  <step.icon className="size-3.5 sm:size-4" />
                 </div>
-                <span className="font-roboto text-xs font-semibold text-[#171715]">
+                <span className="font-roboto text-[10px] font-semibold text-[#171715] sm:text-xs">
                   {step.label}
                 </span>
-                <span className="font-inter text-[11px] text-[#8a8478]">
+                <span className="font-inter text-[10px] leading-tight text-[#8a8478] sm:text-[11px]">
                   {step.detail}
                 </span>
                 {index < DELIVERY_STEPS.length - 1 ? (
@@ -605,7 +605,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           </div>
 
           {product.descriptionHtml ? (
-            <div className="mt-2 overflow-hidden rounded-2xl border border-[#a77d38]/20 bg-[#faf8f4]">
+            <div className="mt-0 overflow-hidden rounded-2xl border border-[#a77d38]/20 bg-[#faf8f4] lg:mt-2">
               <button
                 aria-expanded={openSection === "description"}
                 className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-[#a77d38]/5"
@@ -662,7 +662,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           showStickyBar && canOrder ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-6 py-3 sm:px-10 lg:px-[5.8vw]">
+        <div className="mx-auto flex max-w-[1400px] items-center gap-2.5 px-4 py-3 [padding-bottom:max(0.75rem,env(safe-area-inset-bottom))] sm:gap-4 sm:px-10 lg:px-[5.8vw]">
           <div className="relative size-12 shrink-0 overflow-hidden rounded-md bg-[#f1ede4] sm:size-14">
             {images.length ? (
               <Image
@@ -689,7 +689,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           </div>
 
           <button
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-sm bg-[#0e3927] px-4 py-2.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:px-6 sm:py-3"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md bg-[#0e3927] px-3 py-2.5 font-roboto text-[10px] font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:px-6 sm:py-3 sm:text-xs"
             disabled={!variantId || isCartLoading}
             onClick={() =>
               variantId &&
@@ -698,7 +698,8 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             type="button"
           >
             <ShoppingBag className="size-4" />
-            <span className="hidden sm:inline">COMMANDER</span>
+            <span className="sm:hidden">AJOUTER</span>
+            <span className="hidden sm:inline">AJOUTER AU PANIER</span>
           </button>
         </div>
       </div>
