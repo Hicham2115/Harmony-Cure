@@ -2,11 +2,25 @@
 
 import { shopifyAdminRequest } from "@/lib/shopify-admin";
 import { fetchCart } from "@/lib/cart-actions";
+import {
+  APPETITE_SUPPRESSANT_TIER_TOTALS,
+  FAT_BURNER_TIER_TOTALS,
+  WEIGHT_LOSS_PACK_TIER_TOTALS,
+  ONE_MONTH_WEIGHT_LOSS_PACK_TIER_TOTALS,
+  getProductTierTotal,
+  HARMONY_LOVE_TIER_TOTALS,
+} from "@/lib/product-pricing";
 import { codOrderSchema } from "@/lib/schemas/cod-order";
 import { assertVisitorCanOrder } from "@/lib/shipping-countries";
 
 const COD_TOTALS_BY_HANDLE = {
   "anti-chute-de-cheveux": {
+    1: 37.99,
+    2: 73.98,
+    3: 107.97,
+    4: 139.96,
+  },
+  "complement-alimentaire-vegan-anti-chute-de-cheveux": {
     1: 37.99,
     2: 73.98,
     3: 107.97,
@@ -18,13 +32,31 @@ const COD_TOTALS_BY_HANDLE = {
     3: 113.7,
     4: 147.6,
   },
+  "brule-graisses": {
+    1: 39.9,
+    2: 77.8,
+    3: 113.7,
+    4: 147.6,
+  },
   "collagene-marin": {
     1: 35.99,
     2: 69.98,
     3: 103.97,
     4: 131.96,
   },
+  "collagene-marin-enrichi-en-vitamine-c-et-acide-hyaluronique": {
+    1: 35.99,
+    2: 69.98,
+    3: 103.97,
+    4: 131.96,
+  },
   "coupe-faim-naturel": {
+    1: 29.99,
+    2: 57.98,
+    3: 83.97,
+    4: 107.96,
+  },
+  "coupe-faim-naturel-perte-de-poids": {
     1: 29.99,
     2: 57.98,
     3: 83.97,
@@ -50,14 +82,28 @@ const COD_TOTALS_BY_HANDLE = {
   },
 } as const;
 
-const TIER_TOTALS_BY_HANDLE: Record<string, number[]> = {
+const TIER_TOTALS_BY_HANDLE: Record<string, readonly number[]> = {
   "anti-chute-de-cheveux": [37.99, 73.98, 107.97, 139.96],
-  "bruleur-de-graisses-naturel": [39.9, 77.8, 113.7, 147.6],
+  "complement-alimentaire-vegan-anti-chute-de-cheveux": [
+    37.99,
+    73.98,
+    107.97,
+    139.96,
+  ],
+  "bruleur-de-graisses-naturel": FAT_BURNER_TIER_TOTALS,
+  "brule-graisses": FAT_BURNER_TIER_TOTALS,
   "collagene-marin": [35.99, 69.98, 103.97, 131.96],
-  "coupe-faim-naturel": [29.99, 57.98, 83.97, 107.96],
-  "pack-harmony-love-collagene-marin-anti-chute-vegan": [72.99, 146, 216, 284],
-  "pack-perte-de-poids": [68.99, 129.98, 196.97, 257.96],
-  "pack-perte-de-poids-1-mois": [129.99, 257.98, 383.97, 507.96],
+  "collagene-marin-enrichi-en-vitamine-c-et-acide-hyaluronique": [
+    35.99,
+    69.98,
+    103.97,
+    131.96,
+  ],
+  "coupe-faim-naturel": APPETITE_SUPPRESSANT_TIER_TOTALS,
+  "coupe-faim-naturel-perte-de-poids": APPETITE_SUPPRESSANT_TIER_TOTALS,
+  "pack-harmony-love-collagene-marin-anti-chute-vegan": HARMONY_LOVE_TIER_TOTALS,
+  "pack-perte-de-poids": WEIGHT_LOSS_PACK_TIER_TOTALS,
+  "pack-perte-de-poids-1-mois": ONE_MONTH_WEIGHT_LOSS_PACK_TIER_TOTALS,
 };
 
 function getSelectedTierTotal(
@@ -69,7 +115,9 @@ function getSelectedTierTotal(
   const unitPriceAttribute = attributes.find(
     (attribute) => attribute.key === "selected-unit-price",
   );
-  if (!unitPriceAttribute) return null;
+  if (!unitPriceAttribute) {
+    return getProductTierTotal(handle, quantity);
+  }
   const selectedUnitPrice = Number(unitPriceAttribute.value);
   if (!Number.isFinite(selectedUnitPrice) || selectedUnitPrice <= 0) {
     throw new Error("Le prix du pack sélectionné n'est pas valide.");
@@ -139,7 +187,7 @@ export async function createTierCheckout(cartId: string) {
         quantity: line.quantity,
         appliedDiscount: {
           title: "Prix du pack sélectionné",
-          value: Number((baseUnitPrice - selectedTotal / line.quantity).toFixed(4)),
+          value: Number((baseTotal - selectedTotal).toFixed(2)),
           valueType: "FIXED_AMOUNT",
         },
       };
@@ -154,6 +202,58 @@ export async function createTierCheckout(cartId: string) {
       },
     };
   });
+
+  const discountCodes = cart.discountCodes
+    .filter((discount) => discount.applicable)
+    .map((discount) => discount.code);
+
+  if (discountCodes.length > 0) {
+    const { data: calculationData, errors: calculationErrors } =
+      await shopifyAdminRequest<{
+        draftOrderCalculate: {
+          calculatedDraftOrder: { discountCodes: string[] } | null;
+          userErrors: { field: string[]; message: string }[];
+        };
+      }>(
+        `#graphql
+          mutation CalculateTierCheckout($input: DraftOrderInput!) {
+            draftOrderCalculate(input: $input) {
+              calculatedDraftOrder { discountCodes }
+              userErrors { field message }
+            }
+          }
+        `,
+        {
+          input: {
+            lineItems,
+            acceptAutomaticDiscounts: false,
+            discountCodes,
+            allowDiscountCodesInCheckout: true,
+          },
+        },
+      );
+
+    if (calculationErrors) {
+      throw new Error("Impossible de vérifier le code promo avec Shopify.");
+    }
+
+    const calculationUserErrors =
+      calculationData?.draftOrderCalculate.userErrors;
+    if (calculationUserErrors?.length) {
+      throw new Error(calculationUserErrors[0].message);
+    }
+
+    const calculatedCodes = new Set(
+      calculationData?.draftOrderCalculate.calculatedDraftOrder?.discountCodes.map(
+        (code) => code.toUpperCase(),
+      ) ?? [],
+    );
+    if (discountCodes.some((code) => !calculatedCodes.has(code.toUpperCase()))) {
+      throw new Error(
+        "Ce code promo ne s’applique pas au prix du pack sélectionné.",
+      );
+    }
+  }
 
   const { data, errors } = await shopifyAdminRequest<{
     draftOrderCreate: {
@@ -172,16 +272,34 @@ export async function createTierCheckout(cartId: string) {
     {
       input: {
         lineItems,
-        discountCodes: cart.discountCodes
-          .filter((discount) => discount.applicable)
-          .map((discount) => discount.code),
+        acceptAutomaticDiscounts: false,
+        discountCodes,
         allowDiscountCodesInCheckout: true,
         note: "Commande via Harmony Cure — prix du pack sélectionné",
       },
     },
   );
 
-  if (errors) throw new Error("Erreur Shopify lors de la création du paiement.");
+  if (errors) {
+    const messages = Array.isArray(errors)
+      ? errors.flatMap((error) =>
+          error &&
+          typeof error === "object" &&
+          "message" in error &&
+          typeof error.message === "string"
+            ? [error.message]
+            : [],
+        )
+      : [];
+
+    if (messages.some((message) => /access denied|write_draft_orders/i.test(message))) {
+      throw new Error(
+        "L’application Shopify doit avoir l’autorisation write_draft_orders. Activez-la dans les paramètres de l’application Shopify, puis mettez à jour SHOPIFY_ADMIN_API_ACCESS_TOKEN.",
+      );
+    }
+
+    throw new Error("Erreur Shopify lors de la création du paiement.");
+  }
   const userErrors = data?.draftOrderCreate.userErrors;
   if (userErrors?.length) throw new Error(userErrors[0].message);
 
