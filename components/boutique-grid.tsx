@@ -114,6 +114,7 @@ export function BoutiqueGrid({
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const addItem = useCartStore((state) => state.addItem);
+  const isCartLoading = useCartStore((state) => state.isLoading);
   const canOrder = useCanOrder();
 
   const filterGroups = useMemo(() => {
@@ -353,15 +354,32 @@ export function BoutiqueGrid({
                   className="flex flex-col overflow-hidden rounded-xl border border-[#a77d38]/20 bg-white transition-shadow hover:shadow-lg"
                   key={product.id}
                 >
-                  <Link
-                    className="relative flex aspect-square items-center justify-center bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]"
-                    href={`/boutique/${product.handle}`}
-                  >
-                    {product.productType ? (
-                      <span className="absolute left-3 top-3 z-10 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
-                        {product.productType.toUpperCase()}
-                      </span>
-                    ) : null}
+                  <div className="relative aspect-square bg-linear-to-b from-[#ece3d3] to-[#ddd0b6]">
+                    <Link
+                      aria-label={`Voir ${product.title}`}
+                      className="absolute inset-0 flex items-center justify-center"
+                      href={`/boutique/${product.handle}`}
+                    >
+                      {product.productType ? (
+                        <span className="absolute left-3 top-3 z-10 rounded-sm bg-white/90 px-2 py-1 text-xs font-semibold tracking-wider text-[#171715]">
+                          {product.productType.toUpperCase()}
+                        </span>
+                      ) : null}
+                      {image ? (
+                        <Image
+                          alt={image.altText ?? product.title}
+                          className="object-cover"
+                          fill
+                          src={image.url}
+                        />
+                      ) : (
+                        <Leaf
+                          aria-hidden="true"
+                          className="size-12 text-[#a77d38]/40"
+                          strokeWidth={1}
+                        />
+                      )}
+                    </Link>
                     <button
                       aria-label={
                         isFavorite
@@ -369,11 +387,8 @@ export function BoutiqueGrid({
                           : `Ajouter ${product.title} aux favoris`
                       }
                       aria-pressed={isFavorite}
-                      className="absolute right-3 top-3 z-10 flex size-8 items-center justify-center rounded-full bg-white/90 text-[#1a2e22] transition-transform hover:scale-105"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        toggleFavorite(product.id);
-                      }}
+                      className="absolute right-3 top-3 z-20 flex size-8 touch-manipulation items-center justify-center rounded-full bg-white/90 text-[#1a2e22] transition-transform hover:scale-105"
+                      onClick={() => toggleFavorite(product.id)}
                       type="button"
                     >
                       <Heart
@@ -381,21 +396,7 @@ export function BoutiqueGrid({
                         fill={isFavorite ? "currentColor" : "none"}
                       />
                     </button>
-                    {image ? (
-                      <Image
-                        alt={image.altText ?? product.title}
-                        className="object-cover"
-                        fill
-                        src={image.url}
-                      />
-                    ) : (
-                      <Leaf
-                        aria-hidden="true"
-                        className="size-12 text-[#a77d38]/40"
-                        strokeWidth={1}
-                      />
-                    )}
-                  </Link>
+                  </div>
 
                   <div className="flex flex-1 flex-col gap-2 p-4">
                     <h3 className="font-heading text-lg text-[#171715]">
@@ -416,8 +417,8 @@ export function BoutiqueGrid({
                       <button
                         aria-label={`Ajouter ${product.title} au panier`}
                         className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
-                        disabled={!variantId || !canOrder}
-                        onClick={() => variantId && addItem(variantId)}
+                        disabled={!variantId || !canOrder || isCartLoading}
+                        onClick={() => variantId && void addItem(variantId)}
                         type="button"
                       >
                         <Plus className="size-4" />
