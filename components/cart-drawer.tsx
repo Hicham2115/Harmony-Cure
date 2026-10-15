@@ -1,0 +1,207 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Leaf, Minus, Plus, X } from "lucide-react";
+import { toast } from "sonner";
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { useCartStore } from "@/lib/store/use-cart";
+import type { ShopifyCart } from "@/lib/cart-actions";
+import { createTierCheckout } from "@/lib/order-actions";
+import { getProductTierTotal } from "@/lib/product-pricing";
+import { PromoCodeForm } from "@/components/promo-code-form";
+
+function formatAmount(amount: string, currencyCode: string) {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: currencyCode,
+  }).format(Number(amount));
+}
+
+type CartLine = ShopifyCart["lines"]["nodes"][number];
+
+function getLinePrice(line: CartLine) {
+  const tierTotal = getProductTierTotal(
+    line.merchandise.product.handle,
+    line.quantity,
+  );
+
+  return {
+    amount: tierTotal ?? Number(line.cost.totalAmount.amount),
+    originalAmount: Number(line.cost.subtotalAmount.amount),
+    currencyCode: line.cost.totalAmount.currencyCode,
+  };
+}
+
+export function CartDrawer() {
+  const {
+    cart,
+    cartId,
+    isOpen,
+    isLoading,
+    closeCart,
+    hydrate,
+    updateItem,
+    removeItem,
+  } = useCartStore();
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+
+  useEffect(() => {
+    hydrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
+  const subtotal = lines.reduce((sum, line) => {
+    const tierTotal = getProductTierTotal(
+      line.merchandise.product.handle,
+      line.quantity,
+    );
+    return sum + (tierTotal ?? Number(line.cost.totalAmount.amount));
+  }, 0);
+
+  async function goToCheckout() {
+    if (!cartId) {
+      toast.error("Impossible d'ouvrir le paiement Shopify.");
+      return;
+    }
+
+    setIsCreatingCheckout(true);
+    try {
+      const checkoutUrl = await createTierCheckout(cartId);
+      window.location.assign(checkoutUrl);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible d'ouvrir le paiement Shopify.",
+      );
+      setIsCreatingCheckout(false);
+    }
+  }
+
+  return (
+    <Sheet onOpenChange={(open) => !open && closeCart()} open={isOpen}>
+      <SheetContent className="flex flex-col" side="right">
+        <SheetHeader>
+          <SheetTitle className="font-roboto">
+            Panier {cart ? `(${cart.totalQuantity})` : ""}
+          </SheetTitle>
+        </SheetHeader>
+
+        {lines.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
+            <Leaf className="size-6 text-[#a77d38]" strokeWidth={1.2} />
+            <p className="font-inter text-sm text-[#585750]">
+              Votre panier est vide.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
+            <PromoCodeForm productId="cart" />
+            {lines.map((line) => {
+              const linePrice = getLinePrice(line);
+
+              return (
+              <div className="flex gap-3" key={line.id}>
+                <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-[#f1ede4]">
+                  {line.merchandise.image ? (
+                    <Image
+                      alt={
+                        line.merchandise.image.altText ??
+                        line.merchandise.product.title
+                      }
+                      className="object-cover"
+                      fill
+                      src={line.merchandise.image.url}
+                    />
+                  ) : null}
+                </div>
+
+                <div className="flex flex-1 flex-col gap-1">
+                  <span className="font-roboto text-sm font-semibold text-[#171715]">
+                    {line.merchandise.product.title}
+                  </span>
+                  <span className="font-roboto text-xs text-[#8a8478]">
+                    {formatAmount(String(linePrice.amount), linePrice.currencyCode)}
+                    {linePrice.originalAmount > linePrice.amount ? (
+                      <span className="ml-1 line-through">
+                        {formatAmount(
+                          String(linePrice.originalAmount),
+                          line.cost.subtotalAmount.currencyCode,
+                        )}
+                      </span>
+                    ) : null}
+                  </span>
+
+                  <div className="mt-1 flex items-center gap-2">
+                    <button
+                      aria-label="Diminuer la quantité"
+                      className="flex size-6 items-center justify-center rounded-full border border-[#a77d38]/40 text-[#171715] disabled:opacity-40"
+                      disabled={isLoading}
+                      onClick={() => updateItem(line.id, line.quantity - 1)}
+                      type="button"
+                    >
+                      <Minus className="size-3" />
+                    </button>
+                    <span className="font-roboto text-xs text-[#171715]">
+                      {line.quantity}
+                    </span>
+                    <button
+                      aria-label="Augmenter la quantité"
+                      className="flex size-6 items-center justify-center rounded-full border border-[#a77d38]/40 text-[#171715] disabled:opacity-40"
+                      disabled={isLoading}
+                      onClick={() => updateItem(line.id, line.quantity + 1)}
+                      type="button"
+                    >
+                      <Plus className="size-3" />
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  aria-label={`Retirer ${line.merchandise.product.title} du panier`}
+                  className="self-start text-[#8a8478] hover:text-[#171715] disabled:opacity-40"
+                  disabled={isLoading}
+                  onClick={() => removeItem(line.id)}
+                  type="button"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+              );
+            })}
+          </div>
+        )}
+
+        {cart && lines.length > 0 ? (
+          <div className="flex flex-col gap-3 border-t border-[#a77d38]/20 p-4">
+            <div className="flex items-center justify-between font-roboto text-sm font-semibold text-[#171715]">
+              <span>Sous-total</span>
+              <span>
+                {formatAmount(
+                  String(subtotal),
+                  cart.cost.subtotalAmount.currencyCode,
+                )}
+              </span>
+            </div>
+            <button
+              className="inline-flex w-full items-center justify-center rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
+              disabled={isCreatingCheckout || isLoading}
+              onClick={goToCheckout}
+              type="button"
+            >
+              {isCreatingCheckout ? "OUVERTURE DU PAIEMENT…" : "PASSER À LA CAISSE"}
+            </button>
+          </div>
+        ) : null}
+      </SheetContent>
+    </Sheet>
+  );
+}
