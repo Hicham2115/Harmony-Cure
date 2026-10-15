@@ -14,6 +14,8 @@ import {
 import { useCartStore } from "@/lib/store/use-cart";
 import type { ShopifyCart } from "@/lib/cart-actions";
 import { createTierCheckout } from "@/lib/order-actions";
+import { getProductTierTotal } from "@/lib/product-pricing";
+import { PromoCodeForm } from "@/components/promo-code-form";
 
 function formatAmount(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("fr-FR", {
@@ -22,34 +24,19 @@ function formatAmount(amount: string, currencyCode: string) {
   }).format(Number(amount));
 }
 
-function selectedUnitPrice(line: ShopifyCart["lines"]["nodes"][number]) {
-  const value = line.attributes.find(
-    (attribute) => attribute.key === "selected-unit-price",
-  )?.value;
-  const amount = Number(value);
-  return Number.isFinite(amount) && amount > 0
-    ? amount
-    : Number(line.merchandise.price.amount);
-}
+type CartLine = ShopifyCart["lines"]["nodes"][number];
 
-function selectedLineTotal(line: ShopifyCart["lines"]["nodes"][number]) {
-  const attributes = line.attributes;
-  const selectedTotal = Number(
-    attributes.find((attribute) => attribute.key === "selected-tier-total")?.value,
-  );
-  const selectedQuantity = Number(
-    attributes.find((attribute) => attribute.key === "selected-tier-quantity")?.value,
+function getLinePrice(line: CartLine) {
+  const tierTotal = getProductTierTotal(
+    line.merchandise.product.handle,
+    line.quantity,
   );
 
-  if (
-    Number.isFinite(selectedTotal) &&
-    selectedTotal > 0 &&
-    selectedQuantity === line.quantity
-  ) {
-    return selectedTotal;
-  }
-
-  return selectedUnitPrice(line) * line.quantity;
+  return {
+    amount: tierTotal ?? Number(line.cost.totalAmount.amount),
+    originalAmount: Number(line.cost.subtotalAmount.amount),
+    currencyCode: line.cost.totalAmount.currencyCode,
+  };
 }
 
 export function CartDrawer() {
@@ -71,32 +58,30 @@ export function CartDrawer() {
   }, []);
 
   const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
-  const lineSubtotal = lines.reduce(
-    (total, line) => total + selectedLineTotal(line),
-    0,
-  );
-  const subtotal = lineSubtotal;
-  const hasAppliedDiscount = cart?.discountCodes.some(
-    (discount) => discount.applicable,
-  );
-  const shopifyTotal = Number(cart?.cost.totalAmount.amount ?? 0);
-  const total =
-    hasAppliedDiscount && shopifyTotal > 0 ? shopifyTotal : subtotal;
-  const shippingAmount = hasAppliedDiscount && total > subtotal ? total - subtotal : 0;
+  const subtotal = lines.reduce((sum, line) => {
+    const tierTotal = getProductTierTotal(
+      line.merchandise.product.handle,
+      line.quantity,
+    );
+    return sum + (tierTotal ?? Number(line.cost.totalAmount.amount));
+  }, 0);
 
   async function goToCheckout() {
-    if (!cartId) return;
+    if (!cartId) {
+      toast.error("Impossible d'ouvrir le paiement Shopify.");
+      return;
+    }
+
     setIsCreatingCheckout(true);
     try {
-      const invoiceUrl = await createTierCheckout(cartId);
-      window.location.assign(invoiceUrl);
+      const checkoutUrl = await createTierCheckout(cartId);
+      window.location.assign(checkoutUrl);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
           : "Impossible d'ouvrir le paiement Shopify.",
       );
-    } finally {
       setIsCreatingCheckout(false);
     }
   }
@@ -119,7 +104,11 @@ export function CartDrawer() {
           </div>
         ) : (
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
-            {lines.map((line) => (
+            <PromoCodeForm productId="cart" />
+            {lines.map((line) => {
+              const linePrice = getLinePrice(line);
+
+              return (
               <div className="flex gap-3" key={line.id}>
                 <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-[#f1ede4]">
                   {line.merchandise.image ? (
@@ -140,10 +129,15 @@ export function CartDrawer() {
                     {line.merchandise.product.title}
                   </span>
                   <span className="font-roboto text-xs text-[#8a8478]">
-                    {formatAmount(
-                      String(selectedLineTotal(line)),
-                      line.merchandise.price.currencyCode,
-                    )}
+                    {formatAmount(String(linePrice.amount), linePrice.currencyCode)}
+                    {linePrice.originalAmount > linePrice.amount ? (
+                      <span className="ml-1 line-through">
+                        {formatAmount(
+                          String(linePrice.originalAmount),
+                          line.cost.subtotalAmount.currencyCode,
+                        )}
+                      </span>
+                    ) : null}
                   </span>
 
                   <div className="mt-1 flex items-center gap-2">
@@ -181,7 +175,8 @@ export function CartDrawer() {
                   <X className="size-4" />
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -196,28 +191,6 @@ export function CartDrawer() {
                 )}
               </span>
             </div>
-            {shippingAmount > 0 ? (
-              <div className="flex items-center justify-between font-roboto text-sm text-[#585750]">
-                <span>Livraison Express</span>
-                <span>
-                  {formatAmount(
-                    String(shippingAmount),
-                    cart.cost.totalAmount.currencyCode,
-                  )}
-                </span>
-              </div>
-            ) : null}
-            {total !== subtotal ? (
-              <div className="flex items-center justify-between font-roboto text-sm font-semibold text-[#171715]">
-                <span>Total</span>
-                <span>
-                  {formatAmount(
-                    String(total),
-                    cart.cost.totalAmount.currencyCode,
-                  )}
-                </span>
-              </div>
-            ) : null}
             <button
               className="inline-flex w-full items-center justify-center rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
               disabled={isCreatingCheckout || isLoading}
