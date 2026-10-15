@@ -15,7 +15,6 @@ import { useCartStore } from "@/lib/store/use-cart";
 import type { ShopifyCart } from "@/lib/cart-actions";
 import { createTierCheckout } from "@/lib/order-actions";
 import { getProductTierTotal } from "@/lib/product-pricing";
-import { PromoCodeForm } from "@/components/promo-code-form";
 
 function formatAmount(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("fr-FR", {
@@ -104,7 +103,6 @@ export function CartDrawer() {
           </div>
         ) : (
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
-            <PromoCodeForm productId="cart" />
             {lines.map((line) => {
               const linePrice = getLinePrice(line);
 
