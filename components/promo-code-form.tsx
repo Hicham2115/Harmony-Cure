@@ -21,6 +21,10 @@ const promoCodeSchema = z.object({
 
 export function PromoCodeForm({ productId }: { productId: string }) {
   const applyDiscount = useCartStore((state) => state.applyDiscount);
+  const removeDiscount = useCartStore((state) => state.removeDiscount);
+  const isLoading = useCartStore((state) => state.isLoading);
+  const cart = useCartStore((state) => state.cart);
+  const applicableCodes = cart?.discountCodes.filter((code) => code.applicable) ?? [];
   const applyPromoCode = useMutation({
     mutationFn: applyDiscount,
     onSuccess: () => {
@@ -76,9 +80,23 @@ export function PromoCodeForm({ productId }: { productId: string }) {
           APPLIQUER
         </Button>
       </div>
-      <p className="mt-2 font-inter text-xs text-[#8a8478]">
-        Ajoutez ce produit au panier avant d&apos;appliquer un code.
-      </p>
+      {applicableCodes.length > 0 ? (
+        <div className="mt-2 flex items-center justify-between gap-3 font-inter text-xs text-[#0e3927]">
+          <span>Code {applicableCodes.map((code) => code.code).join(", ")} appliqué.</span>
+          <button
+            className="underline underline-offset-2 disabled:opacity-50"
+            disabled={isLoading}
+            onClick={() => removeDiscount()}
+            type="button"
+          >
+            Retirer
+          </button>
+        </div>
+      ) : (
+        <p className="mt-2 font-inter text-xs text-[#8a8478]">
+          Le code sera confirmé par Shopify au paiement.
+        </p>
+      )}
     </form>
   );
 }

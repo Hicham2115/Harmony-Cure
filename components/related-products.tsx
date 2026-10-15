@@ -88,7 +88,7 @@ export function RelatedProducts({ products }: { products: ShopifyProduct[] }) {
                   </span>
                   <button
                     aria-label={`Ajouter ${product.title} au panier`}
-                    className="flex size-9 items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
+                    className="flex size-9 touch-manipulation items-center justify-center rounded-full bg-[#cdbb98] text-[#171715] transition-transform hover:scale-105 disabled:opacity-50"
                     disabled={!variantId || !canOrder || isCartLoading}
                     onClick={() => variantId && void addItem(variantId)}
                     type="button"

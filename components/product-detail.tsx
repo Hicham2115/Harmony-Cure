@@ -16,6 +16,17 @@ import {
 } from "lucide-react";
 
 import type { ShopifyProductDetail } from "@/lib/shopify";
+import {
+  ANTI_CHUTE_TIER_TOTALS,
+  APPETITE_SUPPRESSANT_TIER_TOTALS,
+  COLLAGEN_TIER_TOTALS,
+  FAT_BURNER_TIER_TOTALS,
+  WEIGHT_LOSS_PACK_TIER_TOTALS,
+  ONE_MONTH_WEIGHT_LOSS_PACK_TIER_TOTALS,
+  HARMONY_LOVE_TIER_TOTALS,
+  isAppetiteSuppressantProduct,
+  isCollagenProduct,
+} from "@/lib/product-pricing";
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 import { useCanOrder } from "@/components/can-order-provider";
@@ -46,13 +57,13 @@ const TIERS = [
 ] as const;
 
 const ANTI_CHUTE_TIERS = [
-  { days: 30, period: "1 mois", multiplier: 1, discount: 0, badge: null },
+  { days: 30, period: "1 mois", multiplier: 1, discount: 0, price: ANTI_CHUTE_TIER_TOTALS[0], badge: null },
   {
     days: 60,
     period: "2 mois",
     multiplier: 2,
     discount: 0,
-    price: 73.98,
+    price: ANTI_CHUTE_TIER_TOTALS[1],
     badge: "MEILLEURE AFFAIRE",
   },
   {
@@ -60,7 +71,7 @@ const ANTI_CHUTE_TIERS = [
     period: "3 mois",
     multiplier: 3,
     discount: 0,
-    price: 107.97,
+    price: ANTI_CHUTE_TIER_TOTALS[2],
     badge: "LE PLUS POPULAIRE",
   },
   {
@@ -68,19 +79,26 @@ const ANTI_CHUTE_TIERS = [
     period: "4 mois",
     multiplier: 4,
     discount: 0,
-    price: 139.96,
+    price: ANTI_CHUTE_TIER_TOTALS[3],
     badge: "OFFRE PREMIUM",
   },
 ] as const;
 
 const FAT_BURNER_TIERS = [
-  { days: 15, period: "15 jours", multiplier: 1, discount: 0, price: 39.9, badge: null },
+  {
+    days: 15,
+    period: "15 jours",
+    multiplier: 1,
+    discount: 0,
+    price: FAT_BURNER_TIER_TOTALS[0],
+    badge: null,
+  },
   {
     days: 30,
     period: "30 jours",
     multiplier: 2,
     discount: 0,
-    price: 77.8,
+    price: FAT_BURNER_TIER_TOTALS[1],
     badge: "MEILLEURE AFFAIRE",
   },
   {
@@ -88,7 +106,7 @@ const FAT_BURNER_TIERS = [
     period: "45 jours",
     multiplier: 3,
     discount: 0,
-    price: 113.7,
+    price: FAT_BURNER_TIER_TOTALS[2],
     badge: "LE PLUS POPULAIRE",
   },
   {
@@ -96,19 +114,19 @@ const FAT_BURNER_TIERS = [
     period: "60 jours",
     multiplier: 4,
     discount: 0,
-    price: 147.6,
+    price: FAT_BURNER_TIER_TOTALS[3],
     badge: "OFFRE PREMIUM",
   },
 ] as const;
 
 const COLLAGEN_TIERS = [
-  { days: 30, period: "1 mois", multiplier: 1, discount: 0, price: 35.99, badge: null },
+  { days: 30, period: "1 mois", multiplier: 1, discount: 0, price: COLLAGEN_TIER_TOTALS[0], badge: null },
   {
     days: 60,
     period: "2 mois",
     multiplier: 2,
     discount: 0,
-    price: 69.98,
+    price: COLLAGEN_TIER_TOTALS[1],
     badge: "MEILLEURE AFFAIRE",
   },
   {
@@ -116,7 +134,7 @@ const COLLAGEN_TIERS = [
     period: "3 mois",
     multiplier: 3,
     discount: 0,
-    price: 103.97,
+    price: COLLAGEN_TIER_TOTALS[2],
     badge: "LE PLUS POPULAIRE",
   },
   {
@@ -124,19 +142,26 @@ const COLLAGEN_TIERS = [
     period: "4 mois",
     multiplier: 4,
     discount: 0,
-    price: 131.96,
+    price: COLLAGEN_TIER_TOTALS[3],
     badge: "OFFRE PREMIUM",
   },
 ] as const;
 
 const APPETITE_SUPPRESSANT_TIERS = [
-  { days: 15, period: "15 jours", multiplier: 1, discount: 0, price: 29.99, badge: null },
+  {
+    days: 15,
+    period: "15 jours",
+    multiplier: 1,
+    discount: 0,
+    price: APPETITE_SUPPRESSANT_TIER_TOTALS[0],
+    badge: null,
+  },
   {
     days: 30,
     period: "30 jours",
     multiplier: 2,
     discount: 0,
-    price: 57.98,
+    price: APPETITE_SUPPRESSANT_TIER_TOTALS[1],
     badge: "MEILLEURE AFFAIRE",
   },
   {
@@ -144,7 +169,7 @@ const APPETITE_SUPPRESSANT_TIERS = [
     period: "45 jours",
     multiplier: 3,
     discount: 0,
-    price: 83.97,
+    price: APPETITE_SUPPRESSANT_TIER_TOTALS[2],
     badge: "LE PLUS POPULAIRE",
   },
   {
@@ -152,19 +177,28 @@ const APPETITE_SUPPRESSANT_TIERS = [
     period: "60 jours",
     multiplier: 4,
     discount: 0,
-    price: 107.96,
+    price: APPETITE_SUPPRESSANT_TIER_TOTALS[3],
     badge: "OFFRE PREMIUM",
   },
 ] as const;
 
 const HARMONY_LOVE_TIERS = [
-  { days: 30, period: "1 mois", multiplier: 1, discount: 0, badge: null },
+  {
+    days: 30,
+    period: "1 mois",
+    multiplier: 1,
+    discount: 0,
+    price: HARMONY_LOVE_TIER_TOTALS[0],
+    compareAtPrice: HARMONY_LOVE_TIER_TOTALS[0],
+    badge: null,
+  },
   {
     days: 60,
     period: "2 mois",
     multiplier: 2,
     discount: 0,
-    price: 146,
+    price: HARMONY_LOVE_TIER_TOTALS[1],
+    compareAtPrice: 147.98,
     badge: "MEILLEURE AFFAIRE",
   },
   {
@@ -172,7 +206,8 @@ const HARMONY_LOVE_TIERS = [
     period: "3 mois",
     multiplier: 3,
     discount: 0,
-    price: 216,
+    price: HARMONY_LOVE_TIER_TOTALS[2],
+    compareAtPrice: 221.97,
     badge: "LE PLUS POPULAIRE",
   },
   {
@@ -180,19 +215,20 @@ const HARMONY_LOVE_TIERS = [
     period: "4 mois",
     multiplier: 4,
     discount: 0,
-    price: 284,
+    price: HARMONY_LOVE_TIER_TOTALS[3],
+    compareAtPrice: 295.96,
     badge: "OFFRE PREMIUM",
   },
 ] as const;
 
 const WEIGHT_LOSS_PACK_TIERS = [
-  { days: 15, period: "15 jours", multiplier: 1, discount: 0, price: 68.99, badge: null },
+  { days: 15, period: "15 jours", multiplier: 1, discount: 0, price: WEIGHT_LOSS_PACK_TIER_TOTALS[0], badge: null },
   {
     days: 30,
     period: "30 jours",
     multiplier: 2,
     discount: 0,
-    price: 129.98,
+    price: WEIGHT_LOSS_PACK_TIER_TOTALS[1],
     badge: "MEILLEURE AFFAIRE",
   },
   {
@@ -200,7 +236,7 @@ const WEIGHT_LOSS_PACK_TIERS = [
     period: "45 jours",
     multiplier: 3,
     discount: 0,
-    price: 196.97,
+    price: WEIGHT_LOSS_PACK_TIER_TOTALS[2],
     badge: "LE PLUS POPULAIRE",
   },
   {
@@ -208,19 +244,19 @@ const WEIGHT_LOSS_PACK_TIERS = [
     period: "60 jours",
     multiplier: 4,
     discount: 0,
-    price: 257.96,
+    price: WEIGHT_LOSS_PACK_TIER_TOTALS[3],
     badge: "OFFRE PREMIUM",
   },
 ] as const;
 
 const ONE_MONTH_WEIGHT_LOSS_PACK_TIERS = [
-  { days: 30, period: "Acheter 1", multiplier: 1, discount: 0, price: 129.99, badge: null },
+  { days: 30, period: "Acheter 1", multiplier: 1, discount: 0, price: ONE_MONTH_WEIGHT_LOSS_PACK_TIER_TOTALS[0], badge: null },
   {
     days: 60,
     period: "Acheter 2",
     multiplier: 2,
     discount: 0,
-    price: 257.98,
+    price: ONE_MONTH_WEIGHT_LOSS_PACK_TIER_TOTALS[1],
     badge: "MEILLEURE AFFAIRE",
   },
   {
@@ -228,7 +264,7 @@ const ONE_MONTH_WEIGHT_LOSS_PACK_TIERS = [
     period: "Acheter 3",
     multiplier: 3,
     discount: 0,
-    price: 383.97,
+    price: ONE_MONTH_WEIGHT_LOSS_PACK_TIER_TOTALS[2],
     badge: "LE PLUS POPULAIRE",
   },
   {
@@ -236,7 +272,7 @@ const ONE_MONTH_WEIGHT_LOSS_PACK_TIERS = [
     period: "Acheter 4",
     multiplier: 4,
     discount: 0,
-    price: 507.96,
+    price: ONE_MONTH_WEIGHT_LOSS_PACK_TIER_TOTALS[3],
     badge: "OFFRE PREMIUM",
   },
 ] as const;
@@ -277,11 +313,18 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
   const baseAmount = Number(product.priceRange.minVariantPrice.amount);
   const currencyCode = currencyFor(product);
-  const tierBaseAmount =
-    product.handle === "pack-harmony-love-collagene-marin-anti-chute-vegan"
-      ? 72.99
-      : baseAmount;
-  const isHarmonyLovePack =
+  const isCollagen = isCollagenProduct(product.handle);
+  const isAntiChute =
+    product.handle === "anti-chute-de-cheveux" ||
+    product.handle === "complement-alimentaire-vegan-anti-chute-de-cheveux";
+  const usesBundlePricing =
+    isCollagen ||
+    isAntiChute ||
+    isAppetiteSuppressantProduct(product.handle) ||
+    product.handle === "bruleur-de-graisses-naturel" ||
+    product.handle === "brule-graisses" ||
+    product.handle === "pack-perte-de-poids" ||
+    product.handle === "pack-perte-de-poids-1-mois" ||
     product.handle === "pack-harmony-love-collagene-marin-anti-chute-vegan";
 
   useEffect(() => {
@@ -303,13 +346,13 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
   const tierPricing = useMemo(() => {
     const tiers =
-      product.handle === "anti-chute-de-cheveux"
+      isAntiChute
         ? ANTI_CHUTE_TIERS
-        : product.handle === "bruleur-de-graisses-naturel"
+        : product.handle === "bruleur-de-graisses-naturel" || product.handle === "brule-graisses"
           ? FAT_BURNER_TIERS
-          : product.handle === "collagene-marin"
+          : isCollagen
             ? COLLAGEN_TIERS
-            : product.handle === "coupe-faim-naturel"
+            : isAppetiteSuppressantProduct(product.handle)
               ? APPETITE_SUPPRESSANT_TIERS
               : product.handle ===
                   "pack-harmony-love-collagene-marin-anti-chute-vegan"
@@ -321,19 +364,30 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
                     : TIERS;
 
     return tiers.map((tier) => {
-        const fullPrice =
-          isHarmonyLovePack && tier.multiplier > 1
-            ? (72.99 + 1) * tier.multiplier
-            : tierBaseAmount * tier.multiplier;
-        const finalPrice = "price" in tier ? tier.price : fullPrice * (1 - tier.discount);
-        return {
-          ...tier,
-          fullPrice,
-          finalPrice,
-          hasDiscount: finalPrice < fullPrice,
-        };
-      });
-  }, [isHarmonyLovePack, tierBaseAmount, product.handle]);
+      const total = baseAmount * tier.multiplier;
+      const finalPrice =
+        usesBundlePricing && "price" in tier && tier.price !== undefined
+          ? tier.price
+          : total;
+
+      return {
+        ...tier,
+        period: usesBundlePricing
+          ? tier.period
+          : `${tier.multiplier} ${tier.multiplier === 1 ? "unité" : "unités"}`,
+        badge: usesBundlePricing ? tier.badge : null,
+        fullPrice:
+          usesBundlePricing && "compareAtPrice" in tier
+            ? tier.compareAtPrice
+            : total,
+        finalPrice,
+        hasDiscount:
+          usesBundlePricing &&
+          finalPrice <
+            ("compareAtPrice" in tier ? tier.compareAtPrice : total),
+      };
+    });
+  }, [baseAmount, isAntiChute, isCollagen, product.handle, usesBundlePricing]);
 
   const activeTier = tierPricing[selectedTier];
 
@@ -461,13 +515,15 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
           <div className="flex flex-col gap-3">
             <p className="font-roboto text-xs font-semibold uppercase tracking-[0.12em] text-[#171715]">
-              Achetez plus, économisez plus
+              {usesBundlePricing
+                ? "Achetez plus, économisez plus"
+                : "Choisissez la quantité"}
             </p>
             <div className="grid grid-cols-2 gap-3">
               {tierPricing.map((tier, index) => (
                 <button
                   aria-pressed={selectedTier === index}
-                    className={`relative flex min-h-20 flex-col gap-0.5 rounded-lg border px-3 py-3 text-left transition-colors sm:px-4 ${
+                  className={`relative flex min-h-20 flex-col gap-0.5 rounded-lg border px-3 py-3 text-left transition-colors sm:px-4 ${
                     selectedTier === index
                       ? "border-[#0e3927] bg-[#0e3927]/5"
                       : "border-[#a77d38]/30 hover:border-[#a77d38]"
@@ -502,12 +558,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             disabled={!variantId || isCartLoading || !canOrder}
             onClick={() =>
               variantId &&
-              addItem(
-                variantId,
-                activeTier.multiplier,
-                activeTier.finalPrice / activeTier.multiplier,
-                activeTier.finalPrice,
-              )
+              addItem(variantId, activeTier.multiplier)
             }
             ref={ctaRef}
             type="button"
@@ -642,12 +693,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             disabled={!variantId || isCartLoading}
             onClick={() =>
               variantId &&
-              addItem(
-                variantId,
-                activeTier.multiplier,
-                activeTier.finalPrice / activeTier.multiplier,
-                activeTier.finalPrice,
-              )
+              addItem(variantId, activeTier.multiplier)
             }
             type="button"
           >

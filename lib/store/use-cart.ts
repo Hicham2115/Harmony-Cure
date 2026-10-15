@@ -10,6 +10,7 @@ import {
   createCart,
   fetchCart,
   removeCartLine,
+  removeCartDiscount,
   updateCartLine,
   type ShopifyCart,
 } from "@/lib/cart-actions";
@@ -26,15 +27,11 @@ type CartState = {
   openCart: () => void;
   closeCart: () => void;
   hydrate: () => Promise<void>;
-  addItem: (
-    merchandiseId: string,
-    quantity?: number,
-    selectedUnitPrice?: number,
-    selectedTierTotal?: number,
-  ) => Promise<void>;
+  addItem: (merchandiseId: string, quantity?: number) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   applyDiscount: (discountCode: string) => Promise<void>;
+  removeDiscount: () => Promise<void>;
 };
 
 export const useCartStore = create<CartState>()(
@@ -63,68 +60,27 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      addItem: async (
-        merchandiseId,
-        quantity = 1,
-        selectedUnitPrice,
-        selectedTierTotal,
-      ) => {
+      addItem: async (merchandiseId, quantity = 1) => {
+        // Ignore repeat taps while a Shopify cart mutation is in flight.
         if (get().isLoading) return;
         set({ isLoading: true });
         try {
           const { cartId } = get();
-          let cart: ShopifyCart | null = null;
+          let cart: ShopifyCart | null;
           try {
-            const oldLine = get().cart?.lines.nodes.find(
-              (line) =>
-                line.merchandise.id === merchandiseId &&
-                line.quantity === quantity &&
-                !line.attributes.some(
-                  (attribute) => attribute.key === "selected-unit-price",
-                ),
-            );
-            cart = cartId && oldLine && selectedUnitPrice !== undefined
-              ? await updateCartLine(
-                  cartId,
-                  oldLine.id,
-                  quantity,
-                  selectedUnitPrice,
-                  selectedTierTotal,
-                )
-              : cartId
-                ? await addCartLine(
-                    cartId,
-                    merchandiseId,
-                    quantity,
-                    selectedUnitPrice,
-                    selectedTierTotal,
-                  )
-                : await createCart(
-                    merchandiseId,
-                    quantity,
-                    selectedUnitPrice,
-                    selectedTierTotal,
-                  );
+            cart = cartId
+              ? await addCartLine(cartId, merchandiseId, quantity)
+              : await createCart(merchandiseId, quantity);
           } catch (error) {
             if (!cartId) throw error;
             // Existing cart is stale or invalid — start a fresh one.
             console.error("Cart was invalid, starting a new one:", error);
-            cart = await createCart(
-              merchandiseId,
-              quantity,
-              selectedUnitPrice,
-              selectedTierTotal,
-            );
+            cart = await createCart(merchandiseId, quantity);
           }
 
           if (cartId && !hasValidLines(cart)) {
             // The existing cart silently failed to add the line — retry fresh.
-            cart = await createCart(
-              merchandiseId,
-              quantity,
-              selectedUnitPrice,
-              selectedTierTotal,
-            );
+            cart = await createCart(merchandiseId, quantity);
           }
 
           set({ cart, cartId: cart?.id ?? null, isOpen: true });
@@ -188,6 +144,19 @@ export const useCartStore = create<CartState>()(
           if (!cart?.discountCodes.some((code) => code.applicable)) {
             throw new Error("Ce code promo n'est pas valide pour votre panier.");
           }
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      removeDiscount: async () => {
+        const { cartId } = get();
+        if (!cartId) return;
+
+        set({ isLoading: true });
+        try {
+          const cart = await removeCartDiscount(cartId);
+          set({ cart });
         } finally {
           set({ isLoading: false });
         }
