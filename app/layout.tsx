@@ -7,6 +7,7 @@ import {
   Roboto,
 } from "next/font/google";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { MetaPixel } from "@/components/meta-pixel";
 import { CanOrderProvider } from "@/components/can-order-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -122,6 +123,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <CanOrderProvider canOrder={canOrder}>
+            <MetaPixel />
             <ScrollToTop />
             {children}
             <Toaster />
