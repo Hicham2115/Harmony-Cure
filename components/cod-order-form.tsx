@@ -23,6 +23,7 @@ import { createCodOrder } from "@/lib/order-actions";
 import { codOrderSchema } from "@/lib/schemas/cod-order";
 import { getErrorMessage } from "@/lib/get-error-message";
 import { brandToast } from "@/lib/toast";
+import { trackMetaPixelEvent } from "@/components/meta-pixel";
 
 const SHIPPING_FEE = 0;
 
@@ -69,6 +70,10 @@ export function CodOrderForm({
         ...values,
       }),
     onSuccess: (order) => {
+      trackMetaPixelEvent("Purchase", {
+        value: total,
+        currency: currencyCode,
+      });
       setConfirmedOrderName(order.name);
       form.reset();
     },
