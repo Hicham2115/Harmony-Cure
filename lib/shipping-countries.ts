@@ -26,8 +26,11 @@ export async function canOrderFromVisitorCountry() {
   const requestHeaders = await headers();
   const country =
     mockCountry ??
-    requestHeaders.get("x-vercel-ip-country") ??
-    requestHeaders.get("cf-ipcountry");
+    requestHeaders.get("cf-ipcountry") ??
+    requestHeaders.get("x-vercel-ip-country");
+  const continent = requestHeaders.get("x-vercel-ip-continent");
+
+  if (!mockCountry && continent?.trim().toUpperCase() === "AF") return false;
   if (!country) return true;
 
   const countryCode = country.trim().toUpperCase();
