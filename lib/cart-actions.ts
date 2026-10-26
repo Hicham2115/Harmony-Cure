@@ -186,6 +186,8 @@ export async function updateCartLine(
   lineId: string,
   quantity: number,
 ) {
+  await assertVisitorCanOrder();
+
   const { data, errors } = await shopifyClient.request(
     `#graphql
       mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) @inContext(country: FR) {
@@ -207,6 +209,8 @@ export async function updateCartLine(
 }
 
 export async function removeCartLine(cartId: string, lineId: string) {
+  await assertVisitorCanOrder();
+
   const { data, errors } = await shopifyClient.request(
     `#graphql
       mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) @inContext(country: FR) {

@@ -1,5 +1,14 @@
 import { headers } from "next/headers";
 
+const AFRICAN_COUNTRY_CODES = new Set([
+  "AO", "BF", "BI", "BJ", "BW", "CD", "CF", "CG", "CI", "CM", "CV",
+  "DJ", "DZ", "EG", "EH", "ER", "ET", "GA", "GH", "GM", "GN", "GQ",
+  "GW", "KE", "KM", "LR", "LS", "LY", "MA", "MG", "ML", "MR", "MU",
+  "MW", "MZ", "NA", "NE", "NG", "RE", "RW", "SC", "SD", "SH", "SL",
+  "SN", "SO", "SS", "ST", "SZ", "TD", "TG", "TN", "TZ", "UG", "YT",
+  "ZA", "ZM", "ZW",
+]);
+
 // Countries covered by the Shopify shipping zones: France, Belgium + Italy, Canada, EU.
 const SHIPPING_COUNTRY_CODES = new Set([
   "FR", "BE", "IT", "CA",
@@ -14,9 +23,17 @@ export async function canOrderFromVisitorCountry() {
     process.env.NODE_ENV === "development"
       ? process.env.MOCK_VISITOR_COUNTRY
       : undefined;
-  const country = mockCountry ?? (await headers()).get("x-vercel-ip-country");
+  const requestHeaders = await headers();
+  const country =
+    mockCountry ??
+    requestHeaders.get("x-vercel-ip-country") ??
+    requestHeaders.get("cf-ipcountry");
   if (!country) return true;
-  return SHIPPING_COUNTRY_CODES.has(country.toUpperCase());
+
+  const countryCode = country.trim().toUpperCase();
+  if (AFRICAN_COUNTRY_CODES.has(countryCode)) return false;
+
+  return SHIPPING_COUNTRY_CODES.has(countryCode);
 }
 
 export async function assertVisitorCanOrder() {

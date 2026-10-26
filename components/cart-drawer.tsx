@@ -12,6 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/lib/store/use-cart";
+import { useCanOrder } from "@/components/can-order-provider";
 import type { ShopifyCart } from "@/lib/cart-actions";
 import { getProductTierTotal } from "@/lib/product-pricing";
 import { AnalyticsEvent, getShopifyAnalytics } from "@/lib/shopify-analytics";
@@ -39,6 +40,7 @@ function getLinePrice(line: CartLine) {
 }
 
 export function CartDrawer() {
+  const canOrder = useCanOrder();
   const {
     cart,
     cartId,
@@ -73,6 +75,11 @@ export function CartDrawer() {
   }, 0);
 
   async function goToCheckout() {
+    if (!canOrder) {
+      toast.error("La commande en ligne n'est pas disponible dans votre pays.");
+      return;
+    }
+
     if (!cartId) {
       toast.error("Impossible d'ouvrir le paiement Shopify.");
       return;
@@ -152,7 +159,7 @@ export function CartDrawer() {
                     <button
                       aria-label="Diminuer la quantité"
                       className="flex size-6 items-center justify-center rounded-full border border-[#a77d38]/40 text-[#171715] disabled:opacity-40"
-                      disabled={isLoading}
+                      disabled={!canOrder || isLoading}
                       onClick={() => updateItem(line.id, line.quantity - 1)}
                       type="button"
                     >
@@ -164,7 +171,7 @@ export function CartDrawer() {
                     <button
                       aria-label="Augmenter la quantité"
                       className="flex size-6 items-center justify-center rounded-full border border-[#a77d38]/40 text-[#171715] disabled:opacity-40"
-                      disabled={isLoading}
+                      disabled={!canOrder || isLoading}
                       onClick={() => updateItem(line.id, line.quantity + 1)}
                       type="button"
                     >
@@ -176,7 +183,7 @@ export function CartDrawer() {
                 <button
                   aria-label={`Retirer ${line.merchandise.product.title} du panier`}
                   className="self-start text-[#8a8478] hover:text-[#171715] disabled:opacity-40"
-                  disabled={isLoading}
+                  disabled={!canOrder || isLoading}
                   onClick={() => removeItem(line.id)}
                   type="button"
                 >
@@ -201,11 +208,15 @@ export function CartDrawer() {
             </div>
             <button
               className="inline-flex w-full items-center justify-center rounded-sm bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
-              disabled={isCreatingCheckout || isLoading}
+              disabled={!canOrder || isCreatingCheckout || isLoading}
               onClick={goToCheckout}
               type="button"
             >
-              {isCreatingCheckout ? "OUVERTURE DU PAIEMENT…" : "PASSER À LA CAISSE"}
+              {isCreatingCheckout
+                ? "OUVERTURE DU PAIEMENT…"
+                : canOrder
+                  ? "PASSER À LA CAISSE"
+                  : "COMMANDE INDISPONIBLE"}
             </button>
           </div>
         ) : null}

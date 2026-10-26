@@ -542,11 +542,12 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
               {tierPricing.map((tier, index) => (
                 <button
                   aria-pressed={selectedTier === index}
-                  className={`relative flex min-h-[76px] flex-col justify-center gap-0.5 rounded-xl border px-3 py-3 text-left transition-colors sm:min-h-20 sm:rounded-lg sm:px-4 ${
+                  className={`relative flex min-h-[76px] flex-col justify-center gap-0.5 rounded-xl border px-3 py-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-20 sm:rounded-lg sm:px-4 ${
                     selectedTier === index
                       ? "border-[#0e3927] bg-[#0e3927]/5"
                       : "border-[#a77d38]/30 hover:border-[#a77d38]"
                   }`}
+                  disabled={!canOrder}
                   key={tier.days}
                   onClick={() => setSelectedTier(index)}
                   type="button"
@@ -583,12 +584,12 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
             type="button"
           >
             <ShoppingBag className="size-4" />
-            {canOrder ? "AJOUTER AU PANIER" : "RUPTURE DE STOCK"}
+            {canOrder ? "AJOUTER AU PANIER" : "COMMANDE INDISPONIBLE"}
           </button>
 
           {canOrder ? null : (
             <p className="font-inter text-xs text-red-600">
-              Ce produit n&apos;est pas disponible dans votre pays.
+              La commande en ligne n&apos;est pas disponible dans votre pays.
             </p>
           )}
 
@@ -709,7 +710,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
           <button
             className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md bg-[#0e3927] px-3 py-2.5 font-roboto text-[10px] font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:px-6 sm:py-3 sm:text-xs"
-            disabled={!variantId || isCartLoading}
+            disabled={!variantId || isCartLoading || !canOrder}
             onClick={() =>
               variantId &&
               addItem(variantId, activeTier.multiplier)
