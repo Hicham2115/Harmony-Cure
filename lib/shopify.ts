@@ -159,6 +159,7 @@ const PRODUCT_BY_HANDLE_QUERY = `#graphql
       handle
       description
       descriptionHtml
+      vendor
       productType
       tags
       images(first: 8) {
@@ -177,6 +178,12 @@ const PRODUCT_BY_HANDLE_QUERY = `#graphql
         nodes {
           id
           availableForSale
+          title
+          sku
+          price {
+            amount
+            currencyCode
+          }
         }
       }
     }

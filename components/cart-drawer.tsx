@@ -13,9 +13,8 @@ import {
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/lib/store/use-cart";
 import type { ShopifyCart } from "@/lib/cart-actions";
-import { createTierCheckout } from "@/lib/order-actions";
 import { getProductTierTotal } from "@/lib/product-pricing";
-import { PromoCodeForm } from "@/components/promo-code-form";
+import { AnalyticsEvent, getShopifyAnalytics } from "@/lib/shopify-analytics";
 
 function formatAmount(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("fr-FR", {
@@ -57,6 +56,13 @@ export function CartDrawer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    getShopifyAnalytics()?.publish(AnalyticsEvent.CART_VIEWED, {
+      cart: cart ?? null,
+    });
+  }, [isOpen, cart]);
+
   const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
   const subtotal = lines.reduce((sum, line) => {
     const tierTotal = getProductTierTotal(
@@ -74,7 +80,10 @@ export function CartDrawer() {
 
     setIsCreatingCheckout(true);
     try {
-      const checkoutUrl = await createTierCheckout(cartId);
+      const checkoutUrl = cart?.checkoutUrl;
+      if (!checkoutUrl) {
+        throw new Error("Shopify n'a pas fourni le lien de paiement.");
+      }
       window.location.assign(checkoutUrl);
     } catch (error) {
       toast.error(
@@ -104,7 +113,6 @@ export function CartDrawer() {
           </div>
         ) : (
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
-            <PromoCodeForm productId="cart" />
             {lines.map((line) => {
               const linePrice = getLinePrice(line);
 

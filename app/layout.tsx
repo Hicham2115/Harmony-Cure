@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import {
   Geist,
   Geist_Mono,
@@ -8,6 +9,9 @@ import {
 } from "next/font/google";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { MetaPixel } from "@/components/meta-pixel";
+import { ShopifyAnalytics } from "@/components/shopify-analytics";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { CartAnalyticsTracker } from "@/components/cart-analytics-tracker";
 import { CanOrderProvider } from "@/components/can-order-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -120,10 +124,17 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${roboto.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        <ShopifyAnalytics />
+      </head>
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <CanOrderProvider canOrder={canOrder}>
             <MetaPixel />
+            <Suspense fallback={null}>
+              <AnalyticsTracker />
+            </Suspense>
+            <CartAnalyticsTracker />
             <ScrollToTop />
             {children}
             <Toaster />

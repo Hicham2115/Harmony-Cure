@@ -14,6 +14,7 @@ const promoCodeSchema = z
 const CART_FRAGMENT = `#graphql
   fragment CartFields on Cart {
     id
+    updatedAt
     checkoutUrl
     totalQuantity
     cost {
@@ -22,6 +23,10 @@ const CART_FRAGMENT = `#graphql
         currencyCode
       }
       totalAmount {
+        amount
+        currencyCode
+      }
+      checkoutChargeAmount {
         amount
         currencyCode
       }
@@ -35,6 +40,10 @@ const CART_FRAGMENT = `#graphql
         id
         quantity
         cost {
+          amountPerQuantity {
+            amount
+            currencyCode
+          }
           subtotalAmount {
             amount
             currencyCode
@@ -53,9 +62,13 @@ const CART_FRAGMENT = `#graphql
             id
             title
             product {
+              id
               title
               handle
+              vendor
+              productType
             }
+            sku
             image {
               url
               altText
@@ -75,11 +88,13 @@ function normalizeCart(cart: unknown) {
   if (!cart) return null;
   return cart as {
     id: string;
+    updatedAt: string;
     checkoutUrl: string;
     totalQuantity: number;
     cost: {
       subtotalAmount: { amount: string; currencyCode: string };
       totalAmount: { amount: string; currencyCode: string };
+      checkoutChargeAmount: { amount: string; currencyCode: string };
     };
     discountCodes: { code: string; applicable: boolean }[];
     lines: {
@@ -87,6 +102,7 @@ function normalizeCart(cart: unknown) {
         id: string;
         quantity: number;
         cost: {
+          amountPerQuantity: { amount: string; currencyCode: string };
           subtotalAmount: { amount: string; currencyCode: string };
           totalAmount: { amount: string; currencyCode: string };
         };
@@ -94,7 +110,14 @@ function normalizeCart(cart: unknown) {
         merchandise: {
           id: string;
           title: string;
-          product: { title: string; handle: string };
+          product: {
+            id: string;
+            title: string;
+            handle: string;
+            vendor: string;
+            productType: string;
+          };
+          sku: string | null;
           image: { url: string; altText: string | null } | null;
           price: { amount: string; currencyCode: string };
         };
