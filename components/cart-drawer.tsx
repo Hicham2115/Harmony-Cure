@@ -14,6 +14,7 @@ import {
 import { useCartStore } from "@/lib/store/use-cart";
 import type { ShopifyCart } from "@/lib/cart-actions";
 import { getProductTierTotal } from "@/lib/product-pricing";
+import { AnalyticsEvent, getShopifyAnalytics } from "@/lib/shopify-analytics";
 
 function formatAmount(amount: string, currencyCode: string) {
   return new Intl.NumberFormat("fr-FR", {
@@ -54,6 +55,13 @@ export function CartDrawer() {
     hydrate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    getShopifyAnalytics()?.publish(AnalyticsEvent.CART_VIEWED, {
+      cart: cart ?? null,
+    });
+  }, [isOpen, cart]);
 
   const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
   const subtotal = lines.reduce((sum, line) => {

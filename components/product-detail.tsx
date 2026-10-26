@@ -30,6 +30,7 @@ import {
 import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 import { useCanOrder } from "@/components/can-order-provider";
+import { AnalyticsEvent, getShopifyAnalytics } from "@/lib/shopify-analytics";
 
 const TIERS = [
   { days: 15, period: "15 jours", multiplier: 1, discount: 0, badge: null },
@@ -310,6 +311,24 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
     state.favoriteIds.includes(product.id),
   );
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
+
+  useEffect(() => {
+    const variant = product.variants.nodes[0];
+    getShopifyAnalytics()?.publish(AnalyticsEvent.PRODUCT_VIEWED, {
+      products: [
+        {
+          id: product.id,
+          title: product.title,
+          price: variant?.price.amount ?? product.priceRange.minVariantPrice.amount,
+          vendor: product.vendor,
+          variantId: variant?.id ?? product.id,
+          variantTitle: variant?.title ?? product.title,
+          sku: variant?.sku,
+          quantity: 1,
+        },
+      ],
+    });
+  }, [product]);
 
   const baseAmount = Number(product.priceRange.minVariantPrice.amount);
   const currencyCode = currencyFor(product);

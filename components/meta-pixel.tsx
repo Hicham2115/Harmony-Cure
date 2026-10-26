@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 
 declare global {
@@ -12,6 +11,12 @@ declare global {
 }
 
 const pixelId = "911641041329943";
+type QueuedFbq = NonNullable<Window["fbq"]> & {
+  callMethod?: (...args: unknown[]) => void;
+  queue?: unknown[][];
+  loaded?: boolean;
+  version?: string;
+};
 
 export function MetaPixel() {
   const pathname = usePathname();
@@ -19,43 +24,52 @@ export function MetaPixel() {
   const query = searchParams.toString();
 
   useEffect(() => {
-    if (typeof window.fbq === "function") {
-      window.fbq("track", "PageView");
-    }
+    const loadPixelIfAllowed = () => {
+      const privacy = window.Shopify?.customerPrivacy;
+      if (!privacy?.marketingAllowed()) return;
+
+      if (!window.fbq) {
+        const queued = ((...args: unknown[]) => {
+          if (queued.callMethod) queued.callMethod(...args);
+          else queued.queue?.push(args);
+        }) as QueuedFbq;
+        queued.queue = [];
+        queued.loaded = true;
+        queued.version = "2.0";
+        window.fbq = queued;
+        window._fbq = queued;
+
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = "https://connect.facebook.net/en_US/fbevents.js";
+        document.head.appendChild(script);
+        window.fbq("init", pixelId);
+      }
+
+      window.fbq?.("track", "PageView");
+    };
+
+    loadPixelIfAllowed();
+    document.addEventListener("consentTrackingApiLoaded", loadPixelIfAllowed);
+    document.addEventListener("visitorConsentCollected", loadPixelIfAllowed);
+    return () => {
+      document.removeEventListener("consentTrackingApiLoaded", loadPixelIfAllowed);
+      document.removeEventListener("visitorConsentCollected", loadPixelIfAllowed);
+    };
   }, [pathname, query]);
 
-  return (
-    <>
-      <Script id="meta-pixel-init" strategy="afterInteractive">
-        {`!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '${pixelId}');
-fbq('track', 'PageView');`}
-      </Script>
-      <noscript>
-        <img
-          alt=""
-          height="1"
-          width="1"
-          style={{ display: "none" }}
-          src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-        />
-      </noscript>
-    </>
-  );
+  return null;
 }
 
 export function trackMetaPixelEvent(
   eventName: string,
   parameters?: Record<string, string | number>,
 ) {
-  if (typeof window !== "undefined" && typeof window.fbq === "function") {
+  if (
+    typeof window !== "undefined" &&
+    window.Shopify?.customerPrivacy?.marketingAllowed() &&
+    typeof window.fbq === "function"
+  ) {
     window.fbq("track", eventName, parameters);
   }
 }
