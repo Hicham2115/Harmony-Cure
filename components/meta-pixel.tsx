@@ -26,7 +26,7 @@ export function MetaPixel() {
   useEffect(() => {
     const loadPixelIfAllowed = () => {
       const privacy = window.Shopify?.customerPrivacy;
-      if (!privacy?.marketingAllowed()) return;
+      if (typeof privacy?.marketingAllowed !== "function" || !privacy.marketingAllowed()) return;
 
       if (!window.fbq) {
         const queued = ((...args: unknown[]) => {
@@ -65,11 +65,11 @@ export function trackMetaPixelEvent(
   eventName: string,
   parameters?: Record<string, string | number>,
 ) {
-  if (
-    typeof window !== "undefined" &&
-    window.Shopify?.customerPrivacy?.marketingAllowed() &&
-    typeof window.fbq === "function"
-  ) {
-    window.fbq("track", eventName, parameters);
-  }
+  if (typeof window === "undefined") return;
+
+  const privacy = window.Shopify?.customerPrivacy;
+  if (typeof privacy?.marketingAllowed !== "function" || !privacy.marketingAllowed()) return;
+  if (typeof window.fbq !== "function") return;
+
+  window.fbq("track", eventName, parameters);
 }
