@@ -10,7 +10,7 @@ const STOREFRONT_ID = "401383";
 
 async function proxyShopifyRequest(request: Request) {
   const url = new URL(request.url);
-  if (url.pathname !== `/api/${API_VERSION}/graphql.json`) {
+  if (!/^\/api\/(?:unstable|2026-10)\/graphql\.json$/.test(url.pathname)) {
     return new Response("Not found", { status: 404 });
   }
 
