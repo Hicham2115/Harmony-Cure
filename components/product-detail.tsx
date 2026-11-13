@@ -31,6 +31,7 @@ import { useCartStore } from "@/lib/store/use-cart";
 import { useFavoritesStore } from "@/lib/store/use-favorites";
 import { useCanOrder } from "@/components/can-order-provider";
 import { AnalyticsEvent, getShopifyAnalytics } from "@/lib/shopify-analytics";
+import { trackMetaPixelEvent } from "@/components/meta-pixel";
 
 const TIERS = [
   { days: 15, period: "15 jours", multiplier: 1, discount: 0, badge: null },
@@ -328,6 +329,15 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
         },
       ],
     });
+    trackMetaPixelEvent("ViewContent", {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      value: Number(
+        variant?.price.amount ?? product.priceRange.minVariantPrice.amount,
+      ),
+      currency: variant?.price.currencyCode ?? product.priceRange.minVariantPrice.currencyCode,
+    });
   }, [product]);
 
   const baseAmount = Number(product.priceRange.minVariantPrice.amount);
@@ -409,6 +419,19 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
   }, [baseAmount, isAntiChute, isCollagen, product.handle, usesBundlePricing]);
 
   const activeTier = tierPricing[selectedTier];
+
+  function handleAddToCart() {
+    if (!variantId) return;
+    trackMetaPixelEvent("AddToCart", {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      value: activeTier.finalPrice,
+      currency: currencyCode,
+      num_items: activeTier.multiplier,
+    });
+    addItem(variantId, activeTier.multiplier);
+  }
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 pt-4 pb-28 sm:px-10 sm:py-14 lg:px-[5.8vw] lg:pb-14">
@@ -575,10 +598,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           <button
             className="mt-1 inline-flex min-h-14 items-center justify-center gap-3 rounded-md bg-[#0e3927] px-6 py-3.5 font-roboto text-xs font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:text-sm"
             disabled={!variantId || isCartLoading || !canOrder}
-            onClick={() =>
-              variantId &&
-              addItem(variantId, activeTier.multiplier)
-            }
+            onClick={handleAddToCart}
             ref={ctaRef}
             type="button"
           >
@@ -710,10 +730,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
           <button
             className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md bg-[#0e3927] px-3 py-2.5 font-roboto text-[10px] font-semibold tracking-[0.06em] text-white transition-colors hover:bg-[#0a2c1c] disabled:opacity-50 sm:px-6 sm:py-3 sm:text-xs"
             disabled={!variantId || isCartLoading}
-            onClick={() =>
-              variantId &&
-              addItem(variantId, activeTier.multiplier)
-            }
+            onClick={handleAddToCart}
             type="button"
           >
             <ShoppingBag className="size-4" />

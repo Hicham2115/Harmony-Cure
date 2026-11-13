@@ -63,7 +63,7 @@ export function MetaPixel() {
 
 export function trackMetaPixelEvent(
   eventName: string,
-  parameters?: Record<string, string | number>,
+  parameters?: Record<string, unknown>,
 ) {
   if (
     typeof window !== "undefined" &&
@@ -72,4 +72,22 @@ export function trackMetaPixelEvent(
   ) {
     window.fbq("track", eventName, parameters);
   }
+}
+
+// Meta hashes these values in the browser before sending them.
+export function setMetaPixelUserData(data: { fullName?: string; phone?: string }) {
+  if (
+    typeof window === "undefined" ||
+    !window.Shopify?.customerPrivacy?.marketingAllowed() ||
+    typeof window.fbq !== "function"
+  ) {
+    return;
+  }
+  const [firstName, ...rest] = (data.fullName ?? "").trim().toLowerCase().split(/\s+/);
+  const phone = (data.phone ?? "").replace(/\D/g, "");
+  window.fbq("init", pixelId, {
+    ...(firstName ? { fn: firstName } : {}),
+    ...(rest.length ? { ln: rest.join(" ") } : {}),
+    ...(phone ? { ph: phone } : {}),
+  });
 }

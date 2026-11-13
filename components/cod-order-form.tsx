@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -23,7 +23,7 @@ import { createCodOrder } from "@/lib/order-actions";
 import { codOrderSchema } from "@/lib/schemas/cod-order";
 import { getErrorMessage } from "@/lib/get-error-message";
 import { brandToast } from "@/lib/toast";
-import { trackMetaPixelEvent } from "@/components/meta-pixel";
+import { setMetaPixelUserData, trackMetaPixelEvent } from "@/components/meta-pixel";
 
 const SHIPPING_FEE = 0;
 
@@ -48,6 +48,7 @@ export function CodOrderForm({
   const [confirmedOrderName, setConfirmedOrderName] = useState<string | null>(
     null,
   );
+  const hasTrackedCheckout = useRef(false);
   const subtotal = totalPrice;
   const total = subtotal + SHIPPING_FEE;
 
@@ -69,10 +70,15 @@ export function CodOrderForm({
         quantity,
         ...values,
       }),
-    onSuccess: (order) => {
+    onSuccess: (order, values) => {
+      setMetaPixelUserData(values);
       trackMetaPixelEvent("Purchase", {
+        content_ids: variantId ? [variantId] : [],
+        content_name: productTitle,
+        content_type: "product",
         value: total,
         currency: currencyCode,
+        num_items: quantity,
       });
       setConfirmedOrderName(order.name);
       form.reset();
@@ -101,6 +107,17 @@ export function CodOrderForm({
   return (
     <form
       className="mt-2 flex flex-col gap-6 overflow-hidden rounded-2xl border border-[#a77d38]/25 bg-[#faf8f4] shadow-[0_16px_40px_-24px_rgba(23,23,21,0.35)]"
+      onFocus={() => {
+        if (hasTrackedCheckout.current) return;
+        hasTrackedCheckout.current = true;
+        trackMetaPixelEvent("InitiateCheckout", {
+          content_ids: variantId ? [variantId] : [],
+          content_type: "product",
+          value: total,
+          currency: currencyCode,
+          num_items: quantity,
+        });
+      }}
       onSubmit={(event) => {
         event.preventDefault();
         form.handleSubmit();

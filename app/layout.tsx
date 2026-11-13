@@ -131,6 +131,16 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <QueryProvider>
           <CanOrderProvider canOrder={canOrder}>
             <MetaPixel />
+            <noscript>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt=""
+                height="1"
+                src="https://www.facebook.com/tr?id=911641041329943&ev=PageView&noscript=1"
+                style={{ display: "none" }}
+                width="1"
+              />
+            </noscript>
             <Suspense fallback={null}>
               <AnalyticsTracker />
             </Suspense>

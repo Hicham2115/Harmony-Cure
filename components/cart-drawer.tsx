@@ -11,6 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { trackMetaPixelEvent } from "@/components/meta-pixel";
 import { useCartStore } from "@/lib/store/use-cart";
 import type { ShopifyCart } from "@/lib/cart-actions";
 import { getProductTierTotal } from "@/lib/product-pricing";
@@ -79,6 +80,13 @@ export function CartDrawer() {
     }
 
     setIsCreatingCheckout(true);
+    trackMetaPixelEvent("InitiateCheckout", {
+      content_ids: lines.map((line) => line.merchandise.product.id),
+      content_type: "product",
+      value: subtotal,
+      currency: cart?.cost.subtotalAmount.currencyCode,
+      num_items: cart?.totalQuantity,
+    });
     try {
       const checkoutUrl = cart?.checkoutUrl;
       if (!checkoutUrl) {
