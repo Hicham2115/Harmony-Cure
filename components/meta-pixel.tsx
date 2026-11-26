@@ -18,6 +18,14 @@ type QueuedFbq = NonNullable<Window["fbq"]> & {
   version?: string;
 };
 
+function isMarketingAllowed() {
+  const privacy = window.Shopify?.customerPrivacy;
+  return (
+    typeof privacy?.marketingAllowed === "function" &&
+    privacy.marketingAllowed()
+  );
+}
+
 export function MetaPixel() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -25,8 +33,7 @@ export function MetaPixel() {
 
   useEffect(() => {
     const loadPixelIfAllowed = () => {
-      const privacy = window.Shopify?.customerPrivacy;
-      if (!privacy?.marketingAllowed()) return;
+      if (!isMarketingAllowed()) return;
 
       if (!window.fbq) {
         const queued = ((...args: unknown[]) => {
@@ -67,7 +74,7 @@ export function trackMetaPixelEvent(
 ) {
   if (
     typeof window !== "undefined" &&
-    window.Shopify?.customerPrivacy?.marketingAllowed() &&
+    isMarketingAllowed() &&
     typeof window.fbq === "function"
   ) {
     window.fbq("track", eventName, parameters);
@@ -78,7 +85,7 @@ export function trackMetaPixelEvent(
 export function setMetaPixelUserData(data: { fullName?: string; phone?: string }) {
   if (
     typeof window === "undefined" ||
-    !window.Shopify?.customerPrivacy?.marketingAllowed() ||
+    !isMarketingAllowed() ||
     typeof window.fbq !== "function"
   ) {
     return;

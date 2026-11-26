@@ -51,7 +51,7 @@ export function Header() {
             strokeWidth={1.2}
           />
           <span className="leading-tight font-inter">
-            Livraison gratuite à partir de 70€ — Ne ratez pas l’offre !
+            Black Friday — Achetez 2 produits, le 3ème offert ! · Livraison gratuite à partir de 70€
           </span>
         </span>
         {/* <button
