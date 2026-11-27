@@ -49,10 +49,10 @@ export function Header() {
             className="size-2.5 shrink-0 sm:size-3.5"
             fill="currentColor"
             strokeWidth={1.2}
-          />
+          /> 
           <span className="leading-tight font-inter">
             Black Friday — Achetez 2 produits, le 3ème offert ! · FRIDAY26
-          </span>
+          </span> 
         </span>
         {/* <button
           className="group absolute right-4 hidden items-center gap-1 text-xs tracking-[0.14em] text-white/90 transition-colors duration-300 hover:text-[#e2c589] sm:inline-flex sm:right-10"
