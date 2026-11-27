@@ -51,7 +51,7 @@ export function Header() {
             strokeWidth={1.2}
           /> 
           <span className="leading-tight font-inter">
-            Black Friday — Achetez 2 produits, le 3ème offert ! · FRIDAY26
+            Black Friday — Achetez 2 produits, le 3ème offert ! · Promo Code : FRIDAY26
           </span> 
         </span>
         {/* <button
