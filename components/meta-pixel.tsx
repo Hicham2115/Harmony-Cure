@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 declare global {
@@ -19,30 +19,14 @@ type QueuedFbq = NonNullable<Window["fbq"]> & {
   version?: string;
 };
 
-function isMarketingAllowed() {
-  const privacy = window.Shopify?.customerPrivacy;
-  // Shopify's consent banner doesn't work on localhost, so allow testing there.
-  if (
-    process.env.NODE_ENV !== "production" &&
-    typeof privacy?.marketingAllowed !== "function"
-  ) {
-    return true;
-  }
-  return (
-    typeof privacy?.marketingAllowed === "function" &&
-    privacy.marketingAllowed()
-  );
-}
-
 export function MetaPixel() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const query = searchParams.toString();
+  const lastPageView = useRef<string | null>(null);
 
   useEffect(() => {
     const loadPixelIfAllowed = () => {
-      if (!isMarketingAllowed()) return;
-
       if (!window.fbq) {
         const queued = ((...args: unknown[]) => {
           if (queued.callMethod) queued.callMethod(...args);
@@ -62,6 +46,10 @@ export function MetaPixel() {
         window.fbq("init", pixelId);
       }
 
+      // Consent events re-run this, so send each page's PageView only once.
+      const pageKey = `${pathname}?${query}`;
+      if (lastPageView.current === pageKey) return;
+      lastPageView.current = pageKey;
       window.fbq?.("track", "PageView");
     };
 
@@ -83,7 +71,6 @@ export function trackMetaPixelEvent(
 ) {
   if (
     typeof window !== "undefined" &&
-    isMarketingAllowed() &&
     typeof window.fbq === "function"
   ) {
     window.fbq("track", eventName, parameters);
@@ -96,7 +83,6 @@ export function trackMetaPixelCustomEvent(
 ) {
   if (
     typeof window !== "undefined" &&
-    isMarketingAllowed() &&
     typeof window.fbq === "function"
   ) {
     window.fbq("trackCustom", eventName, parameters);
@@ -111,7 +97,6 @@ export function setMetaPixelUserData(data: {
 }) {
   if (
     typeof window === "undefined" ||
-    !isMarketingAllowed() ||
     typeof window.fbq !== "function"
   ) {
     return;
