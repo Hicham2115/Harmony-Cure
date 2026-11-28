@@ -13,6 +13,7 @@ declare global {
 const pixelId = "911641041329943";
 type QueuedFbq = NonNullable<Window["fbq"]> & {
   callMethod?: (...args: unknown[]) => void;
+  push?: unknown;
   queue?: unknown[][];
   loaded?: boolean;
   version?: string;
@@ -20,6 +21,13 @@ type QueuedFbq = NonNullable<Window["fbq"]> & {
 
 function isMarketingAllowed() {
   const privacy = window.Shopify?.customerPrivacy;
+  // Shopify's consent banner doesn't work on localhost, so allow testing there.
+  if (
+    process.env.NODE_ENV !== "production" &&
+    typeof privacy?.marketingAllowed !== "function"
+  ) {
+    return true;
+  }
   return (
     typeof privacy?.marketingAllowed === "function" &&
     privacy.marketingAllowed()
@@ -40,6 +48,7 @@ export function MetaPixel() {
           if (queued.callMethod) queued.callMethod(...args);
           else queued.queue?.push(args);
         }) as QueuedFbq;
+        queued.push = queued;
         queued.queue = [];
         queued.loaded = true;
         queued.version = "2.0";
