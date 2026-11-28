@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ArrowRight, Camera, Mail, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { setMetaPixelUserData, trackMetaPixelEvent } from "@/components/meta-pixel";
 import { Input } from "@/components/ui/input";
 import { PAYMENT_METHODS } from "@/components/payment-icons";
 import logo from "@/app/assets/logo.webp";
@@ -54,7 +55,11 @@ export function Footer() {
         throw new Error(result?.error ?? "Impossible de vous inscrire.");
       }
     },
-    onSuccess: () => toast.success("Inscription confirmée."),
+    onSuccess: (_data, email) => {
+      setMetaPixelUserData({ email });
+      trackMetaPixelEvent("Subscribe");
+      toast.success("Inscription confirmée.");
+    },
     onError: (error) => toast.error(error.message),
   });
 

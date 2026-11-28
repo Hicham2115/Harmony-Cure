@@ -5,6 +5,7 @@ import { type FormEvent } from "react";
 import { ArrowRight, Leaf, Mail } from "lucide-react";
 import { toast } from "sonner";
 
+import { setMetaPixelUserData, trackMetaPixelEvent } from "@/components/meta-pixel";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -58,7 +59,13 @@ export function Contact() {
         throw new Error(result?.error ?? "Impossible d'envoyer le message.");
       }
     },
-    onSuccess: () => toast.success("Votre message a bien été envoyé."),
+    onSuccess: (_data, payload) => {
+      setMetaPixelUserData({
+        email: typeof payload.email === "string" ? payload.email : undefined,
+      });
+      trackMetaPixelEvent("Contact");
+      toast.success("Votre message a bien été envoyé.");
+    },
     onError: (error) => toast.error(error.message),
   });
 

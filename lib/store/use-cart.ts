@@ -5,6 +5,11 @@ import { persist } from "zustand/middleware";
 import { toast } from "sonner";
 
 import {
+  trackMetaPixelCustomEvent,
+  trackMetaPixelEvent,
+} from "@/components/meta-pixel";
+
+import {
   addCartLine,
   applyCartDiscount,
   createCart,
@@ -27,7 +32,11 @@ type CartState = {
   openCart: () => void;
   closeCart: () => void;
   hydrate: () => Promise<void>;
-  addItem: (merchandiseId: string, quantity?: number) => Promise<void>;
+  addItem: (
+    merchandiseId: string,
+    quantity?: number,
+    value?: number,
+  ) => Promise<void>;
   updateItem: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   applyDiscount: (discountCode: string) => Promise<void>;
@@ -60,7 +69,7 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      addItem: async (merchandiseId, quantity = 1) => {
+      addItem: async (merchandiseId, quantity = 1, value) => {
         // Ignore repeat taps while a Shopify cart mutation is in flight.
         if (get().isLoading) return;
         set({ isLoading: true });
@@ -84,6 +93,18 @@ export const useCartStore = create<CartState>()(
           }
 
           set({ cart, cartId: cart?.id ?? null, isOpen: true });
+
+          const line = cart?.lines.nodes.find(
+            (item) => item.merchandise.id === merchandiseId,
+          );
+          trackMetaPixelEvent("AddToCart", {
+            content_ids: line ? [line.merchandise.product.id] : [merchandiseId],
+            content_name: line?.merchandise.product.title,
+            content_type: "product",
+            value: value ?? Number(line?.cost.amountPerQuantity.amount ?? 0) * quantity,
+            currency: line?.cost.amountPerQuantity.currencyCode,
+            num_items: quantity,
+          });
         } catch (error) {
           console.error("Failed to add item to cart:", error);
           toast.error(
@@ -118,9 +139,18 @@ export const useCartStore = create<CartState>()(
       removeItem: async (lineId) => {
         const { cartId } = get();
         if (!cartId) return;
+        const removedLine = get().cart?.lines.nodes.find(
+          (item) => item.id === lineId,
+        );
         set({ isLoading: true });
         try {
           const cart = await removeCartLine(cartId, lineId);
+          trackMetaPixelCustomEvent("RemoveFromCart", {
+            content_ids: removedLine ? [removedLine.merchandise.product.id] : [],
+            content_name: removedLine?.merchandise.product.title,
+            content_type: "product",
+            num_items: removedLine?.quantity,
+          });
           set({ cart });
         } catch (error) {
           console.error("Failed to update cart, resetting it:", error);
@@ -140,6 +170,9 @@ export const useCartStore = create<CartState>()(
         try {
           const cart = await applyCartDiscount(cartId, discountCode);
           set({ cart });
+          trackMetaPixelCustomEvent("ApplyPromoCode", {
+            applied: !!cart?.discountCodes.some((code) => code.applicable),
+          });
 
           if (!cart?.discountCodes.some((code) => code.applicable)) {
             throw new Error("Ce code promo n'est pas valide pour votre panier.");

@@ -11,7 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { trackMetaPixelEvent } from "@/components/meta-pixel";
+import { trackMetaPixelCustomEvent, trackMetaPixelEvent } from "@/components/meta-pixel";
 import { useCartStore } from "@/lib/store/use-cart";
 import type { ShopifyCart } from "@/lib/cart-actions";
 import { getProductTierTotal } from "@/lib/product-pricing";
@@ -63,6 +63,20 @@ export function CartDrawer() {
       cart: cart ?? null,
     });
   }, [isOpen, cart]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    trackMetaPixelCustomEvent("ViewCart", {
+      content_ids: (cart?.lines.nodes ?? []).map(
+        (line) => line.merchandise.product.id,
+      ),
+      value: Number(cart?.cost.subtotalAmount.amount ?? 0),
+      currency: cart?.cost.subtotalAmount.currencyCode,
+      num_items: cart?.totalQuantity ?? 0,
+    });
+    // Only when the drawer opens, not on every cart change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const lines = (cart?.lines.nodes ?? []).filter((line) => line.quantity > 0);
   const subtotal = lines.reduce((sum, line) => {

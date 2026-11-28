@@ -422,15 +422,7 @@ export function ProductDetail({ product }: { product: ShopifyProductDetail }) {
 
   function handleAddToCart() {
     if (!variantId) return;
-    trackMetaPixelEvent("AddToCart", {
-      content_ids: [product.id],
-      content_name: product.title,
-      content_type: "product",
-      value: activeTier.finalPrice,
-      currency: currencyCode,
-      num_items: activeTier.multiplier,
-    });
-    addItem(variantId, activeTier.multiplier);
+    addItem(variantId, activeTier.multiplier, activeTier.finalPrice);
   }
 
   return (
